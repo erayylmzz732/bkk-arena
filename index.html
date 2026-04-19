@@ -1363,6 +1363,7 @@ function App(){
   const [joinCodeInput,setJoinCodeInput]=useState("");
   const [joinCodeErr,setJoinCodeErr]=useState("");
   const [showTournament,setShowTournament]=useState(false);
+  const [leagueData,setLeagueData]=useState({league:"bronze",weeklyPts:0,weekKey:""});
   const [tournamentData,setTournamentData]=useState(null);
   const [userCode,setUserCode]=useState("");
 
@@ -1922,6 +1923,40 @@ function App(){
           </div>
         </>}
 
+        {homeTab==="league"&&(()=>{
+          const ld=leagueData||{league:"bronze",weeklyPts:0};
+          const lg=getLeagueObj?getLeagueObj(ld.league||"bronze"):{id:"bronze",name:"Bronz",icon:"🥉",color:"#cd7f32",minPts:0};
+          const board=(typeof getFakeLeaderboard!=="undefined")?getFakeLeaderboard(ld.weeklyPts||0,ld.league||"bronze",username):[];
+          const myRank=board.findIndex(p=>p.isMe)+1||"-";
+          const allLeagues=typeof LEAGUES!=="undefined"?LEAGUES:[{id:"bronze",name:"Bronz",icon:"🥉",minPts:0},{id:"silver",name:"Gumus",icon:"🥈",minPts:500},{id:"gold",name:"Altin",icon:"🥇",minPts:1500},{id:"diamond",name:"Elmas",icon:"💎",minPts:3000},{id:"master",name:"Usta",icon:"👑",minPts:6000}];
+          const nextLg=allLeagues[allLeagues.findIndex(l=>l.id===ld.league)+1];
+          return(
+            <div>
+              <div style={{background:"linear-gradient(135deg,"+lg.color+"22,"+lg.color+"11)",border:"2px solid "+lg.color,borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
+                <div style={{fontSize:40,marginBottom:4}}>{lg.icon}</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:lg.color}}>{lg.name} Ligi</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:30,fontWeight:700,color:"#fff",margin:"4px 0"}}>{(ld.weeklyPts||0).toLocaleString()} <span style={{fontSize:12,color:"#a8c4e0"}}>puan</span></div>
+                <div style={{fontSize:12,color:"#a8c4e0"}}>Bu Haftaki Siran: <b style={{color:lg.color}}>#{myRank}</b></div>
+                {nextLg&&<><div style={{fontSize:11,color:"#a8c4e0",marginTop:6}}>{nextLg.icon} {nextLg.name} icin <b style={{color:"#06d6a0"}}>{Math.max(0,nextLg.minPts-(ld.weeklyPts||0))} puan</b> daha lazim</div>
+                <div style={{height:5,background:"rgba(255,255,255,.1)",borderRadius:3,marginTop:6,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:Math.min(100,((ld.weeklyPts||0)-lg.minPts)/((nextLg.minPts||9999)-lg.minPts)*100)+"%",background:lg.color,borderRadius:3,transition:"width .5s"}}/>
+                </div></>}
+              </div>
+              <div style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:11,padding:"10px 13px",marginBottom:12,display:"flex",gap:8,alignItems:"center"}}>
+                <span>💡</span><div style={{fontSize:11,color:"#a8c4e0"}}>Dogru cevap <b style={{color:"#06d6a0"}}>+2 puan</b>, coklu 1. <b style={{color:"#ffd166"}}>+10 puan</b>. Pazar sifirlanir.</div>
+              </div>
+              <div style={{fontSize:12,fontWeight:700,color:"#a8c4e0",marginBottom:8}}>Bu Haftaki Siralama</div>
+              {board.slice(0,10).map((p,i)=>(
+                <div key={i} style={{background:p.isMe?"linear-gradient(135deg,rgba(76,201,240,.1),rgba(155,93,229,.1))":"#0f2040",border:p.isMe?"2px solid #4cc9f0":"1.5px solid #1e3a6e",borderRadius:11,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#162848",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:i<3?"#060e1e":"#a8c4e0",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+                  <div style={{flex:1,fontWeight:700,color:p.isMe?"#4cc9f0":"#fff",fontSize:13}}>{p.isMe?"Sen":p.name}</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:15,fontWeight:700,color:lg.color}}>{p.pts?p.pts.toLocaleString():0}</div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
         {homeTab==="friends"&&<>
           <div style={{fontSize:13,color:"#3d3d6b",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
           <div style={{display:"flex",gap:8,marginBottom:10}}>
@@ -1949,6 +1984,54 @@ function App(){
             </div>
           ))}
         </>}
+
+        {homeTab==="stats"&&(()=>{
+          const st=(typeof getDetailedStats!=="undefined")?getDetailedStats(username):{};
+          const history=(typeof getWeeklyHistory!=="undefined")?getWeeklyHistory(username):[];
+          const last7=[];
+          for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split("T")[0];const dd=history.filter(h=>h.d===k);last7.push({day:["Pz","Pt","Sa","Ca","Pe","Cu","Ct"][d.getDay()],pts:dd.reduce((s,h)=>s+(h.pts||0),0),games:dd.length});}
+          const maxPts=Math.max(...last7.map(d=>d.pts),1);
+          const acc=st.games>0?Math.round((st.correct||0)/Math.max((st.games||0)*7,1)*100):0;
+          const cats=[{k:"correct",l:"Genel",i:"🎲",c:"#a8c4e0"},{k:"geo_correct",l:"Cografya",i:"🌍",c:"#06d6a0"},{k:"hist_correct",l:"Tarih",i:"⏳",c:"#ffd166"},{k:"sport_correct",l:"Spor",i:"⚽",c:"#ff4d6d"},{k:"sci_correct",l:"Bilim",i:"🔬",c:"#4cc9f0"},{k:"art_correct",l:"Sanat",i:"🎨",c:"#9b5de5"}];
+          return(
+            <div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
+                {[{v:st.games||0,l:"Oyun",i:"🎮",c:"#4cc9f0"},{v:st.correct||0,l:"Dogru",i:"✅",c:"#06d6a0"},{v:"%"+acc,l:"Isabet",i:"🎯",c:"#ffd166"},{v:st.wins||0,l:"Galibiyet",i:"👑",c:"#9b5de5"},{v:(leagueData&&leagueData.weeklyPts)||0,l:"Haftalik",i:"🏆",c:"#ff4d6d"},{v:(typeof getReferralCount!=="undefined")?getReferralCount(username):0,l:"Davet",i:"👥",c:"#06d6a0"}].map((s,i)=>(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+s.c+"44",borderRadius:11,padding:"10px 6px",textAlign:"center"}}>
+                    <div style={{fontSize:15}}>{s.i}</div>
+                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:s.c}}>{s.v}</div>
+                    <div style={{fontSize:10,color:"#a8c4e0"}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:13,padding:13,marginBottom:12}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#a8c4e0",marginBottom:10}}>Son 7 Gun</div>
+                <div style={{display:"flex",gap:4,alignItems:"flex-end",height:60}}>
+                  {last7.map((d,i)=>(
+                    <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                      <div style={{width:"100%",borderRadius:"3px 3px 0 0",background:d.pts>0?"linear-gradient(180deg,#4cc9f0,#9b5de5)":"#162848",height:Math.max(3,d.pts/maxPts*52)+"px"}}/>
+                      <div style={{fontSize:9,color:d.pts>0?"#a8c4e0":"#2a4060",fontWeight:700}}>{d.day}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:13,padding:13}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#a8c4e0",marginBottom:10}}>Kategoriler</div>
+                {cats.map((c,i)=>{const v=st[c.k]||0;const max=Math.max(st.correct||1,1);return(
+                  <div key={i} style={{marginBottom:8}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                      <span style={{fontSize:12,color:"#fff"}}>{c.i} {c.l}</span>
+                      <span style={{fontSize:12,fontWeight:700,color:c.c}}>{v}</span>
+                    </div>
+                    <div style={{height:4,background:"#162848",borderRadius:2,overflow:"hidden"}}>
+                      <div style={{height:"100%",width:Math.min(100,v/max*100)+"%",background:c.c,borderRadius:2}}/>
+                    </div>
+                  </div>
+                );})}
+              </div>
+            </div>
+          );
+        })()}
 
         {homeTab==="missions"&&<>
           <div style={{fontSize:12,color:"#3d3d6b",marginBottom:10}}>{MISSIONS_DEF.filter(m=>ms[m.id]==='done').length}/{MISSIONS_DEF.length} tamamlandı</div>
@@ -2058,6 +2141,60 @@ function App(){
         })()}
 
         {showSettings&&<SettingsModal sfxOn={sfxOn} setSfxOn={setSfxOn} musicOn={musicOn} setMusicOn={setMusicOn} onClose={()=>setShowSettings(false)} onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
+        
+        {showTournament&&<div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.96)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
+          <div style={{background:"#060e1e",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"22px 18px 36px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#ff4d6d"}}>Turnuva Modu</div>
+              <button onClick={()=>setShowTournament(false)} style={{background:"none",border:"none",color:"#a8c4e0",fontSize:22,cursor:"pointer",lineHeight:1}}>X</button>
+            </div>
+            {!tournamentData.started?(
+              <div>
+                <div style={{fontSize:12,color:"#a8c4e0",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
+                {(tournamentData.players.length===0?[username]:tournamentData.players).map((p,i)=>(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"9px 12px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+                    <span>👤</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}</span>
+                    {i>0&&<button onClick={()=>setTournamentData(d=>({...d,players:d.players.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff4d6d",cursor:"pointer",fontSize:18,lineHeight:1}}>X</button>}
+                  </div>
+                ))}
+                {(tournamentData.players.length||1)<8&&<button onClick={()=>{const n=prompt("Oyuncu adi girin:");if(!n||!n.trim())return;setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));}} style={{width:"100%",background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"10px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:14,marginBottom:12}}>+ Oyuncu Ekle</button>}
+                <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)",marginTop:4}} onClick={()=>{
+                  const players=tournamentData.players.length?tournamentData.players:[username];
+                  if(players.length<2){alert("En az 2 oyuncu gerekli!");return;}
+                  const sh=[...players].sort(()=>Math.random()-.5);
+                  const matches=[];
+                  for(let i=0;i<sh.length;i+=2){if(i+1<sh.length)matches.push({p1:sh[i],p2:sh[i+1],winner:null});else matches.push({p1:sh[i],p2:"BYE",winner:sh[i]});}
+                  setTournamentData({players,started:true,bracket:matches,round:1});
+                }}>Turnuvayi Basla</button>
+              </div>
+            ):(
+              <div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#a8c4e0",marginBottom:10}}>Tur {tournamentData.round} Eslesmeler</div>
+                {tournamentData.bracket.map((m,i)=>(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+(m.winner?"#06d6a0":"#1e3a6e"),borderRadius:12,padding:"12px",marginBottom:8}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:m.winner?0:8}}>
+                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p1?"#06d6a0":"#fff"}}>{m.p1}</div>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,color:"#a8c4e0",fontWeight:700}}>VS</div>
+                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p2?"#06d6a0":m.p2==="BYE"?"#4a6080":"#fff"}}>{m.p2}</div>
+                    </div>
+                    {!m.winner&&m.p2!=="BYE"&&<div style={{display:"flex",gap:6}}>
+                      {[m.p1,m.p2].map(w=><button key={w} onClick={()=>{
+                        const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);
+                        if(nb.every(bm=>bm.winner)){
+                          const ws=nb.map(bm=>bm.winner);
+                          if(ws.length===1){alert("Sampiyon: "+ws[0]+"! Tebrikler!");setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}
+                          else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}
+                        } else setTournamentData(d=>({...d,bracket:nb}));
+                      }} style={{flex:1,background:"rgba(6,214,160,.08)",border:"1.5px solid #06d6a0",borderRadius:9,padding:"7px",color:"#06d6a0",fontWeight:800,cursor:"pointer",fontSize:11}}>{w} Kazandi</button>)}
+                    </div>}
+                    {m.winner&&<div style={{textAlign:"center",color:"#06d6a0",fontWeight:700,fontSize:12}}>Kazanan: {m.winner}</div>}
+                  </div>
+                ))}
+                <button onClick={()=>setTournamentData({players:[],started:false,bracket:[],round:1})} style={{width:"100%",background:"rgba(255,77,109,.08)",border:"1.5px solid #ff4d6d",borderRadius:10,padding:"9px",color:"#ff4d6d",fontWeight:700,cursor:"pointer",marginTop:4}}>Sifirla</button>
+              </div>
+            )}
+          </div>
+        </div>}
         {showAvEd&&<AvatarEditor avatar={avatar} levelInfo={levelInfo} onSave={(av)=>{setAvatar(av);saveAvatar(usernameRef.current,av);setShowAvEd(false);}} onClose={()=>setShowAvEd(false)}/>}
         {showShop&&(
           <div className="shop-overlay" onClick={()=>setShowShop(false)}>
@@ -2069,7 +2206,52 @@ function App(){
               <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"12px",textAlign:"center",marginBottom:14}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#fbbf24"}}>🪙 {gold}</div>
               </div>
-              {[{k:'double',i:"🎯",n:"Çift Seçim",d:"2 şık seç (biriktirilebilir)",c:200},{k:'elim',i:"❌",n:"2 Yanlışı Ele",d:"2 yanlış elenir",c:200},{k:'x2',i:"⚡",n:"x2 Puan",d:"Puan iki katı",c:300}].map(pw=>(
+              <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Altin Paketleri</div>
+              {[{g:1000,b:0,p:"29.99",icon:"🪙"},{g:4000,b:500,p:"89.99",popular:true,icon:"💛"},{g:8000,b:1000,p:"159.99",icon:"🏆"},{g:20000,b:5000,p:"349.99",icon:"👑"}].map((pkg,pi)=>(
+                <div key={pi} style={{background:pkg.popular?"rgba(76,201,240,.07)":"#0f2040",border:pkg.popular?"2px solid #4cc9f0":"1.5px solid #2a5a8e",borderRadius:12,padding:"10px 12px",marginBottom:8,position:"relative"}}>
+                  {pkg.popular&&<div style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",color:"#060e1e",fontSize:9,fontWeight:800,padding:"2px 10px",borderRadius:20,whiteSpace:"nowrap"}}>EN POPULER</div>}
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:22}}>{pkg.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:"#ffd166"}}>{pkg.g.toLocaleString()} Altin {pkg.b>0?<span style={{color:"#06d6a0",fontSize:12}}>+{pkg.b.toLocaleString()} bonus</span>:null}</div>
+                      <div style={{fontSize:10,color:"#a8c4e0"}}>Toplam: {(pkg.g+pkg.b).toLocaleString()}</div>
+                    </div>
+                    <button onClick={()=>alert("Yakindan aktif olacak!")} style={{background:pkg.popular?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:9,padding:"7px 12px",color:"#060e1e",fontWeight:800,fontSize:12,cursor:"pointer"}}>TL{pkg.p}</button>
+                  </div>
+                </div>
+              ))}
+              {!localStorage.getItem("ba_premium")&&<div style={{background:"rgba(255,209,102,.07)",border:"2px solid #ffd166",borderRadius:12,padding:"11px",marginBottom:12,textAlign:"center"}}>
+                <div style={{fontSize:13,fontWeight:800,color:"#ffd166",marginBottom:4}}>Reklamlari Kaldir</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#ffd166",marginBottom:8}}>TL49.99</div>
+                <button onClick={()=>{localStorage.setItem("ba_premium","1");setShowShop(false);}} style={{background:"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:10,padding:"9px 20px",color:"#060e1e",fontWeight:800,fontSize:13,cursor:"pointer",width:"100%"}}>Satin Al</button>
+              </div>}
+              <div style={{borderTop:"1px solid #1e3a6e",marginTop:4,marginBottom:12}}/>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Guclendiriciler</div>
+            </div>
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Altin Paketleri</div>
+              {[{g:1000,b:0,p:"29.99",icon:"🪙"},{g:4000,b:500,p:"89.99",popular:true,icon:"💛"},{g:8000,b:1000,p:"159.99",icon:"🏆"},{g:20000,b:5000,p:"349.99",icon:"👑"}].map((pkg,pi)=>(
+                <div key={pi} style={{background:pkg.popular?"rgba(76,201,240,.07)":"#0f2040",border:pkg.popular?"2px solid #4cc9f0":"1.5px solid #2a5a8e",borderRadius:12,padding:"10px 12px",marginBottom:8,position:"relative"}}>
+                  {pkg.popular&&<div style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",color:"#060e1e",fontSize:9,fontWeight:800,padding:"2px 10px",borderRadius:20,whiteSpace:"nowrap"}}>EN POPULER</div>}
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:22}}>{pkg.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:"#ffd166"}}>{pkg.g.toLocaleString()} {pkg.b>0?<span style={{color:"#06d6a0",fontSize:12}}>+{pkg.b.toLocaleString()}</span>:null}</div>
+                      <div style={{fontSize:10,color:"#a8c4e0"}}>Toplam: {(pkg.g+pkg.b).toLocaleString()}</div>
+                    </div>
+                    <button onClick={()=>alert("Yakindan aktif!")} style={{background:pkg.popular?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:9,padding:"7px 12px",color:"#060e1e",fontWeight:800,fontSize:12,cursor:"pointer"}}>TL{pkg.p}</button>
+                  </div>
+                </div>
+              ))}
+              {!localStorage.getItem("ba_premium")&&<div style={{background:"rgba(255,209,102,.07)",border:"2px solid #ffd166",borderRadius:12,padding:"11px",marginBottom:12,textAlign:"center"}}>
+                <div style={{fontSize:13,fontWeight:800,color:"#ffd166",marginBottom:4}}>Reklamlari Kaldir</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#ffd166",marginBottom:8}}>TL49.99</div>
+                <button onClick={()=>{localStorage.setItem("ba_premium","1");setShowShop(false);}} style={{background:"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:10,padding:"9px",color:"#060e1e",fontWeight:800,fontSize:13,cursor:"pointer",width:"100%"}}>Satin Al</button>
+              </div>}
+              <div style={{borderTop:"1px solid #1e3a6e",marginTop:2,marginBottom:10}}/>
+            </div>
+            {[{k:'double',i:"🎯",n:"Çift Seçim",d:"2 şık seç (biriktirilebilir)",c:200},{k:'elim',i:"❌",n:"2 Yanlışı Ele",d:"2 yanlış elenir",c:200},{k:'x2',i:"⚡",n:"x2 Puan",d:"Puan iki katı",c:300}].map(pw=>(
                 <div key={pw.k} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
                   <span style={{fontSize:22}}>{pw.i}</span>
                   <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{pw.n} <span style={{color:"#fbbf24",fontFamily:"'Rajdhani',sans-serif"}}>({powers[pw.k]||0})</span></div><div style={{fontSize:11,color:"#3d3d6b"}}>{pw.d}</div></div>
@@ -2147,6 +2329,11 @@ function App(){
       <div style={{background:"rgba(52,211,153,.08)",border:"1px solid rgba(52,211,153,.2)",borderRadius:10,padding:"9px 12px",display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
         <span>🟢</span><span style={{fontSize:12,color:"#34d399",fontWeight:700}}>Bağlantı hazır!</span>
       </div>
+      <div style={{background:"rgba(76,201,240,.1)",border:"2px solid #4cc9f0",borderRadius:14,padding:"12px",marginBottom:12,textAlign:"center"}}>
+        <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Oda Kodu</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:42,fontWeight:700,color:"#4cc9f0",letterSpacing:8}}>{roomCode||"------"}</div>
+        <div style={{fontSize:10,color:"#a8c4e0",marginTop:2}}>Arkadasina bu kodu soyle veya linki paylas</div>
+      </div>
       <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
       <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
@@ -2190,7 +2377,32 @@ function App(){
           </div>
         </div>
         <div className="pb"><div className="pbi" style={{width:prog+"%"}}/></div>
-        <div className="pw-row">
+        <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Altin Paketleri</div>
+              {[{g:1000,b:0,p:"29.99",icon:"🪙"},{g:4000,b:500,p:"89.99",popular:true,icon:"💛"},{g:8000,b:1000,p:"159.99",icon:"🏆"},{g:20000,b:5000,p:"349.99",icon:"👑"}].map((pkg,pi)=>(
+                <div key={pi} style={{background:pkg.popular?"rgba(76,201,240,.07)":"#0f2040",border:pkg.popular?"2px solid #4cc9f0":"1.5px solid #2a5a8e",borderRadius:12,padding:"10px 12px",marginBottom:8,position:"relative"}}>
+                  {pkg.popular&&<div style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",color:"#060e1e",fontSize:9,fontWeight:800,padding:"2px 10px",borderRadius:20,whiteSpace:"nowrap"}}>EN POPULER</div>}
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:22}}>{pkg.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:"#ffd166"}}>{pkg.g.toLocaleString()} {pkg.b>0?<span style={{color:"#06d6a0",fontSize:12}}>+{pkg.b.toLocaleString()}</span>:null}</div>
+                    </div>
+                    <button onClick={()=>alert("Yakindan aktif!")} style={{background:pkg.popular?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:9,padding:"7px 12px",color:"#060e1e",fontWeight:800,fontSize:12,cursor:"pointer"}}>TL{pkg.p}</button>
+                  </div>
+                </div>
+              ))}
+              {!localStorage.getItem("ba_premium")&&<div style={{background:"rgba(255,209,102,.07)",border:"2px solid #ffd166",borderRadius:12,padding:"10px",marginBottom:10,display:"flex",alignItems:"center",gap:10}}>
+                <span style={{fontSize:20}}>👑</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontWeight:800,color:"#ffd166"}}>Reklamlari Kaldir</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#ffd166"}}>TL49.99</div>
+                </div>
+                <button onClick={()=>{localStorage.setItem("ba_premium","1");setShowShop(false);}} style={{background:"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:9,padding:"8px 14px",color:"#060e1e",fontWeight:800,fontSize:12,cursor:"pointer"}}>Al</button>
+              </div>}
+              <div style={{borderTop:"1px solid #1e3a6e",marginTop:2,marginBottom:10}}/>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Guclendiriciler</div>
+            </div>
+            <div className="pw-row">
           {['double','elim','x2'].map(k=>{
             const has=(powers[k]||0)>0,ac={double:pwDouble,elim:pwElim,x2:pwX2}[k];
             return(<button key={k} className={"pw-btn"+(ac?" active":"")} disabled={fullyAnswered||ac||(!has&&gold<costs[k])} onClick={()=>activatePw(k)}>
@@ -2200,7 +2412,14 @@ function App(){
             </button>);
           })}
         </div>
-        <div className="qcard"><div className="qt">{q.q}</div></div>
+        <div className="qcard" style={{position:"relative"}}>
+        <button onClick={()=>{
+          const q=questions[qIdx];if(!q)return;
+          const r=prompt("Bildirme nedeni:\n1. Yanlis cevap\n2. Yazim hatasi\n3. Anlasılmaz soru\nNedeni yazin:");
+          if(!r)return;
+          try{const rs=JSON.parse(localStorage.getItem("ba_reports")||"[]");rs.push({q:q.q,r,ts:Date.now()});localStorage.setItem("ba_reports",JSON.stringify(rs.slice(-50)));}catch(e){}
+          alert("Bildiriminiz alindi, tesekkurler!");
+        }} style={{position:"absolute",top:8,right:8,background:"rgba(255,77,109,.1)",border:"1px solid rgba(255,77,109,.3)",borderRadius:8,color:"#ff4d6d",fontSize:10,fontWeight:700,cursor:"pointer",padding:"3px 8px",zIndex:1}}>Bildir</button><div className="qt">{q.q}</div></div>
         <div className="tc"><TimerRing tl={tl}/></div>
         <div>
           {displayOpts.map((item,di)=>{
