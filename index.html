@@ -2126,7 +2126,7 @@ function App(){
       {mode==="solo"?(
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
-        <button className="pbtn" style={{marginTop:4}} onClick={createRoom}>🏠 Oda Oluştur & Link Al</button>
+        <><button className="pbtn" style={{marginTop:4}} onClick={createRoom}>🏠 Oda Oluştur & Link Al</button>
         <div style={{textAlign:"center",fontSize:12,color:"#c4b0ff",margin:"14px 0 8px"}}>── veya mevcut odaya katıl ──</div>
         <div style={{display:"flex",gap:8}}>
           <input className="inp" style={{margin:0,flex:1,letterSpacing:6,fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,textAlign:"center"}}
@@ -2142,7 +2142,7 @@ function App(){
             else setJoinCodeErr("Kod geçersiz veya süresi dolmuş.");
           }}>Katıl →</button>
         </div>
-        {joinCodeErr&&<div style={{fontSize:11,color:"#ff4466",marginTop:5,textAlign:"center"}}>⚠ {joinCodeErr}</div>}
+        {joinCodeErr&&<div style={{fontSize:11,color:"#ff4466",marginTop:5,textAlign:"center"}}>⚠ {joinCodeErr}</div>}</>
       )}
     </div></W>
   );
