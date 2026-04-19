@@ -158,7 +158,7 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 .pw-btn.active{border-color:#ffd700;background:rgba(255,215,0,.18);box-shadow:0 0 14px rgba(255,215,0,.35)}
 .pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd700}.pw-label{font-size:9px;color:#c4b0ff;white-space:nowrap}
 .shop-overlay{position:fixed;inset:0;background:rgba(10,5,40,.92);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.shop-panel{background:#1a0a4e;border:1.5px solid #7050d0;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:88vh;overflow-y:auto}
+.shop-panel{background:#1a0a4e;border:1.5px solid #7050d0;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}
 .shop-panel::-webkit-scrollbar{width:0}
 .toggle{width:48px;height:26px;border-radius:13px;background:#3a2490;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
 .toggle.on{background:linear-gradient(135deg,#00f0ff,#9d50ff)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}.toggle.on .toggle-knob{left:25px}
@@ -1110,25 +1110,24 @@ function addGameHistory(u,pts,correct,total){
 
 function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
   return(
-    <div className="shop-overlay" onClick={onClose}>
-      <div className="shop-panel" onClick={e=>e.stopPropagation()}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#f0eeff"}}>⚙️ Ayarlar</div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:"#6b5fa8",fontSize:22,cursor:"pointer"}}>✕</button>
+    <div style={{position:"fixed",inset:0,background:"rgba(10,5,40,.92)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div style={{background:"#1a0a4e",border:"2px solid #7050d0",borderRadius:20,padding:20,width:"100%",maxWidth:340}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffffff"}}>⚙️ Ayarlar</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#c4b0ff",fontSize:24,cursor:"pointer",lineHeight:1,padding:0}}>✕</button>
         </div>
-        {[{l:"🔊 Ses Efektleri",v:sfxOn,fn:(nv)=>{setSfxOn(nv);setSfxEnabledG(nv);}},{l:"🎵 Oyun Müziği",v:musicOn,fn:(nv)=>{setMusicOn(nv);setMusicEnabledG(nv);}}].map((s,i)=>(
-          <div key={i} style={{background:"#1e1555",border:"1.5px solid #5035b0",borderRadius:12,padding:"13px 15px",marginBottom:9,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <span style={{fontSize:14,fontWeight:700,color:"#f0eeff"}}>{s.l}</span>
+        {[{l:"🔊 Ses Efektleri",v:sfxOn,fn:(v)=>{setSfxOn(v);setSfxEnabledG(v);}},{l:"🎵 Oyun Müziği",v:musicOn,fn:(v)=>{setMusicOn(v);setMusicEnabledG(v);}}].map((s,i)=>(
+          <div key={i} style={{background:"#2d1b6e",border:"1.5px solid #5a3fc0",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#ffffff"}}>{s.l}</span>
             <div className={"toggle"+(s.v?" on":"")} onClick={()=>s.fn(!s.v)}><div className="toggle-knob"/></div>
           </div>
         ))}
-        <div style={{marginTop:12}}>
-          <button className="sbtn" style={{fontSize:13,padding:"10px"}} onClick={onLogout}>🚪 Çıkış Yap</button>
-        </div>
+        <button className="sbtn" style={{fontSize:13,padding:11,marginTop:8,width:"100%"}} onClick={onLogout}>🚪 Çıkış Yap</button>
       </div>
     </div>
   );
 }
+
 
 function AvatarEditor({avatar,levelInfo,onSave,onClose}){
   const [av,setAv]=useState({...avatar});
@@ -1856,50 +1855,23 @@ function App(){
 
   if(screen==="auth") return(
     <W><div className="sc fi">
-      <div className="logo" style={{textAlign:"center",paddingTop:16}}>
-        <h1>BİLGİ ARENA</h1><p>Kim Kazanacak? · Rakibini geç!</p>
-      </div>
-      <div className="tabs" style={{marginBottom:16}}>
+      <div className="logo"><h1>BİLGİ ARENA</h1><p>Bilgini sına · Rakibini geç</p></div>
+      <div className="tabs">
         <button className={"tb "+(authTab==="login"?"on":"off")} onClick={()=>{setAuthTab("login");setFErr("");}}>Giriş Yap</button>
         <button className={"tb "+(authTab==="register"?"on":"off")} onClick={()=>{setAuthTab("register");setFErr("");}}>Kayıt Ol</button>
       </div>
-      {authTab==="register"&&<input className="inp" placeholder="Kullanıcı adı (min 3 karakter)" value={fUser} onChange={e=>{setFUser(e.target.value.replace(/\s/g,""));setFErr("");}} autoComplete="username"/>}
-      <input className="inp" placeholder="E-posta adresi" value={fEmail} onChange={e=>{setFEmail(e.target.value.trim());setFErr("");}} type="email" autoComplete="email"/>
-      <input className={"inp"+(fErr&&fPass.length>0?" err":"")} type="password" placeholder="Şifre (min 6 karakter)" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&document.getElementById("authBtn").click()} autoComplete={authTab==="login"?"current-password":"new-password"}/>
+      <input className={"inp"+(fErr&&!fUser.trim()?" err":"")} placeholder="Kullanıcı adı" value={fUser} onChange={e=>{setFUser(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&handleAuth()} autoComplete="username"/>
+      <input className={"inp"+(fErr&&fUser.trim()?" err":"")} type="password" placeholder="Şifre" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&handleAuth()} autoComplete="current-password"/>
       {fErr&&<div className="errmsg">⚠ {fErr}</div>}
-      <button id="authBtn" className="pbtn" style={{marginTop:6,opacity:authLoading?.55:1}} disabled={authLoading} onClick={async()=>{
-        setFErr("");setAuthLoading(true);
-        const email=fEmail.trim(),pass=fPass.trim(),uname=fUser.trim();
-        if(authTab==="register"&&uname.length<3){setFErr("Kullanıcı adı min 3 karakter");setAuthLoading(false);return;}
-        if(!email.includes("@")){setFErr("Geçerli bir e-posta girin");setAuthLoading(false);return;}
-        if(pass.length<6){setFErr("Şifre min 6 karakter");setAuthLoading(false);return;}
-        let result;
-        if(typeof fbRegister!=="undefined"&&typeof firebase!=="undefined"){
-          result=authTab==="register"?await fbRegister(email,pass,uname):await fbLogin(email,pass);
-        } else {
-          const u=uname||email.split("@")[0];
-          result={ok:true,uid:"local_"+u,username:u,gold:getGold(u),xp:getTotalXP(u),code:getUserCode(u),avatar:getAvatar(u)};
-        }
-        if(!result.ok){setFErr(result.err||"Bir hata oluştu");setAuthLoading(false);return;}
-        const u=result.username||(uname||email.split("@")[0]);
-        setUsername(u);
-        try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",pass);if(result.uid)localStorage.setItem("ba_fb_uid",result.uid);}catch(e){}
-        loadUser(u);
-        if(result.gold) setGold(result.gold);
-        if(result.avatar) setAvatar(result.avatar);
-        setTimeout(()=>doTriggerDaily("login"),400);
-        const pending=sessionStorage.getItem("pendingRoom");
-        if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}else setScreen("home");
-        setAuthLoading(false);
-      }}>{authLoading?"⏳ Bekleniyor...":(authTab==="login"?"Giriş Yap →":"Hesap Oluştur →")}</button>
-      <div style={{textAlign:"center",margin:"12px 0",color:"#6040a0",fontSize:12}}>— veya —</div>
+      <button className="pbtn" style={{marginTop:6}} onClick={handleAuth}>{authTab==="login"?"Giriş Yap →":"Hesap Oluştur →"}</button>
+      <div style={{textAlign:"center",margin:"14px 0",color:"#2a2a52",fontSize:13}}>— veya —</div>
       <button className="sbtn" onClick={()=>{
-        const g="Misafir"+(Math.floor(Math.random()*9000)+1000);
+        const g="Misafir"+(Math.floor(Math.random()*900)+100);
         try{localStorage.setItem("ba_user",g);localStorage.setItem("ba_pass","misafir");}catch(e){}
-        setUsername(g);loadUser(g);setTimeout(()=>doTriggerDaily("login"),300);
-        const p=sessionStorage.getItem("pendingRoom");if(p){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p);}else setScreen("home");
-      }}>👤 Misafir Olarak Devam Et</button>
-      <div style={{textAlign:"center",fontSize:10,color:"#4a30a0",marginTop:8}}>Misafir hesapları cihaza bağlıdır · Veri kaybolabilir</div>
+        setUsername(g);loadUser(g);setTimeout(()=>triggerDaily('login'),300);
+        const p=sessionStorage.getItem("pendingRoom");
+        if(p){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p);}else setScreen("home");
+      }}>Misafir Olarak Devam Et</button>
     </div></W>
   );
 
@@ -1917,7 +1889,7 @@ function App(){
         </div>
         {/* Nav */}
         <div style={{display:"flex",background:"#111130",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
-          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
+          {[{k:"home",l:"🏠"},{k:"league",l:"🏆"},{k:"friends",l:"👥"},{k:"stats",l:"📈"},{k:"profile",l:"👤"}].map(t=>(
             <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#6ee7f7,#818cf8)":"transparent",color:homeTab===t.k?"#0a0a1f":"#3d3d6b",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
           ))}
         </div>
@@ -1965,6 +1937,87 @@ function App(){
             <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer</span></div>
           </div>
         </>}
+
+        {homeTab==="league"&&(()=>{
+          const ld=leagueData||{league:"bronze",weeklyPts:0};
+          const lg=getLeagueObj(ld.league||"bronze");
+          const board=getFakeLeaderboard(ld.weeklyPts||0,ld.league||"bronze",username);
+          const myRank=board.findIndex(p=>p.isMe)+1;
+          const nextLg=LEAGUES[LEAGUES.findIndex(l=>l.id===ld.league)+1];
+          return(
+            <div>
+              <div style={{background:`linear-gradient(135deg,${lg.color}22,${lg.color}11)`,border:`2px solid ${lg.color}`,borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
+                <div style={{fontSize:42,marginBottom:4}}>{lg.icon}</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:24,fontWeight:700,color:lg.color}}>{lg.name} Ligi</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:32,fontWeight:700,color:"#ffffff",margin:"4px 0"}}>{(ld.weeklyPts||0).toLocaleString()} <span style={{fontSize:13,color:"#c4b0ff"}}>puan</span></div>
+                <div style={{fontSize:12,color:"#c4b0ff"}}>Sıralaman: <b style={{color:lg.color}}>#{myRank}</b> / {board.length}</div>
+                {nextLg&&<><div style={{fontSize:11,color:"#c4b0ff",marginTop:6}}>{nextLg.icon} {nextLg.name} için <b style={{color:"#00ffa3"}}>{Math.max(0,nextLg.minPts-(ld.weeklyPts||0))} puan</b> daha</div>
+                <div style={{height:4,background:"rgba(255,255,255,.1)",borderRadius:2,marginTop:6,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${Math.min(100,((ld.weeklyPts||0)-lg.minPts)/((nextLg?.minPts||9999)-lg.minPts)*100)}%`,background:lg.color,borderRadius:2}}/>
+                </div></>}
+              </div>
+              <div style={{background:"#2d1b6e",border:"1.5px solid #5a3fc0",borderRadius:12,padding:"10px 13px",marginBottom:12,display:"flex",gap:8,alignItems:"center"}}>
+                <span>💡</span><div style={{fontSize:11,color:"#c4b0ff"}}>Her doğru cevap <b style={{color:"#00ffa3"}}>+2 puan</b>, çoklu 1. <b style={{color:"#ffd700"}}>+10 puan</b>. Pazar sıfırlanır.</div>
+              </div>
+              <div style={{fontSize:12,fontWeight:700,color:"#c4b0ff",marginBottom:8}}>Bu Haftaki Sıralama</div>
+              {board.slice(0,10).map((p,i)=>(
+                <div key={i} style={{background:p.isMe?"linear-gradient(135deg,rgba(0,240,255,.1),rgba(157,80,255,.1))":"#2d1b6e",border:p.isMe?"2px solid #00f0ff":"1.5px solid #5a3fc0",borderRadius:11,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#3a2490",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:i<3?"#0a0a18":"#c4b0ff",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+                  <div style={{flex:1,fontWeight:700,color:p.isMe?"#00f0ff":"#ffffff",fontSize:13}}>{p.isMe?"Sen":p.name}</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:15,fontWeight:700,color:lg.color}}>{p.pts.toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
+        {homeTab==="stats"&&(()=>{
+          const st=getDetailedStats(username)||{};
+          const history=getWeeklyHistory(username)||[];
+          const cats=[{k:"correct",l:"Genel",i:"🎲",c:"#c4b0ff"},{k:"geo_correct",l:"Coğrafya",i:"🌍",c:"#00ffa3"},{k:"hist_correct",l:"Tarih",i:"⏳",c:"#ffd700"},{k:"sport_correct",l:"Spor",i:"⚽",c:"#ff4466"},{k:"sci_correct",l:"Bilim",i:"🔬",c:"#00f0ff"},{k:"art_correct",l:"Sanat",i:"🎨",c:"#9d50ff"}];
+          const last7=[];
+          for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split("T")[0];const dd=history.filter(h=>h.d===k);last7.push({day:["Pz","Pt","Sa","Ça","Pe","Cu","Ct"][d.getDay()],pts:dd.reduce((s,h)=>s+(h.pts||0),0),games:dd.length});}
+          const maxPts=Math.max(...last7.map(d=>d.pts),1);
+          const acc=st.games>0?Math.round((st.correct||0)/(Math.max((st.games||0)*7,1))*100):0;
+          return(
+            <div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
+                {[{v:st.games||0,l:"Oyun",i:"🎮",c:"#00f0ff"},{v:st.correct||0,l:"Doğru",i:"✅",c:"#00ffa3"},{v:`%${acc}`,l:"İsabet",i:"🎯",c:"#ffd700"},{v:st.wins||0,l:"Galibiyet",i:"👑",c:"#9d50ff"},{v:(leagueData&&leagueData.weeklyPts)||0,l:"Haftalık",i:"🏆",c:"#ff4466"},{v:getReferralCount(username),l:"Davet",i:"👥",c:"#00ffa3"}].map((s,i)=>(
+                  <div key={i} style={{background:"#2d1b6e",border:`1.5px solid ${s.c}44`,borderRadius:11,padding:"10px 6px",textAlign:"center"}}>
+                    <div style={{fontSize:15}}>{s.i}</div>
+                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:s.c}}>{s.v}</div>
+                    <div style={{fontSize:10,color:"#c4b0ff"}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{background:"#2d1b6e",border:"1.5px solid #5a3fc0",borderRadius:13,padding:13,marginBottom:12}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#c4b0ff",marginBottom:10}}>📅 Son 7 Gün</div>
+                <div style={{display:"flex",gap:4,alignItems:"flex-end",height:60}}>
+                  {last7.map((d,i)=>(
+                    <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                      <div style={{width:"100%",borderRadius:"3px 3px 0 0",background:d.pts>0?"linear-gradient(180deg,#00f0ff,#9d50ff)":"#3a2490",height:`${Math.max(3,d.pts/maxPts*52)}px`}}/>
+                      <div style={{fontSize:9,color:d.pts>0?"#c4b0ff":"#4a30a0",fontWeight:700}}>{d.day}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{background:"#2d1b6e",border:"1.5px solid #5a3fc0",borderRadius:13,padding:13}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#c4b0ff",marginBottom:10}}>📊 Kategoriler</div>
+                {cats.map((c,i)=>{const v=st[c.k]||0;return(
+                  <div key={i} style={{marginBottom:8}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                      <span style={{fontSize:12,color:"#ffffff"}}>{c.i} {c.l}</span>
+                      <span style={{fontSize:12,fontWeight:700,color:c.c}}>{v}</span>
+                    </div>
+                    <div style={{height:4,background:"#3a2490",borderRadius:2,overflow:"hidden"}}>
+                      <div style={{height:"100%",width:`${Math.min(100,(v/Math.max(st.correct||1,1))*100)}%`,background:c.c,borderRadius:2}}/>
+                    </div>
+                  </div>
+                );})}
+              </div>
+            </div>
+          );
+        })()}
 
         {homeTab==="friends"&&<>
           <div style={{fontSize:13,color:"#3d3d6b",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
@@ -2113,6 +2166,31 @@ function App(){
               <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"12px",textAlign:"center",marginBottom:14}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#fbbf24"}}>🪙 {gold}</div>
               </div>
+              {/* Altın Paketleri */}
+              <div style={{fontSize:10,color:"#c4b0ff",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>💰 Altın Paketleri</div>
+              {[{gold:1000,bonus:0,price:"₺29.99",popular:false,icon:"🪙"},{gold:4000,bonus:500,price:"₺89.99",popular:true,icon:"💛"},{gold:8000,bonus:1000,price:"₺159.99",popular:false,icon:"🏆"},{gold:20000,bonus:5000,price:"₺349.99",popular:false,icon:"👑"}].map((pkg,pi)=>(
+                <div key={pi} style={{background:pkg.popular?"linear-gradient(135deg,rgba(0,240,255,.08),rgba(157,80,255,.08))":"#2d1b6e",border:pkg.popular?"2px solid #00f0ff":"1.5px solid #5a3fc0",borderRadius:12,padding:"10px 12px",marginBottom:8,position:"relative"}}>
+                  {pkg.popular&&<div style={{position:"absolute",top:-8,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#00f0ff,#9d50ff)",color:"#0a0a18",fontSize:9,fontWeight:800,padding:"2px 10px",borderRadius:20,whiteSpace:"nowrap"}}>⭐ EN POPÜLER</div>}
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:22}}>{pkg.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:"#ffd700"}}>{pkg.gold.toLocaleString()}🪙{pkg.bonus>0&&<span style={{color:"#00ffa3",fontSize:12}}> +{pkg.bonus.toLocaleString()}</span>}</div>
+                      <div style={{fontSize:10,color:"#c4b0ff"}}>Toplam: {(pkg.gold+pkg.bonus).toLocaleString()}</div>
+                    </div>
+                    <button onClick={()=>alert("Yakında aktif olacak! Google Play üzerinden.")} style={{background:pkg.popular?"linear-gradient(135deg,#00f0ff,#9d50ff)":"linear-gradient(135deg,#ffd700,#f0a500)",border:"none",borderRadius:9,padding:"7px 12px",color:"#0a0a18",fontWeight:800,fontSize:12,cursor:"pointer"}}>{pkg.price}</button>
+                  </div>
+                </div>
+              ))}
+              {!localStorage.getItem("ba_premium")&&(
+                <div style={{background:"linear-gradient(135deg,rgba(255,215,0,.08),rgba(157,80,255,.08))",border:"2px solid #ffd700",borderRadius:12,padding:"12px",marginBottom:12,textAlign:"center"}}>
+                  <div style={{fontSize:13,fontWeight:800,color:"#ffd700",marginBottom:2}}>👑 Reklamsız Premium</div>
+                  <div style={{fontSize:11,color:"#c4b0ff",marginBottom:8}}>Tek seferlik · Sonsuza kadar reklamsız</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffd700",marginBottom:8}}>₺49.99</div>
+                  <button onClick={()=>{localStorage.setItem("ba_premium","1");setShowShop(false);}} style={{background:"linear-gradient(135deg,#ffd700,#f0a500)",border:"none",borderRadius:10,padding:"9px 20px",color:"#0a0a18",fontWeight:800,fontSize:13,cursor:"pointer",width:"100%"}}>Satın Al →</button>
+                </div>
+              )}
+              <div style={{borderTop:"1px solid #3a2490",marginBottom:10}}/>
+              <div style={{fontSize:10,color:"#c4b0ff",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>⚡ Güçlendiriciler</div>
               {[{k:'double',i:"🎯",n:"Çift Seçim",d:"2 şık seç (biriktirilebilir)",c:200},{k:'elim',i:"❌",n:"2 Yanlışı Ele",d:"2 yanlış elenir",c:200},{k:'x2',i:"⚡",n:"x2 Puan",d:"Puan iki katı",c:300}].map(pw=>(
                 <div key={pw.k} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
                   <span style={{fontSize:22}}>{pw.i}</span>
