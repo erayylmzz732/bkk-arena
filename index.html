@@ -1856,23 +1856,50 @@ function App(){
 
   if(screen==="auth") return(
     <W><div className="sc fi">
-      <div className="logo"><h1>BİLGİ ARENA</h1><p>Bilgini sına · Rakibini geç</p></div>
-      <div className="tabs">
+      <div className="logo" style={{textAlign:"center",paddingTop:16}}>
+        <h1>BİLGİ ARENA</h1><p>Kim Kazanacak? · Rakibini geç!</p>
+      </div>
+      <div className="tabs" style={{marginBottom:16}}>
         <button className={"tb "+(authTab==="login"?"on":"off")} onClick={()=>{setAuthTab("login");setFErr("");}}>Giriş Yap</button>
         <button className={"tb "+(authTab==="register"?"on":"off")} onClick={()=>{setAuthTab("register");setFErr("");}}>Kayıt Ol</button>
       </div>
-      <input className={"inp"+(fErr&&!fUser.trim()?" err":"")} placeholder="Kullanıcı adı" value={fUser} onChange={e=>{setFUser(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&handleAuth()} autoComplete="username"/>
-      <input className={"inp"+(fErr&&fUser.trim()?" err":"")} type="password" placeholder="Şifre" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&handleAuth()} autoComplete="current-password"/>
+      {authTab==="register"&&<input className="inp" placeholder="Kullanıcı adı (min 3 karakter)" value={fUser} onChange={e=>{setFUser(e.target.value.replace(/\s/g,""));setFErr("");}} autoComplete="username"/>}
+      <input className="inp" placeholder="E-posta adresi" value={fEmail} onChange={e=>{setFEmail(e.target.value.trim());setFErr("");}} type="email" autoComplete="email"/>
+      <input className={"inp"+(fErr&&fPass.length>0?" err":"")} type="password" placeholder="Şifre (min 6 karakter)" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&document.getElementById("authBtn").click()} autoComplete={authTab==="login"?"current-password":"new-password"}/>
       {fErr&&<div className="errmsg">⚠ {fErr}</div>}
-      <button className="pbtn" style={{marginTop:6}} onClick={handleAuth}>{authTab==="login"?"Giriş Yap →":"Hesap Oluştur →"}</button>
-      <div style={{textAlign:"center",margin:"14px 0",color:"#2a2a52",fontSize:13}}>— veya —</div>
+      <button id="authBtn" className="pbtn" style={{marginTop:6,opacity:authLoading?.55:1}} disabled={authLoading} onClick={async()=>{
+        setFErr("");setAuthLoading(true);
+        const email=fEmail.trim(),pass=fPass.trim(),uname=fUser.trim();
+        if(authTab==="register"&&uname.length<3){setFErr("Kullanıcı adı min 3 karakter");setAuthLoading(false);return;}
+        if(!email.includes("@")){setFErr("Geçerli bir e-posta girin");setAuthLoading(false);return;}
+        if(pass.length<6){setFErr("Şifre min 6 karakter");setAuthLoading(false);return;}
+        let result;
+        if(typeof fbRegister!=="undefined"&&typeof firebase!=="undefined"){
+          result=authTab==="register"?await fbRegister(email,pass,uname):await fbLogin(email,pass);
+        } else {
+          const u=uname||email.split("@")[0];
+          result={ok:true,uid:"local_"+u,username:u,gold:getGold(u),xp:getTotalXP(u),code:getUserCode(u),avatar:getAvatar(u)};
+        }
+        if(!result.ok){setFErr(result.err||"Bir hata oluştu");setAuthLoading(false);return;}
+        const u=result.username||(uname||email.split("@")[0]);
+        setUsername(u);
+        try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",pass);if(result.uid)localStorage.setItem("ba_fb_uid",result.uid);}catch(e){}
+        loadUser(u);
+        if(result.gold) setGold(result.gold);
+        if(result.avatar) setAvatar(result.avatar);
+        setTimeout(()=>doTriggerDaily("login"),400);
+        const pending=sessionStorage.getItem("pendingRoom");
+        if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}else setScreen("home");
+        setAuthLoading(false);
+      }}>{authLoading?"⏳ Bekleniyor...":(authTab==="login"?"Giriş Yap →":"Hesap Oluştur →")}</button>
+      <div style={{textAlign:"center",margin:"12px 0",color:"#6040a0",fontSize:12}}>— veya —</div>
       <button className="sbtn" onClick={()=>{
-        const g="Misafir"+(Math.floor(Math.random()*900)+100);
+        const g="Misafir"+(Math.floor(Math.random()*9000)+1000);
         try{localStorage.setItem("ba_user",g);localStorage.setItem("ba_pass","misafir");}catch(e){}
-        setUsername(g);loadUser(g);setTimeout(()=>triggerDaily('login'),300);
-        const p=sessionStorage.getItem("pendingRoom");
-        if(p){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p);}else setScreen("home");
-      }}>Misafir Olarak Devam Et</button>
+        setUsername(g);loadUser(g);setTimeout(()=>doTriggerDaily("login"),300);
+        const p=sessionStorage.getItem("pendingRoom");if(p){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p);}else setScreen("home");
+      }}>👤 Misafir Olarak Devam Et</button>
+      <div style={{textAlign:"center",fontSize:10,color:"#4a30a0",marginTop:8}}>Misafir hesapları cihaza bağlıdır · Veri kaybolabilir</div>
     </div></W>
   );
 
