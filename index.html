@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bilgi Arena: Kim Kazanacak?">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#1a0a4e">
+<meta name="theme-color" content="#060e1e">
 <title>Bilgi Arena: Kim Kazanacak?</title>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-app-compat.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-auth-compat.min.js"></script>
@@ -21,9 +21,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#1a0a4e}
-.app{min-height:100vh;background:linear-gradient(135deg,#2d1065 0%,#1a0a4e 50%,#0d1040 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
-.phone{width:390px;min-height:840px;background:#1a0a4e;border-radius:38px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #2d1065,0 24px 60px rgba(0,0,0,.5),0 0 80px rgba(180,120,255,.4);overflow:hidden;display:flex;flex-direction:column;position:relative}
+body{background:#060e1e}
+.app{min-height:100vh;background:linear-gradient(160deg,#0a1628 0%,#060e1e 60%,#0d0a20 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
+.phone{width:390px;min-height:840px;background:#0a1628;border-radius:38px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a1628,0 28px 70px rgba(0,0,0,.7),0 0 80px rgba(76,201,240,.15),0 0 40px rgba(255,77,109,.1);overflow:hidden;display:flex;flex-direction:column;position:relative}
 .sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
 .sc::-webkit-scrollbar{width:0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -32,136 +32,141 @@ body{background:#1a0a4e}
 @keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
 .fi{animation:fadeUp .25s ease both}
 .logo{text-align:center;padding:32px 0 24px}
-.logo h1{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#00f0ff 0%,#9d50ff 60%,#c084fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo p{font-size:12px;color:#c4b0ff;margin-top:5px;letter-spacing:1px;text-transform:uppercase}
-.tabs{display:flex;background:#2d1b6e;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
+.logo h1{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#4cc9f0 0%,#9b5de5 60%,#c084fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo p{font-size:12px;color:#a8c4e0;margin-top:5px;letter-spacing:1px;text-transform:uppercase}
+.tabs{display:flex;background:#0f2040;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
 .tb{flex:1;padding:10px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;transition:all .2s}
-.tb.on{background:linear-gradient(135deg,#00f0ff,#9d50ff);color:#0a0a1f}
-.tb.off{background:transparent;color:#c4b0ff}
-.inp{width:100%;padding:13px 15px;background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;margin-bottom:10px;outline:none;transition:border-color .2s,box-shadow .2s}
-.inp:focus{border-color:#00f0ff;box-shadow:0 0 0 3px rgba(0,240,255,.1)}
-.inp::placeholder{color:#9070c0}
-.inp.err{border-color:#ff4466}
-.errmsg{font-size:12px;color:#ff4466;margin:-6px 0 8px 4px}
-.pbtn{width:100%;padding:14px;background:linear-gradient(135deg,#00f0ff,#9d50ff);border:none;border-radius:14px;color:#0a0a1f;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .2s}
-.pbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,240,255,.28)}
+.tb.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5);color:#0a0a1f}
+.tb.off{background:transparent;color:#a8c4e0}
+.inp{width:100%;padding:13px 15px;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;margin-bottom:10px;outline:none;transition:border-color .2s,box-shadow .2s}
+.inp:focus{border-color:#4cc9f0;box-shadow:0 0 0 3px rgba(76,201,240,.1)}
+.inp::placeholder{color:#4a6080}
+.inp.err{border-color:#ff4d6d}
+.errmsg{font-size:12px;color:#ff4d6d;margin:-6px 0 8px 4px}
+.pbtn{width:100%;padding:14px;background:linear-gradient(135deg,#4cc9f0,#9b5de5);border:none;border-radius:14px;color:#0a0a1f;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .2s}
+.pbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(76,201,240,.28)}
 .pbtn:active{transform:translateY(0)}
 .pbtn:disabled{opacity:.5;cursor:default;transform:none}
-.sbtn{width:100%;padding:12px;background:transparent;border:1.5px solid #5a3fc0;border-radius:14px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
-.sbtn:hover{border-color:#00f0ff;background:rgba(0,240,255,.04)}
+.sbtn{width:100%;padding:12px;background:transparent;border:1.5px solid #1e3a6e;border-radius:14px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.sbtn:hover{border-color:#4cc9f0;background:rgba(76,201,240,.04)}
 .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-.logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#00f0ff,#9d50ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
-.av{width:37px;height:37px;background:linear-gradient(135deg,#00f0ff,#9d50ff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0a0a1f}
-.mc{background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
-.mc:hover{border-color:#00f0ff;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,240,255,.1)}
+.logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4cc9f0,#9b5de5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.av{width:37px;height:37px;background:linear-gradient(135deg,#4cc9f0,#9b5de5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0a0a1f}
+.mc{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
+.mc:hover{border-color:#4cc9f0;transform:translateY(-2px);box-shadow:0 8px 32px rgba(76,201,240,.1)}
 .stitle{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700;color:#e2e4f0}
-.bk{background:transparent;border:none;color:#c4b0ff;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
-.bk:hover{color:#00f0ff}
+.bk{background:transparent;border:none;color:#a8c4e0;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
+.bk:hover{color:#4cc9f0}
 .shdr{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.cc{background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s}
-.cc.sel{border-color:#00f0ff;background:rgba(0,240,255,.05);box-shadow:0 0 20px rgba(0,240,255,.08)}
-.cc:hover:not(.sel){border-color:#00f0ff;opacity:.9}
-.cn{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:#00f0ff;min-width:48px}
+.cc{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s}
+.cc.sel{border-color:#4cc9f0;background:rgba(76,201,240,.05);box-shadow:0 0 20px rgba(76,201,240,.08)}
+.cc:hover:not(.sel){border-color:#4cc9f0;opacity:.9}
+.cn{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:#4cc9f0;min-width:48px}
 .gh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.qcnt{font-size:13px;color:#c4b0ff}
-.qcnt span{color:#00f0ff;font-weight:700}
-.scdisp{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#ffd700}
-.pb{height:5px;background:#4a30a0;border-radius:2px;margin-bottom:18px;overflow:hidden}
-.pbi{height:100%;background:linear-gradient(90deg,#00f0ff,#9d50ff);border-radius:2px;transition:width .4s ease}
-.qcard{background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:18px;padding:18px;margin-bottom:14px}
+.qcnt{font-size:13px;color:#a8c4e0}
+.qcnt span{color:#4cc9f0;font-weight:700}
+.scdisp{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#ffd166}
+.pb{height:5px;background:#1e3a6e;border-radius:2px;margin-bottom:18px;overflow:hidden}
+.pbi{height:100%;background:linear-gradient(90deg,#4cc9f0,#9b5de5);border-radius:2px;transition:width .4s ease}
+.qcard{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:18px;padding:18px;margin-bottom:14px}
 .qt{font-size:16px;font-weight:700;color:#e2e4f0;line-height:1.6}
 .tc{display:flex;justify-content:center;margin-bottom:14px}
-.ob{width:100%;padding:12px 14px;background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s}
-.ob:hover:not(:disabled){border-color:#00f0ff66;background:rgba(0,240,255,.03)}
+.ob{width:100%;padding:12px 14px;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s}
+.ob:hover:not(:disabled){border-color:#4cc9f066;background:rgba(76,201,240,.03)}
 .ob:disabled{cursor:default}
-.ob.ok{border-color:#00ffa3;background:rgba(0,255,163,.09);color:#00ffa3}
-.ob.ng{border-color:#ff4466;background:rgba(255,68,102,.09);color:#ff4466}
+.ob.ok{border-color:#06d6a0;background:rgba(6,214,160,.09);color:#06d6a0}
+.ob.ng{border-color:#ff4d6d;background:rgba(255,77,109,.09);color:#ff4d6d}
 .ob.dm{opacity:.35;border-color:#1e1e4a}
 .ol{width:26px;height:26px;background:#1e1e4a;border-radius:7px;display:"flex";align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;flex-shrink:0}
-.ok .ol{background:rgba(0,255,163,.2);color:#00ffa3}
-.ng .ol{background:rgba(255,68,102,.2);color:#ff4466}
+.ok .ol{background:rgba(6,214,160,.2);color:#06d6a0}
+.ng .ol{background:rgba(255,77,109,.2);color:#ff4d6d}
 .fdb{text-align:center;padding:10px 14px;border-radius:12px;font-weight:700;font-size:14px;margin-top:4px}
-.lbpanel{background:#1a0a4e;border:1.5px solid #5a3fc0;border-radius:14px;padding:11px 12px;margin-top:10px}
-.lbptitle{font-size:10px;color:#c4b0ff;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.lbpanel{background:#0a1628;border:1.5px solid #1e3a6e;border-radius:14px;padding:11px 12px;margin-top:10px}
+.lbptitle{font-size:10px;color:#a8c4e0;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
 .lbprow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
 .lbprow::-webkit-scrollbar{height:0}
 .plchip{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:7px 6px;border-radius:10px}
-.plchip.me{background:rgba(0,240,255,.1);border:1px solid rgba(0,240,255,.2)}
-.plchip.other{background:#2d1b6e;border:1px solid transparent}
+.plchip.me{background:rgba(76,201,240,.1);border:1px solid rgba(76,201,240,.2)}
+.plchip.other{background:#0f2040;border:1px solid transparent}
 .plavc{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0a0a1f;margin-bottom:3px;position:relative}
 .rh{text-align:center;padding:24px 0 16px}
 .re{font-size:58px;margin-bottom:8px}
-.rs{font-family:'Rajdhani',sans-serif;font-size:54px;font-weight:700;color:#ffd700;text-shadow:0 0 28px rgba(255,215,0,.3)}
-.rsl{font-size:12px;color:#c4b0ff;margin-top:2px}
+.rs{font-family:'Rajdhani',sans-serif;font-size:54px;font-weight:700;color:#ffd166;text-shadow:0 0 28px rgba(255,209,102,.3)}
+.rsl{font-size:12px;color:#a8c4e0;margin-top:2px}
 .rstats{display:flex;gap:9px;margin:14px 0}
-.scard{flex:1;background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:13px;padding:12px 8px;text-align:center}
+.scard{flex:1;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;padding:12px 8px;text-align:center}
 .sv{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700}
-.sl{font-size:11px;color:#c4b0ff;margin-top:1px}
+.sl{font-size:11px;color:#a8c4e0;margin-top:1px}
 .lblist{margin:12px 0 16px}
-.lbtit{font-size:11px;color:#c4b0ff;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
-.lbrow{display:flex;align-items:center;gap:10px;padding:9px 13px;background:#2d1b6e;border-radius:10px;margin-bottom:5px}
+.lbtit{font-size:11px;color:#a8c4e0;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
+.lbrow{display:flex;align-items:center;gap:10px;padding:9px 13px;background:#0f2040;border-radius:10px;margin-bottom:5px}
 .lbrank{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;width:22px;text-align:center}
 .lbname{flex:1;font-size:14px;font-weight:700}
-.lbscore{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#ffd700}
+.lbscore{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#ffd166}
 .rbtns{display:flex;flex-direction:column;gap:8px}
-.ri{background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:13px;padding:14px;margin-bottom:10px}
-.rqn{font-size:10px;color:#c4b0ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.ri{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;padding:14px;margin-bottom:10px}
+.rqn{font-size:10px;color:#a8c4e0;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
 .rqt{font-size:14px;font-weight:700;color:#e2e4f0;margin-bottom:8px;line-height:1.5}
 .ro{padding:7px 10px;border-radius:8px;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
-.ro.ca{background:rgba(0,255,163,.1);color:#00ffa3}
-.ro.wa{background:rgba(255,68,102,.1);color:#ff4466}
+.ro.ca{background:rgba(6,214,160,.1);color:#06d6a0}
+.ro.wa{background:rgba(255,77,109,.1);color:#ff4d6d}
 .ro.na{color:#2a2a52}
 .badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700}
-.be{background:rgba(0,255,163,.12);color:#00ffa3}
-.bm{background:rgba(255,215,0,.12);color:#ffd700}
-.spin{width:44px;height:44px;border:3px solid #1e1e4a;border-top-color:#00f0ff;border-radius:50%;animation:spin .65s linear infinite}
+.be{background:rgba(6,214,160,.12);color:#06d6a0}
+.bm{background:rgba(255,209,102,.12);color:#ffd166}
+.spin{width:44px;height:44px;border:3px solid #1e1e4a;border-top-color:#4cc9f0;border-radius:50%;animation:spin .65s linear infinite}
 .lo{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:14px}
-.linkbox{background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(157,80,255,.06));border:1.5px solid rgba(0,240,255,.25);border-radius:18px;padding:18px;margin:14px 0}
-.linktxt{font-size:12px;color:#00f0ff;word-break:break-all;font-family:monospace;line-height:1.5}
-.copybtn{margin-top:10px;background:rgba(0,240,255,.1);border:1px solid rgba(0,240,255,.2);color:#00f0ff;padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;transition:all .2s;width:100%}
-.copybtn:hover{background:rgba(0,240,255,.2)}
-.playerlist{background:#2d1b6e;border-radius:14px;padding:12px}
+.linkbox{background:linear-gradient(135deg,rgba(76,201,240,.06),rgba(155,93,229,.06));border:1.5px solid rgba(76,201,240,.25);border-radius:18px;padding:18px;margin:14px 0}
+.linktxt{font-size:12px;color:#4cc9f0;word-break:break-all;font-family:monospace;line-height:1.5}
+.copybtn{margin-top:10px;background:rgba(76,201,240,.1);border:1px solid rgba(76,201,240,.2);color:#4cc9f0;padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;transition:all .2s;width:100%}
+.copybtn:hover{background:rgba(76,201,240,.2)}
+.playerlist{background:#0f2040;border-radius:14px;padding:12px}
 .plitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;animation:slideIn .25s ease both}
 .plitem:not(:last-child){border-bottom:1px solid #1a1a40}
-.plavatarsm{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#00f0ff,#9d50ff);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0a0a1f;flex-shrink:0}
-.pingdot{width:8px;height:8px;border-radius:50%;background:#00ffa3;position:relative}
-.pingdot::after{content:'';position:absolute;inset:0;border-radius:50%;background:#00ffa3;animation:ping 1.2s ease-out infinite}
-.statusbar{background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px}
+.plavatarsm{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4cc9f0,#9b5de5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0a0a1f;flex-shrink:0}
+.pingdot{width:8px;height:8px;border-radius:50%;background:#06d6a0;position:relative}
+.pingdot::after{content:'';position:absolute;inset:0;border-radius:50%;background:#06d6a0;animation:ping 1.2s ease-out infinite}
+.statusbar{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px}
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#030312;overscroll-behavior:none}
 
-.ob.selected{border-color:#9d50ff;background:rgba(157,80,255,.12);color:#c4b5fd}
+.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.12);color:#c4b5fd}
 .ob.elim{opacity:.15;pointer-events:none;border-color:#1e1e4a;color:#2a2a52}
-.gold-bar{display:flex;align-items:center;gap:5px;background:#1a1a30;border:1.5px solid #ffd700;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd700;cursor:pointer;transition:all .2s;user-select:none}
+.gold-bar{display:flex;align-items:center;gap:5px;background:#1a1a30;border:1.5px solid #ffd166;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;transition:all .2s;user-select:none}
 .pw-row{display:flex;gap:6px;margin-bottom:10px}
-.pw-btn{flex:1;background:#2d1b6e;border:1.5px solid #5a3fc0;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
-.pw-btn:hover:not(:disabled){border-color:#ffd700;background:rgba(255,215,0,.06)}
+.pw-btn{flex:1;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
+.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}
 .pw-btn:disabled{opacity:.3;cursor:default}
-.pw-btn.active{border-color:#ffd700;background:rgba(255,215,0,.1)}
-.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd700}
-.pw-label{font-size:9px;color:#c4b0ff;white-space:nowrap}
+.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.1)}
+.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}
+.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}
 .shop-overlay{position:fixed;inset:0;background:rgba(3,3,18,.9);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.shop-panel{background:#1a0a4e;border:1.5px solid #5a3fc0;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:88vh;overflow-y:auto}
+.shop-panel{background:#0a1628;border:1.5px solid #1e3a6e;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:88vh;overflow-y:auto}
 .shop-panel::-webkit-scrollbar{width:0}
-.gold-earned{background:rgba(255,215,0,.08);border:1.5px solid rgba(255,215,0,.25);border-radius:14px;padding:14px;text-align:center;margin-bottom:14px}
+.gold-earned{background:rgba(255,209,102,.08);border:1.5px solid rgba(255,209,102,.25);border-radius:14px;padding:14px;text-align:center;margin-bottom:14px}
 .toggle{width:48px;height:26px;border-radius:13px;background:#1e1e4a;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
-.toggle.on{background:linear-gradient(135deg,#00f0ff,#9d50ff)}
+.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}
 .toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .toggle.on .toggle-knob{left:25px}
 
-.ob.selected{border-color:#bf5fff;background:rgba(191,95,255,.18);color:#e0b4ff}
+.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}
 .ob.elim{opacity:.15;pointer-events:none}
-.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#2a1a00,#1a1200);border:1.5px solid #ffd700;box-shadow:0 0 12px rgba(255,215,0,.3);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd700;cursor:pointer;user-select:none}
-.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#2d1b6e;border:1.5px solid #6040c0;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
-.pw-btn:hover:not(:disabled){border-color:#ffd700;background:rgba(255,215,0,.08)}.pw-btn:disabled{opacity:.3;cursor:default}
-.pw-btn.active{border-color:#ffd700;background:rgba(255,215,0,.18);box-shadow:0 0 14px rgba(255,215,0,.35)}
-.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd700}.pw-label{font-size:9px;color:#c4b0ff;white-space:nowrap}
-.shop-overlay{position:fixed;inset:0;background:rgba(10,5,40,.92);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.shop-panel{background:#1a0a4e;border:1.5px solid #7050d0;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}
+.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#2a1a00,#1a1200);border:1.5px solid #ffd166;box-shadow:0 0 12px rgba(255,209,102,.3);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}
+.pw-row{display:flex;gap:6px;margin-bottom:10px}
+.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
+.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}
+.pw-btn:disabled{opacity:.3;cursor:default}
+.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15);box-shadow:0 0 12px rgba(255,209,102,.3)}
+.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}
+.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}
+.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}
 .shop-panel::-webkit-scrollbar{width:0}
-.toggle{width:48px;height:26px;border-radius:13px;background:#3a2490;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
-.toggle.on{background:linear-gradient(135deg,#00f0ff,#9d50ff)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}.toggle.on .toggle-knob{left:25px}
+.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
+.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}
+.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle.on .toggle-knob{left:25px}
 
 </style>
 </head>
@@ -1103,10 +1108,10 @@ function addGameHistory(u,pts,correct,total){
 </script>
 <script type="text/babel">
 
-// ─────────────────────────────────────────────
+// -------------------------────────────────────
 // TOP-LEVEL STABLE COMPONENTS (keyboard fix)
 // Defined outside App so they don't remount on state change
-// ─────────────────────────────────────────────
+// -------------------------────────────────────
 
 function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
   return(
@@ -1381,6 +1386,490 @@ function App(){
   const [fEmail,setFEmail]=useState("");
   const [joinCodeInput,setJoinCodeInput]=useState("");
   const [joinCodeErr,setJoinCodeErr]=useState("");
+  const [showTournament,setShowTournament]=useState(false);
+  const [tournamentData,setTournamentData]=useState(null);
+  const [userCode,setUserCode]=useState("");
+
+  // refs
+  const USERS=useRef(new Map());
+  const peerRef=useRef(null);
+  const connsRef=useRef([]);
+  const hostConnRef=useRef(null);
+  const timerRef=useRef(null);
+  const forceRef=useRef(null);
+  const selRef=useRef(null); selRef.current=sel;
+  const sel2Ref=useRef(null); sel2Ref.current=sel2;
+  const usernameRef=useRef(""); usernameRef.current=username;
+  const scoreRef=useRef(0);
+  const isHostRef=useRef(false);
+  const modeRef=useRef("solo"); modeRef.current=mode;
+  const playersRef=useRef({});
+  const answeredRef=useRef({});
+  const questionsRef=useRef([]);
+  const qIdxRef=useRef(0); qIdxRef.current=qIdx;
+  const tlRef=useRef(15); tlRef.current=tl;
+  const pwX2Ref=useRef(false); pwX2Ref.current=pwX2;
+  const pwDoubleRef=useRef(false); pwDoubleRef.current=pwDouble;
+  const sfxOnRef=useRef(true); sfxOnRef.current=sfxOn;
+  const categoryRef=useRef("karışık"); categoryRef.current=category;
+  const afkCountRef=useRef({});
+  const pendingSfxRef=useRef(null);
+  const pingIntervalRef=useRef(null);
+
+  // ── Load user ──
+  const loadUser=useCallback((u)=>{
+    const xp=getTotalXP(u);
+    const li=calcLevelInfo(xp);
+    setTotalXP(xp); setLevelInfo(li);
+    setGold(getGold(u));
+    setPowers(getPowers(u));
+    setStats(getStats(u));
+    setMissions(getMissions(u));
+    const dd=getDailyData(u);
+    setDailyData(dd);
+    setAvatar(getAvatar(u));
+    setUserCode(getUserCode(u));
+    setGmailInput(getGmail(u));
+    setUserTitle(getTitleLS(u));
+    setFriends(getFriends(u));
+    getUserCode(u); // ensure code generated
+  },[]);
+
+  // ── Online ping ──
+  useEffect(()=>{
+    if(!username)return;
+    pingOnline(username);
+    pingIntervalRef.current=setInterval(()=>pingOnline(usernameRef.current),30000);
+    return()=>clearInterval(pingIntervalRef.current);
+  },[username]);
+
+  // ── Reveal SFX ──
+  useEffect(()=>{
+    if(revealed&&pendingSfxRef.current!==null&&sfxOnRef.current){
+      playSfx(pendingSfxRef.current?'correct':'wrong');
+      pendingSfxRef.current=null;
+    }
+  },[revealed]);
+
+  // ── Gold award on result ──
+  useEffect(()=>{
+    if(screen!=="result")return;
+    const lb=getLB();
+    const myRank=lb.findIndex(p=>p.isMe);
+    const rankGold=[100,50,25][myRank]||0;
+    if(rankGold>0){
+      if(sfxOnRef.current)playSfx('earn');
+      setGold(g=>{const ng=g+rankGold;saveGoldLS(usernameRef.current,ng);return ng;});
+      setGoldEarned(rankGold);
+    }
+    // XP from correct answers
+    const correctCount=answers.filter(a=>a.sel===a.a).length;
+    if(correctCount>0) addXP(correctCount*5);
+    // Update stats
+    const ns=getStats(usernameRef.current);
+    ns.games=(ns.games||0)+1;
+    ns.correct=(ns.correct||0)+correctCount;
+    if(myRank===0&&mode==='multi') ns.wins=(ns.wins||0)+1;
+    // Category stats
+    const catMap={bilim:'sci_correct',spor:'sport_correct',coğrafya:'geo_correct',tarih:'hist_correct',sanat:'art_correct'};
+    if(catMap[categoryRef.current]) ns[catMap[categoryRef.current]]=(ns[catMap[categoryRef.current]]||0)+correctCount;
+    setStats(ns);
+    saveStatsLS(usernameRef.current,ns);
+    checkMissions(ns,calcLevelInfo(getTotalXP(usernameRef.current)).level);
+    // Daily
+    triggerDaily('gameComplete');
+    if(correctCount>0) triggerDaily('firstCorrect');
+  },[screen]);
+
+  // ── Music ──
+  useEffect(()=>{
+    if(screen==="game"&&!musicStarted){setMusicStarted(true);if(musicOn)playMusic(0);}
+    if((screen==="result"||screen==="home"||screen==="auth")&&musicStarted){stopMusic();setMusicStarted(false);}
+  },[screen]);
+
+  // ── Shuffle ──
+  useEffect(()=>{
+    if(!questions[qIdx])return;
+    const seed=usernameRef.current+String(qIdx);
+    const sh=seededShuffle(questions[qIdx].o,seed);
+    setShuffled(sh);
+    if(pwElim){
+      const wrong=sh.map((it,di)=>({di,i:it.i})).filter(x=>x.i!==questions[qIdx].a);
+      setEliminated(wrong.slice(0,2).map(x=>x.di));
+    } else setEliminated([]);
+  },[qIdx,questions]);
+
+  // ── addXP ──
+  const addXP=useCallback((amount)=>{
+    const u=usernameRef.current;if(!u)return;
+    const oldXP=getTotalXP(u);
+    const newXP=oldXP+amount;
+    setTotalXP(newXP);
+    saveTotalXP(u,newXP);
+    const oldLI=calcLevelInfo(oldXP);
+    const newLI=calcLevelInfo(newXP);
+    setLevelInfo(newLI);
+    const queue=[];
+    for(let lv=oldLI.level+1;lv<=newLI.level;lv++){
+      const rewards=getLevelRewards(lv);
+      queue.push({newLevel:lv,rewards});
+      let g2=0;
+      const np={...getPowers(u)};
+      rewards.forEach(r=>{
+        if(r.type==='gold'){g2+=r.amount;}
+        if(r.type==='power'){np[r.pw]=(np[r.pw]||0)+1;}
+      });
+      if(g2>0){setGold(g=>{const ng=g+g2;saveGoldLS(u,ng);return ng;});}
+      if(Object.values(np).some(v=>v>0)){setPowers(np);savePowersLS(u,np);}
+    }
+    if(queue.length>0)setLevelUpQueue(q=>[...q,...queue]);
+  },[]);
+
+  // ── checkMissions ──
+  const checkMissions=useCallback((ns,currentLevel)=>{
+    const u=usernameRef.current;
+    const ms=getMissions(u);
+    let changed=false;
+    MISSIONS_DEF.forEach(md=>{
+      if(ms[md.id]==='done')return;
+      const val=md.stat==='level'?currentLevel:(ns[md.stat]||0);
+      if(val>=md.target){
+        ms[md.id]='done';changed=true;
+        addXP(md.xp);
+        setGold(g=>{const ng=g+md.gold;saveGoldLS(u,ng);return ng;});
+        if(md.title_reward){setUserTitle(md.title_reward);saveTitleLS(u,md.title_reward);}
+      }
+    });
+    if(changed){setMissions({...ms});saveMissionsLS(u,ms);}
+  },[addXP]);
+
+  // ── triggerDaily ──
+  const triggerDaily=useCallback((event)=>{
+    const u=usernameRef.current;if(!u)return;
+    const dd=getDailyData(u);
+    const def=DAILY_DEF.find(d=>d.event===event);
+    if(!def||dd.done[def.id])return;
+    const newDone={...dd.done,[def.id]:true};
+    const newPts=(dd.pts||0)+def.pts;
+    const shouldChest=newPts>=20&&!dd.chestClaimed;
+    const newDD={done:newDone,pts:newPts,chestClaimed:dd.chestClaimed||shouldChest};
+    setDailyData(newDD);
+    saveDailyDataLS(u,newDD);
+    if(shouldChest){
+      setChestModal(true);
+      setGold(g=>{const ng=g+100;saveGoldLS(u,ng);return ng;});
+    }
+  },[]);
+
+  // ── AUTH ──
+  const handleAuth=useCallback(async()=>{
+    setFErr("");setAuthLoading(true);
+    const email=fEmail.trim(),pass=fPass.trim(),uname=fUser.trim();
+    if(authTab==="register"&&uname.length<3){setFErr("Kullanıcı adı min 3 karakter olmalı");setAuthLoading(false);return;}
+    if(!email||!email.includes("@")){setFErr("Geçerli bir e-posta adresi girin");setAuthLoading(false);return;}
+    if(pass.length<6){setFErr("Şifre min 6 karakter olmalı");setAuthLoading(false);return;}
+    let result;
+    try{
+      if(typeof fbRegister!=="undefined"&&typeof firebase!=="undefined"&&firebase.apps&&firebase.apps.length){
+        result=authTab==="register"?await fbRegister(email,pass,uname):await fbLogin(email,pass);
+      } else {
+        const u=uname||email.split("@")[0];
+        result={ok:true,uid:"local_"+u,username:u};
+      }
+    }catch(e){result={ok:false,err:"Bağlantı hatası: "+e.message};}
+    if(!result.ok){setFErr(result.err||"Bir hata oluştu. Tekrar deneyin.");setAuthLoading(false);return;}
+    const u=result.username||(uname||email.split("@")[0]);
+    setUsername(u);
+    try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",pass);if(result.uid)localStorage.setItem("ba_fb_uid",result.uid);}catch(e){}
+    loadUser(u);
+    if(result.gold) setGold(result.gold);
+    if(result.avatar) setAvatar(result.avatar);
+    setTimeout(()=>doTriggerDaily("login"),400);
+    const pending=sessionStorage.getItem("pendingRoom");
+    if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}else setScreen("home");
+    setAuthLoading(false);
+  },[authTab,fUser,fPass,fEmail,authLoading]);
+
+// -----------------------------------------------
+// TOP-LEVEL STABLE COMPONENTS (keyboard fix)
+// Defined outside App so they don't remount on state change
+// -----------------------------------------------
+
+function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(10,5,40,.92)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div style={{background:"#1a0a4e",border:"2px solid #7050d0",borderRadius:20,padding:20,width:"100%",maxWidth:340}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffffff"}}>⚙️ Ayarlar</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#c4b0ff",fontSize:24,cursor:"pointer",lineHeight:1,padding:0}}>✕</button>
+        </div>
+        {[{l:"🔊 Ses Efektleri",v:sfxOn,fn:(v)=>{setSfxOn(v);setSfxEnabledG(v);}},{l:"🎵 Oyun Müziği",v:musicOn,fn:(v)=>{setMusicOn(v);setMusicEnabledG(v);}}].map((s,i)=>(
+          <div key={i} style={{background:"#2d1b6e",border:"1.5px solid #5a3fc0",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#ffffff"}}>{s.l}</span>
+            <div className={"toggle"+(s.v?" on":"")} onClick={()=>s.fn(!s.v)}><div className="toggle-knob"/></div>
+          </div>
+        ))}
+        <button className="sbtn" style={{fontSize:13,padding:11,marginTop:8,width:"100%"}} onClick={onLogout}>🚪 Çıkış Yap</button>
+      </div>
+    </div>
+  );
+}
+
+
+function AvatarEditor({avatar,levelInfo,onSave,onClose}){
+  const [av,setAv]=useState({...avatar});
+  return(
+    <div className="shop-overlay" onClick={onClose}>
+      <div className="shop-panel" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f0eeff"}}>🎨 Karakter</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#6b5fa8",fontSize:22,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:14,background:"#1e1555",borderRadius:16,padding:16}}>
+          <AvatarSVG {...av} level={levelInfo.level} size={100}/>
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Cinsiyet</div>
+        <div style={{display:"flex",gap:8,marginBottom:12}}>
+          {[{v:'m',l:'👦 Erkek'},{v:'f',l:'👧 Kız'}].map(o=>(
+            <button key={o.v} onClick={()=>setAv({...av,gender:o.v,hairStyle:0,beardStyle:0})}
+              style={{flex:1,padding:"9px",borderRadius:10,border:av.gender===o.v?"2px solid #00f0ff":"2px solid #5035b0",background:av.gender===o.v?"rgba(0,240,255,.08)":"#1e1555",color:"#f0eeff",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13}}>
+              {o.l}</button>))}
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Ten</div>
+        <div style={{display:"flex",gap:9,marginBottom:12}}>{SKIN.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,skinIdx:i})} style={{width:34,height:34,borderRadius:"50%",background:c,border:av.skinIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Rengi</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,hairColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.hairColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Stili</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,hairStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.hairStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender={av.gender} skinIdx={av.skinIdx} hairStyle={i} hairColorIdx={av.hairColorIdx} beardStyle={0} size={36}/></div>))}</div>
+        {av.gender==='m'&&<>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,beardStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.beardStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender="m" skinIdx={av.skinIdx} hairStyle={av.hairStyle} hairColorIdx={av.hairColorIdx} beardStyle={i} beardColorIdx={av.beardColorIdx} size={36}/></div>))}</div>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal Rengi</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,beardColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.beardColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        </>}
+        <button className="pbtn" onClick={()=>onSave(av)}>✅ Kaydet</button>
+      </div>
+    </div>
+  );
+}
+
+// Bilgi Arena v9 - Clean JSX App
+const {useState,useEffect,useRef,useCallback,memo}=React;
+
+// ── W Wrapper (stable, outside App) ──
+const W=memo(function W({children}){
+  return React.createElement('div',{className:"app"},
+    React.createElement('div',{className:"phone"},children));
+});
+
+// ── Timer Ring ──
+function TimerRing({tl,total}){
+  total=total||15;
+  const r=36,circ=2*Math.PI*r,off=circ*(1-tl/total);
+  const col=tl>8?"#6ee7f7":tl>4?"#fbbf24":"#f87171";
+  return(
+    <div style={{position:"relative",width:88,height:88,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <svg width="88" height="88" style={{position:"absolute",transform:"rotate(-90deg)"}}>
+        <circle cx="44" cy="44" r={r} fill="none" stroke="#1e1e4a" strokeWidth="7"/>
+        <circle cx="44" cy="44" r={r} fill="none" stroke={col} strokeWidth="7"
+          strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
+          style={{transition:"stroke-dashoffset 0.95s linear,stroke 0.3s"}}/>
+      </svg>
+      <span style={{fontSize:24,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:col,zIndex:1}}>{tl}</span>
+    </div>
+  );
+}
+
+// ── Avatar ──
+function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorIdx,size,level}){
+  size=size||60;level=level||1;
+  const sk=SKIN[skinIdx||0],hc=HAIR_COL[hairColorIdx||0],bc=HAIR_COL[beardColorIdx||0];
+  const fr=getFrame(level);
+  const fh=[
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="l" d="M17,36 Q10,50 11,65 Q12,75 14,82 Q15,78 14,65 Q13,52 18,38Z" fill={hc}/>,<path key="r" d="M73,36 Q80,50 79,65 Q78,75 76,82 Q75,78 76,65 Q77,52 72,38Z" fill={hc}/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<ellipse key="b" cx="45" cy="5" rx="16" ry="13" fill={hc}/>,<path key="w" d="M29,14 Q37,18 45,17 Q53,18 61,14" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="l" d="M17,36 Q8,48 10,58 Q8,68 11,76 Q13,82 14,82 Q13,76 15,68 Q13,58 15,48Z" fill={hc}/>,<path key="r" d="M73,36 Q82,48 80,58 Q82,68 79,76 Q77,82 76,82 Q77,76 75,68 Q77,58 75,48Z" fill={hc}/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="b" d="M17,36 Q15,44 17,50 Q21,55 31,58 Q38,60 45,60 Q52,60 59,58 Q69,55 73,50 Q75,44 73,36 Q67,48 45,50 Q23,48 17,36Z" fill={hc}/>],
+  ];
+  const mh=[
+    [<path key="h" d="M16,32 Q16,8 45,8 Q74,8 74,32 L74,24 Q74,4 45,4 Q16,4 16,24Z" fill={hc}/>],
+    [<path key="h" d="M16,32 Q16,8 45,8 Q74,8 74,32 L74,24 Q74,4 45,4 Q16,4 16,24Z" fill={hc}/>,<polygon key="s1" points="28,22 24,5 33,18" fill={hc}/>,<polygon key="s2" points="45,18 43,2 50,16" fill={hc}/>,<polygon key="s3" points="62,22 58,5 67,18" fill={hc}/>],
+    [<path key="h" d="M16,32 Q14,10 45,8 Q76,10 74,32 L74,26 Q72,6 45,6 Q18,6 16,26Z" fill={hc}/>,<path key="w" d="M18,20 Q26,14 34,19 Q42,14 50,19 Q58,14 66,19 Q72,16 74,20" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>],
+    [<path key="h" d="M22,36 Q20,14 45,12 Q70,14 68,36 L68,30 Q66,10 45,10 Q24,10 22,30Z" fill={hc}/>],
+  ];
+  const bd=[null,
+    <g key="b1"><ellipse cx="45" cy="62" rx="16" ry="8" fill={bc} opacity=".4"/><ellipse cx="35" cy="58" rx="5" ry="4" fill={bc} opacity=".35"/><ellipse cx="55" cy="58" rx="5" ry="4" fill={bc} opacity=".35"/></g>,
+    <g key="b2"><path d="M29,54 Q28,70 45,74 Q62,70 61,54 Q55,60 45,61 Q35,60 29,54Z" fill={bc} opacity=".85"/></g>,
+    <g key="b3"><path d="M26,50 Q22,72 45,78 Q68,72 64,50 Q58,62 45,64 Q32,62 26,50Z" fill={bc}/><ellipse cx="45" cy="52" rx="18" ry="6" fill={bc}/></g>,
+  ];
+  const hp=gender==='f'?fh[hairStyle%4]:mh[hairStyle%4];
+  const bp=gender==='m'?bd[beardStyle||0]:null;
+  return(
+    <div style={{position:"relative",display:"inline-flex",flexShrink:0,marginBottom:level>1?10:0}}>
+      <svg width={size} height={size} viewBox="0 0 90 90" style={{borderRadius:"50%",boxShadow:fr?fr.s:"none"}}>
+        <ellipse cx="45" cy="85" rx="30" ry="14" fill={gender==='f'?"#818cf8":"#6ee7f7"}/>
+        <rect x="39" y="58" width="12" height="13" fill={sk} rx="2"/>
+        <ellipse cx="45" cy="42" rx="27" ry="29" fill={sk}/>
+        {hp}
+        <ellipse cx="18" cy="44" rx="5" ry="6" fill={sk}/><ellipse cx="72" cy="44" rx="5" ry="6" fill={sk}/>
+        <ellipse cx="34" cy="40" rx="5" ry="5.5" fill="white"/><ellipse cx="56" cy="40" rx="5" ry="5.5" fill="white"/>
+        <circle cx="35.2" cy="41" r="3" fill="#1a1a3a"/><circle cx="57.2" cy="41" r="3" fill="#1a1a3a"/>
+        <circle cx="36" cy="40" r="1.2" fill="white"/><circle cx="58" cy="40" r="1.2" fill="white"/>
+        <path d="M29,33 Q34,30 39,33" stroke="#3a2a1a" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".7"/>
+        <path d="M51,33 Q56,30 61,33" stroke="#3a2a1a" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".7"/>
+        <path d="M43,47 Q42,52 45,53 Q48,52 47,47" fill="none" stroke={SKIN[Math.min((skinIdx||0)+1,3)]} strokeWidth="1.5" strokeLinecap="round"/>
+        {bp}
+        <path d="M37,59 Q45,66 53,59" fill="none" stroke="#b05060" strokeWidth="2.2" strokeLinecap="round"/>
+        {gender==='f'&&<><ellipse cx="28" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/><ellipse cx="62" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/></>}
+      </svg>
+      {fr&&<div style={{position:"absolute",bottom:-2,right:-2,background:fr.c,borderRadius:"50%",width:Math.max(14,size*.22),height:Math.max(14,size*.22),display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(8,size*.13),border:"1.5px solid rgba(0,0,0,.2)"}}>⭐</div>}
+      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#111130",border:"1.5px solid "+(fr?fr.c:"#1e1e4a"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#6ee7f7",whiteSpace:"nowrap"}}>Sv.{level}</div>}
+    </div>
+  );
+}
+
+// ── Confetti ──
+function Confetti(){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const cv=ref.current;if(!cv)return;
+    const ctx=cv.getContext('2d');cv.width=390;cv.height=500;
+    const P=Array.from({length:80},()=>({x:Math.random()*390,y:-30-Math.random()*80,vx:(Math.random()-.5)*5,vy:1.5+Math.random()*3.5,w:8+Math.random()*8,h:4+Math.random()*4,rot:Math.random()*360,rv:(Math.random()-.5)*8,col:['#6ee7f7','#fbbf24','#34d399','#f87171','#818cf8','#c084fc'][Math.floor(Math.random()*6)]}));
+    let raf,done=false;
+    const tick=()=>{ctx.clearRect(0,0,390,500);let any=false;P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.07;if(p.y<520)any=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,1-p.y/480);ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(any&&!done)raf=requestAnimationFrame(tick);};
+    tick();return()=>{done=true;cancelAnimationFrame(raf);};
+  },[]);
+  return <canvas ref={ref} style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:50}}/>;
+}
+
+// ── Chest Modal ──
+function ChestModal({onClose}){
+  const [st,setSt]=useState('shake');
+  useEffect(()=>{playSfx('earn');},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <style>{`@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.1)}}`}</style>
+      <div style={{textAlign:"center",padding:32}}>
+        <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
+        {st==='shake'&&<>
+          <div onClick={()=>{setSt('open');playSfx('earn');}} style={{fontSize:110,cursor:"pointer",display:"inline-block",animation:"shake .15s infinite",filter:"drop-shadow(0 0 20px #fbbf24)"}}>🎁</div>
+          <div style={{fontSize:13,color:"#6ee7f7",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
+        </>}
+        {st==='open'&&<>
+          <div style={{fontSize:90,animation:"pop .4s ease",display:"inline-block",filter:"drop-shadow(0 0 30px #fbbf24)"}}>🎁</div>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:48,fontWeight:700,color:"#fbbf24",marginTop:8}}>+100 🪙</div>
+          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:20}}>Altın Kazandın!</div>
+          <button onClick={onClose} style={{background:"linear-gradient(135deg,#6ee7f7,#818cf8)",border:"none",borderRadius:14,padding:"14px 40px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
+        </>}
+      </div>
+    </div>
+  );
+}
+
+// ── Level Up Modal ──
+function LevelUpModal({newLevel,rewards,onClose}){
+  useEffect(()=>{playSfx('levelup');},[]);
+  const fr=getFrame(newLevel);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div style={{background:"#0a0a1f",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
+        <div style={{fontSize:12,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:72,fontWeight:700,color:"#fbbf24",lineHeight:1}}>{newLevel}</div>
+        <div style={{fontSize:14,color:"#e2e4f0",marginBottom:16}}>Seviye {newLevel}</div>
+        {fr&&newLevel%5===0&&<div style={{background:"rgba(0,0,0,.2)",border:"2px solid "+fr.c,borderRadius:12,padding:"8px",marginBottom:12,fontSize:13,fontWeight:700,color:fr.c}}>🖼️ {fr.name} Çerçeve!</div>}
+        <div style={{marginBottom:16}}>
+          {rewards.map((r,i)=>(
+            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:20}}>{r.type==='gold'?"🪙":r.type==='frame'?"🖼️":"⚡"}</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{r.type==='gold'?"+"+r.amount+" Altın":r.type==='frame'?r.name+" Çerçeve":{double:"🎯 Çift Seçim",elim:"❌ 2 Yanlışı Ele",x2:"⚡ x2 Puan"}[r.pw]||r.pw}</span>
+            </div>
+          ))}
+        </div>
+        <button onClick={onClose} style={{background:"linear-gradient(135deg,#fbbf24,#f59e0b)",border:"none",borderRadius:14,padding:"13px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:15,cursor:"pointer",width:"100%"}}>Devam Et →</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main App ──
+function App(){
+  const [screen,setScreen]=useState("auth");
+  const [authTab,setAuthTab]=useState("login");
+  const [fUser,setFUser]=useState("");
+  const [fPass,setFPass]=useState("");
+  const [fErr,setFErr]=useState("");
+  const [username,setUsername]=useState("");
+  const [avatar,setAvatar]=useState({gender:'m',skinIdx:0,hairStyle:0,hairColorIdx:0,beardStyle:0,beardColorIdx:0});
+
+  // game config
+  const [mode,setMode]=useState("solo");
+  const [qCount,setQCount]=useState(7);
+  const [category,setCategory]=useState("karışık");
+
+  // multiplayer
+  const [inviteLink,setInviteLink]=useState("");
+  const [roomCode,setRoomCode]=useState("");
+  const [roomPlayers,setRoomPlayers]=useState([]);
+  const [connStatus,setConnStatus]=useState("idle");
+  const [copied,setCopied]=useState(false);
+
+  // game state
+  const [questions,setQuestions]=useState([]);
+  const [qIdx,setQIdx]=useState(0);
+  const [sel,setSel]=useState(null);
+  const [sel2,setSel2]=useState(null);
+  const [tl,setTl]=useState(15);
+  const [score,setScore]=useState(0);
+  const [answers,setAnswers]=useState([]);
+  const [feedback,setFeedback]=useState(false);
+  const [revealed,setRevealed]=useState(false);
+  const [liveScores,setLiveScores]=useState({});
+  const [waiting,setWaiting]=useState(false);
+  const [waitCount,setWaitCount]=useState({answered:0,total:1});
+  const [shuffled,setShuffled]=useState([]);
+  const [eliminated,setEliminated]=useState([]);
+
+  // economy & progression
+  const [gold,setGold]=useState(1000);
+  const [powers,setPowers]=useState({double:0,elim:0,x2:0});
+  const [pwDouble,setPwDouble]=useState(false);
+  const [pwElim,setPwElim]=useState(false);
+  const [pwX2,setPwX2]=useState(false);
+  const [totalXP,setTotalXP]=useState(0);
+  const [levelInfo,setLevelInfo]=useState({level:1,currentXP:0,neededXP:100});
+  const [stats,setStats]=useState({correct:0,games:0,wins:0,rooms:0});
+  const [missions,setMissions]=useState({});
+  const [dailyData,setDailyData]=useState({done:{},pts:0,chestClaimed:false});
+  const [userTitle,setUserTitle]=useState("");
+  const [goldEarned,setGoldEarned]=useState(0);
+  const [kickedPlayers,setKickedPlayers]=useState([]);
+
+  // friends
+  const [friends,setFriends]=useState([]);
+  const [friendSearchInput,setFriendSearchInput]=useState("");
+  const [friendSearchResult,setFriendSearchResult]=useState(null);
+  const [friendSearchErr,setFriendSearchErr]=useState("");
+
+  // UI
+  const [homeTab,setHomeTab]=useState("home");
+  const [showShop,setShowShop]=useState(false);
+  const [showSettings,setShowSettings]=useState(false);
+  const [showAvEd,setShowAvEd]=useState(false);
+  const [sfxOn,setSfxOn]=useState(true);
+  const [musicOn,setMusicOn]=useState(true);
+  const [musicStarted,setMusicStarted]=useState(false);
+  const [levelUpQueue,setLevelUpQueue]=useState([]);
+  const [chestModal,setChestModal]=useState(false);
+  const [gmailInput,setGmailInput]=useState("");
+  const [leagueData,setLeagueData]=useState({league:"bronze",weeklyPts:0,weekKey:"",prevLeague:"bronze"});
+  const [referralInput,setReferralInput]=useState("");
+  const [referralMsg,setReferralMsg]=useState("");
+  const [authLoading,setAuthLoading]=useState(false);
+  const [fEmail,setFEmail]=useState("");
+  const [joinCodeInput,setJoinCodeInput]=useState("");
+  const [joinCodeErr,setJoinCodeErr]=useState("");
+  const [showTournament,setShowTournament]=useState(false);
+  const [tournamentData,setTournamentData]=useState(null);
   const [userCode,setUserCode]=useState("");
 
   // refs
@@ -1648,7 +2137,7 @@ function App(){
     isHostRef.current=true;playersRef.current={[username]:0};answeredRef.current={};afkCountRef.current={};
     setRoomPlayers([username]);setLiveScores({[username]:0});setConnStatus("connecting");setKickedPlayers([]);
     const peer=new Peer();peerRef.current=peer;
-    peer.on("open",id=>{const code=genRoomCode();setRoomCode(code);saveRoomCode(code,id);if(typeof fbSaveRoomCode!=="undefined")fbSaveRoomCode(code,id);setInviteLink(window.location.href.split("#")[0]+"#room="+id);setConnStatus("connected");setScreen("lobby-host");});
+    peer.on("open",id=>{const code=genRoomCode();setRoomCode(code);saveRoomCode(code,id);if(typeof fbSaveRoomCode!=="undefined"){fbSaveRoomCode(code,id).catch(()=>{});}  if(typeof fbSaveRoomCode!=="undefined")fbSaveRoomCode(code,id);setInviteLink(window.location.href.split("#")[0]+"#room="+id);setConnStatus("connected");setScreen("lobby-host");});
     peer.on("connection",conn=>{
       conn.on("open",()=>{connsRef.current.push(conn);conn.send({type:"welcome",host:usernameRef.current});});
       conn.on("data",msg=>{
@@ -1855,23 +2344,29 @@ function App(){
 
   if(screen==="auth") return(
     <W><div className="sc fi">
-      <div className="logo"><h1>BİLGİ ARENA</h1><p>Bilgini sına · Rakibini geç</p></div>
-      <div className="tabs">
+      <div className="logo" style={{textAlign:"center",paddingTop:20,paddingBottom:4}}>
+        <h1 style={{fontSize:32}}>BİLGİ ARENA</h1>
+        <p style={{fontSize:13,color:"#a0b4d0"}}>Kim Kazanacak? · Rakibini geç!</p>
+      </div>
+      <div className="tabs" style={{marginBottom:16}}>
         <button className={"tb "+(authTab==="login"?"on":"off")} onClick={()=>{setAuthTab("login");setFErr("");}}>Giriş Yap</button>
         <button className={"tb "+(authTab==="register"?"on":"off")} onClick={()=>{setAuthTab("register");setFErr("");}}>Kayıt Ol</button>
       </div>
-      <input className={"inp"+(fErr&&!fUser.trim()?" err":"")} placeholder="Kullanıcı adı" value={fUser} onChange={e=>{setFUser(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&handleAuth()} autoComplete="username"/>
-      <input className={"inp"+(fErr&&fUser.trim()?" err":"")} type="password" placeholder="Şifre" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&handleAuth()} autoComplete="current-password"/>
+      {authTab==="register"&&<input className="inp" placeholder="Kullanıcı adı (min 3 karakter)" value={fUser} onChange={e=>{setFUser(e.target.value.replace(/\s/g,""));setFErr("");}} autoComplete="username"/>}
+      <input className="inp" placeholder="E-posta adresi" value={fEmail} onChange={e=>{setFEmail(e.target.value.trim());setFErr("");}} type="email" autoComplete="email" inputMode="email"/>
+      <input className="inp" type="password" placeholder="Şifre (min 6 karakter)" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&!authLoading&&handleAuth()} autoComplete={authTab==="login"?"current-password":"new-password"}/>
       {fErr&&<div className="errmsg">⚠ {fErr}</div>}
-      <button className="pbtn" style={{marginTop:6}} onClick={handleAuth}>{authTab==="login"?"Giriş Yap →":"Hesap Oluştur →"}</button>
-      <div style={{textAlign:"center",margin:"14px 0",color:"#2a2a52",fontSize:13}}>— veya —</div>
+      <button className="pbtn" style={{marginTop:6,opacity:authLoading?.5:1}} disabled={authLoading} onClick={handleAuth}>
+        {authLoading?"⏳ Bekleniyor...":(authTab==="login"?"Giriş Yap →":"Hesap Oluştur →")}
+      </button>
+      <div style={{textAlign:"center",margin:"12px 0",color:"#506080",fontSize:12}}>— veya —</div>
       <button className="sbtn" onClick={()=>{
-        const g="Misafir"+(Math.floor(Math.random()*900)+100);
+        const g="Misafir"+(Math.floor(Math.random()*9000)+1000);
         try{localStorage.setItem("ba_user",g);localStorage.setItem("ba_pass","misafir");}catch(e){}
-        setUsername(g);loadUser(g);setTimeout(()=>triggerDaily('login'),300);
-        const p=sessionStorage.getItem("pendingRoom");
-        if(p){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p);}else setScreen("home");
-      }}>Misafir Olarak Devam Et</button>
+        setUsername(g);loadUser(g);setTimeout(()=>doTriggerDaily("login"),300);
+        const p=sessionStorage.getItem("pendingRoom");if(p){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p);}else setScreen("home");
+      }}>👤 Misafir Olarak Devam Et</button>
+      <div style={{textAlign:"center",fontSize:10,color:"#304060",marginTop:8}}>Misafir hesapları cihaza bağlıdır · Veri kaybolabilir</div>
     </div></W>
   );
 
@@ -2155,6 +2650,99 @@ function App(){
         })()}
 
         {showSettings&&<SettingsModal sfxOn={sfxOn} setSfxOn={setSfxOn} musicOn={musicOn} setMusicOn={setMusicOn} onClose={()=>setShowSettings(false)} onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
+        
+        {/* ── Turnuva Modu ── */}
+        {showTournament&&(()=>{
+          const tData=tournamentData||{players:[username],started:false,bracket:[],round:1,scores:{}};
+          const addPlayer=()=>{
+            const name=prompt("Oyuncu adını girin (veya kullanıcı adı):");
+            if(!name||name.trim()==="")return;
+            if(tData.players.length>=8){alert("Maksimum 8 oyuncu!");return;}
+            if(tData.players.includes(name.trim())){alert("Bu oyuncu zaten listede!");return;}
+            setTournamentData({...tData,players:[...tData.players,name.trim()]});
+          };
+          const startTournament=()=>{
+            if(tData.players.length<2){alert("En az 2 oyuncu gerekli!");return;}
+            // Create bracket - pair players randomly
+            const shuffled=[...tData.players].sort(()=>Math.random()-.5);
+            const matches=[];
+            for(let i=0;i<shuffled.length;i+=2){
+              if(i+1<shuffled.length) matches.push({p1:shuffled[i],p2:shuffled[i+1],winner:null,score:{[shuffled[i]]:0,[shuffled[i+1]]:0}});
+              else matches.push({p1:shuffled[i],p2:"BYE",winner:shuffled[i],score:{}});
+            }
+            setTournamentData({...tData,started:true,bracket:matches,round:1});
+          };
+          const recordWin=(matchIdx,winner)=>{
+            const newBracket=[...tData.bracket];
+            newBracket[matchIdx]={...newBracket[matchIdx],winner};
+            const allDone=newBracket.every(m=>m.winner);
+            if(allDone){
+              const winners=newBracket.map(m=>m.winner);
+              if(winners.length===1){
+                alert("🏆 Turnuva Şampiyonu: "+winners[0]+"! Tebrikler!");
+                setTournamentData(null);setShowTournament(false);return;
+              }
+              const nextMatches=[];
+              for(let i=0;i<winners.length;i+=2){
+                if(i+1<winners.length) nextMatches.push({p1:winners[i],p2:winners[i+1],winner:null,score:{}});
+                else nextMatches.push({p1:winners[i],p2:"BYE",winner:winners[i],score:{}});
+              }
+              setTournamentData({...tData,bracket:nextMatches,round:tData.round+1});
+            } else {
+              setTournamentData({...tData,bracket:newBracket});
+            }
+          };
+          return(
+            <div style={{position:"fixed",inset:0,background:"rgba(10,5,40,.95)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
+              <div style={{background:"#0a1628",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"24px 20px 36px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#ff4d6d"}}>🏆 Turnuva Modu</div>
+                  <button onClick={()=>setShowTournament(false)} style={{background:"none",border:"none",color:"#c4b0ff",fontSize:22,cursor:"pointer"}}>✕</button>
+                </div>
+                {!tData.started?(
+                  <div>
+                    <div style={{fontSize:12,color:"#c4b0ff",marginBottom:12}}>Katılımcıları ekle (2-8 oyuncu)</div>
+                    {tData.players.map((p,i)=>(
+                      <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"10px 12px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+                        <span style={{fontSize:16}}>👤</span>
+                        <span style={{flex:1,fontWeight:700,color:"#ffffff"}}>{p}</span>
+                        {i>0&&<button onClick={()=>setTournamentData({...tData,players:tData.players.filter((_,j)=>j!==i)})} style={{background:"none",border:"none",color:"#ff4466",cursor:"pointer",fontSize:16}}>✕</button>}
+                      </div>
+                    ))}
+                    {tData.players.length<8&&<button onClick={addPlayer} style={{width:"100%",background:"rgba(0,240,255,.08)",border:"2px dashed #00f0ff",borderRadius:10,padding:"10px",color:"#00f0ff",fontWeight:700,cursor:"pointer",fontSize:14,marginBottom:12}}>+ Oyuncu Ekle</button>}
+                    <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)"}} onClick={startTournament}>🚀 Turnuvayı Başlat ({tData.players.length} oyuncu)</button>
+                    <div style={{fontSize:10,color:"#506080",marginTop:8,textAlign:"center"}}>Her maçı kendi aranızda oynayıp sonucu girin</div>
+                  </div>
+                ):(
+                  <div>
+                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#c4b0ff",marginBottom:12}}>Tur {tData.round} Maçları</div>
+                    {tData.bracket.map((match,i)=>(
+                      <div key={i} style={{background:"#0f2040",border:`1.5px solid ${match.winner?"#00ffa3":"#1e3a6e"}`,borderRadius:12,padding:"12px",marginBottom:8}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:match.winner?0:8}}>
+                          <div style={{flex:1,textAlign:"center"}}>
+                            <div style={{fontWeight:700,color:match.winner===match.p1?"#00ffa3":"#ffffff"}}>{match.p1}</div>
+                          </div>
+                          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#c4b0ff"}}>VS</div>
+                          <div style={{flex:1,textAlign:"center"}}>
+                            <div style={{fontWeight:700,color:match.winner===match.p2?"#00ffa3":match.p2==="BYE"?"#506080":"#ffffff"}}>{match.p2}</div>
+                          </div>
+                        </div>
+                        {!match.winner&&match.p2!=="BYE"&&(
+                          <div style={{display:"flex",gap:6}}>
+                            <button onClick={()=>recordWin(i,match.p1)} style={{flex:1,background:"rgba(0,255,163,.1)",border:"1.5px solid #00ffa3",borderRadius:9,padding:"7px",color:"#00ffa3",fontWeight:800,cursor:"pointer",fontSize:12}}>{match.p1} Kazandı</button>
+                            <button onClick={()=>recordWin(i,match.p2)} style={{flex:1,background:"rgba(0,255,163,.1)",border:"1.5px solid #00ffa3",borderRadius:9,padding:"7px",color:"#00ffa3",fontWeight:800,cursor:"pointer",fontSize:12}}>{match.p2} Kazandı</button>
+                          </div>
+                        )}
+                        {match.winner&&<div style={{textAlign:"center",color:"#00ffa3",fontWeight:700,fontSize:12}}>✅ {match.winner} kazandı</div>}
+                      </div>
+                    ))}
+                    <button onClick={()=>setTournamentData(null)} style={{width:"100%",background:"rgba(255,68,102,.1)",border:"1.5px solid #ff4466",borderRadius:10,padding:"10px",color:"#ff4466",fontWeight:700,cursor:"pointer",marginTop:8}}>🗑️ Turnuvayı Sıfırla</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
         {showAvEd&&<AvatarEditor avatar={avatar} levelInfo={levelInfo} onSave={(av)=>{setAvatar(av);saveAvatar(usernameRef.current,av);setShowAvEd(false);}} onClose={()=>setShowAvEd(false)}/>}
         {showShop&&(
           <div className="shop-overlay" onClick={()=>setShowShop(false)}>
@@ -2323,7 +2911,16 @@ function App(){
             </button>);
           })}
         </div>
-        <div className="qcard"><div className="qt">{q.q}</div></div>
+        <div className="qcard" style={{position:"relative"}}>
+        <button onClick={()=>{
+          const q=questions[qIdx];
+          if(!q)return;
+          const reason=prompt("Soruyu neden bildiriyorsunuz?\n1. Yanlış cevap\n2. Yazım hatası\n3. Anlaşılmaz soru\n\nSebep yazın:");
+          if(!reason)return;
+          try{const reports=JSON.parse(localStorage.getItem("ba_reports")||"[]");reports.push({q:q.q,reason,ts:new Date().toISOString()});localStorage.setItem("ba_reports",JSON.stringify(reports.slice(-50)));}catch(e){}
+          if(typeof db!=="undefined"&&typeof db==="function"&&db()){try{db().collection("reports").add({q:q.q,reason,ts:new Date().toISOString(),user:usernameRef.current});}catch(e){}}
+          alert("Bildiriminiz alındı! Teşekkürler.");
+        }} style={{position:"absolute",top:8,right:8,background:"rgba(255,68,102,.15)",border:"1px solid rgba(255,68,102,.3)",borderRadius:8,color:"#ff4466",fontSize:10,fontWeight:700,cursor:"pointer",padding:"3px 8px"}}>⚠ Bildir</button><div className="qt">{q.q}</div></div>
         <div className="tc"><TimerRing tl={tl}/></div>
         <div>
           {displayOpts.map((item,di)=>{
