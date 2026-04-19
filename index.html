@@ -12,11 +12,9 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <title>Bilgi Arena: Kim Kazanacak?</title>
-<!-- Firebase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-app-compat.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-auth-compat.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-firestore-compat.min.js"></script>
-<!-- Game -->
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -177,7 +175,6 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 </head>
 <body>
 <div id="root"></div>
-<!-- Firebase Integration -->
 <script>
 // ═══════════════════════════════════════════════════════
 // BİLGİ ARENA — FİREBASE BACKEND
@@ -192,12 +189,12 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 // ═══════════════════════════════════════════════════════
 
 const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyBO3HaX0rI37mUEwEWVu3soTW2GkAenZNo",
-  authDomain:        "bilgiarena-new.firebaseapp.com",
-  projectId:         "bilgiarena-new",
-  storageBucket:     "bilgiarena-new.firebasestorage.app",
-  messagingSenderId: "1066315851875",
-  appId:             "1:1066315851875:web:7ddebd56fdccd04b41b056"
+  apiKey:            "BURAYA_YAPISTIR",
+  authDomain:        "BURAYA_YAPISTIR",
+  projectId:         "BURAYA_YAPISTIR",
+  storageBucket:     "BURAYA_YAPISTIR",
+  messagingSenderId: "BURAYA_YAPISTIR",
+  appId:             "BURAYA_YAPISTIR"
 };
 
 // ── Firebase başlat ──
@@ -290,7 +287,7 @@ function fbLogout(){
 }
 
 function fbCurrentUser(){
-  return _fbAuth?_fbAuth.currentUser:null;
+  return _fbAuth?._fbAuth.currentUser||null;
 }
 
 // ── Local cache ──
@@ -440,11 +437,7 @@ async function fbGetLeagueBoard(leagueId, uid){
 }
 
 function getNewLeague(pts){
-  const _LG=[
-    {id:'bronze',minPts:0},{id:'silver',minPts:500},{id:'gold',minPts:1500},
-    {id:'diamond',minPts:3000},{id:'master',minPts:6000}
-  ];
-  for(let i=_LG.length-1;i>=0;i--){if(pts>=_LG[i].minPts)return _LG[i].id;}
+  for(let i=LEAGUES.length-1;i>=0;i--){if(pts>=LEAGUES[i].minPts)return LEAGUES[i].id;}
   return 'bronze';
 }
 
@@ -501,7 +494,6 @@ async function fbIsOnline(uid){
 }
 
 </script>
-<!-- Game Data & Helpers -->
 <script>
 /* ═══ GLOBAL DATA (plain JS, no Babel) ═══ */
 "use strict";
@@ -1114,7 +1106,6 @@ function addGameHistory(u,pts,correct,total){
 }
 
 </script>
-<!-- React App -->
 <script type="text/babel">
 
 // ─────────────────────────────────────────────
@@ -1470,9 +1461,846 @@ function App(){
   const [gmailInput,setGmailInput]=useState("");
   const [leagueData,setLeagueData]=useState({league:'bronze',weeklyPts:0,weekKey:'',prevLeague:'bronze'});
   const [referralInput,setReferralInput]=useState("");
+  const [joinCodeInput,setJoinCodeInput]=useState("");
+  const [joinCodeErr,setJoinCodeErr]=useState("");
   const [referralMsg,setReferralMsg]=useState("");
-  const [authLoading,setAuthLoading]=useState(false);
-  const [fEmail,setFEmail]=useState("");
+  const [userCode,setUserCode]=useState("");
+
+  // refs
+  const USERS=useRef(new Map());
+  const peerRef=useRef(null);
+  const connsRef=useRef([]);
+  const hostConnRef=useRef(null);
+  const timerRef=useRef(null);
+  const forceRef=useRef(null);
+  const selRef=useRef(null); selRef.current=sel;
+  const sel2Ref=useRef(null); sel2Ref.current=sel2;
+  const usernameRef=useRef(""); usernameRef.current=username;
+  const scoreRef=useRef(0);
+  const isHostRef=useRef(false);
+  const modeRef=useRef("solo"); modeRef.current=mode;
+  const playersRef=useRef({});
+  const answeredRef=useRef({});
+  const questionsRef=useRef([]);
+  const qIdxRef=useRef(0); qIdxRef.current=qIdx;
+  const tlRef=useRef(15); tlRef.current=tl;
+  const pwX2Ref=useRef(false); pwX2Ref.current=pwX2;
+  const pwDoubleRef=useRef(false); pwDoubleRef.current=pwDouble;
+  const sfxOnRef=useRef(true); sfxOnRef.current=sfxOn;
+  const categoryRef=useRef("karışık"); categoryRef.current=category;
+  const afkCountRef=useRef({});
+  const pendingSfxRef=useRef(null);
+  const pingIntervalRef=useRef(null);
+
+  // ── Load user ──
+  const loadUser=useCallback((u)=>{
+    const xp=getTotalXP(u);
+    const li=calcLevelInfo(xp);
+    setTotalXP(xp); setLevelInfo(li);
+    setGold(getGold(u));
+    setPowers(getPowers(u));
+    setStats(getStats(u));
+    setMissions(getMissions(u));
+    const dd=getDailyData(u);
+    setDailyData(dd);
+    const av_=getAvatar(u);if(!av_.hasOwnProperty('glassStyle'))av_.glassStyle=0;if(!av_.hasOwnProperty('glassColorIdx'))av_.glassColorIdx=0;setAvatar(av_);
+    setUserCode(getUserCode(u));
+    setLeagueData(getLeagueData(u));
+    setGmailInput(getGmail(u));
+    setUserTitle(getTitleLS(u));
+    setFriends(getFriends(u));
+    getUserCode(u); // ensure code generated
+  },[]);
+
+  // ── Online ping ──
+  useEffect(()=>{
+    if(!username)return;
+    pingOnline(username);
+    pingIntervalRef.current=setInterval(()=>pingOnline(usernameRef.current),30000);
+    return()=>clearInterval(pingIntervalRef.current);
+  },[username]);
+
+  // ── Reveal SFX ──
+  useEffect(()=>{
+    if(revealed&&pendingSfxRef.current!==null&&sfxOnRef.current){
+      playSfx(pendingSfxRef.current?'correct':'wrong');
+      pendingSfxRef.current=null;
+    }
+  },[revealed]);
+
+  // ── Gold award on result ──
+  useEffect(()=>{
+    if(screen!=="result")return;
+    const lb=getLB();
+    const myRank=lb.findIndex(p=>p.isMe);
+    const rankGold=[100,50,25][myRank]||0;
+    if(rankGold>0){
+      if(sfxOnRef.current)playSfx('earn');
+      setGold(g=>{const ng=g+rankGold;saveGoldLS(usernameRef.current,ng);return ng;});
+      setGoldEarned(rankGold);
+    }
+    // XP from correct answers
+    const correctCount=answers.filter(a=>a.sel===a.a).length;
+    if(correctCount>0) addXP(correctCount*5);
+    // League points (2 pts per correct, 10 pts for winning)
+    const lPts=correctCount*2+(myRank===0&&mode==='multi'?10:0);
+    if(lPts>0){
+      const ld=addLeaguePts(usernameRef.current,lPts);setLeagueData({...ld});
+      const uid=localStorage.getItem("ba_fb_uid");
+      if(uid&&typeof fbAddLeaguePts!=='undefined') fbAddLeaguePts(uid,usernameRef.current,ld.league,lPts);
+    }
+    // Game history
+    addGameHistory(usernameRef.current,score,correctCount,answers.length);
+    // Update stats
+    const ns=getStats(usernameRef.current);
+    ns.games=(ns.games||0)+1;
+    ns.correct=(ns.correct||0)+correctCount;
+    if(myRank===0&&mode==='multi') ns.wins=(ns.wins||0)+1;
+    // Category stats
+    const catMap={bilim:'sci_correct',spor:'sport_correct',coğrafya:'geo_correct',tarih:'hist_correct',sanat:'art_correct'};
+    if(catMap[categoryRef.current]) ns[catMap[categoryRef.current]]=(ns[catMap[categoryRef.current]]||0)+correctCount;
+    setStats(ns);
+    saveStatsLS(usernameRef.current,ns);
+    checkMissions(ns,calcLevelInfo(getTotalXP(usernameRef.current)).level);
+    // Daily
+    triggerDaily('gameComplete');
+    if(correctCount>0) triggerDaily('firstCorrect');
+  },[screen]);
+
+  // ── Music ──
+  useEffect(()=>{
+    if(screen==="game"&&!musicStarted){setMusicStarted(true);if(musicOn)playMusic(0);}
+    if((screen==="result"||screen==="home"||screen==="auth")&&musicStarted){stopMusic();setMusicStarted(false);}
+  },[screen]);
+
+  // ── Shuffle ──
+  useEffect(()=>{
+    if(!questions[qIdx])return;
+    const seed=usernameRef.current+String(qIdx);
+    const sh=seededShuffle(questions[qIdx].o,seed);
+    setShuffled(sh);
+    if(pwElim){
+      const wrong=sh.map((it,di)=>({di,i:it.i})).filter(x=>x.i!==questions[qIdx].a);
+      setEliminated(wrong.slice(0,2).map(x=>x.di));
+    } else setEliminated([]);
+  },[qIdx,questions]);
+
+  // ── addXP ──
+  const addXP=useCallback((amount)=>{
+    const u=usernameRef.current;if(!u)return;
+    const oldXP=getTotalXP(u);
+    const newXP=oldXP+amount;
+    setTotalXP(newXP);
+    saveTotalXP(u,newXP);
+    const oldLI=calcLevelInfo(oldXP);
+    const newLI=calcLevelInfo(newXP);
+    setLevelInfo(newLI);
+    const queue=[];
+    for(let lv=oldLI.level+1;lv<=newLI.level;lv++){
+      const rewards=getLevelRewards(lv);
+      queue.push({newLevel:lv,rewards});
+      let g2=0;
+      const np={...getPowers(u)};
+      rewards.forEach(r=>{
+        if(r.type==='gold'){g2+=r.amount;}
+        if(r.type==='power'){np[r.pw]=(np[r.pw]||0)+1;}
+      });
+      if(g2>0){setGold(g=>{const ng=g+g2;saveGoldLS(u,ng);return ng;});}
+      if(Object.values(np).some(v=>v>0)){setPowers(np);savePowersLS(u,np);}
+    }
+    if(queue.length>0)setLevelUpQueue(q=>[...q,...queue]);
+  },[]);
+
+  // ── checkMissions ──
+  const checkMissions=useCallback((ns,currentLevel)=>{
+    const u=usernameRef.current;
+    const ms=getMissions(u);
+    let changed=false;
+    MISSIONS_DEF.forEach(md=>{
+      if(ms[md.id]==='done')return;
+      const val=md.stat==='level'?currentLevel:(ns[md.stat]||0);
+      if(val>=md.target){
+        ms[md.id]='done';changed=true;
+        addXP(md.xp);
+        setGold(g=>{const ng=g+md.gold;saveGoldLS(u,ng);return ng;});
+        if(md.title_reward){setUserTitle(md.title_reward);saveTitleLS(u,md.title_reward);}
+      }
+    });
+    if(changed){setMissions({...ms});saveMissionsLS(u,ms);}
+  },[addXP]);
+
+  // ── triggerDaily ──
+  const triggerDaily=useCallback((event)=>{
+    const u=usernameRef.current;if(!u)return;
+    const dd=getDailyData(u);
+    const def=DAILY_DEF.find(d=>d.event===event);
+    if(!def||dd.done[def.id])return;
+    const newDone={...dd.done,[def.id]:true};
+    const newPts=(dd.pts||0)+def.pts;
+    const shouldChest=newPts>=20&&!dd.chestClaimed;
+    const newDD={done:newDone,pts:newPts,chestClaimed:dd.chestClaimed||shouldChest};
+    setDailyData(newDD);
+    saveDailyDataLS(u,newDD);
+    if(shouldChest){
+      setChestModal(true);
+      setGold(g=>{const ng=g+100;saveGoldLS(u,ng);return ng;});
+    }
+  },[]);
+
+  // ── AUTH ──
+  const handleAuth=useCallback(()=>{
+    const u=fUser.trim(),p=fPass.trim();
+    setFErr("");
+    if(!u){setFErr("Kullanıcı adı boş bırakılamaz.");return;}
+    if(u.length<2){setFErr("En az 2 karakter giriniz.");return;}
+    if(!p){setFErr("Şifre boş bırakılamaz.");return;}
+    const db=USERS.current;
+    if(authTab==="register"){
+      if(db.has(u)||isUsernameTaken(u)){setFErr("Bu kullanıcı adı zaten kullanılıyor.");return;}
+      db.set(u,p);
+      registerUsername(u);
+    } else {
+      if(db.has(u)&&db.get(u)!==p){setFErr("Şifre hatalı.");return;}
+      if(!db.has(u)){db.set(u,p);registerUsername(u);}
+    }
+    setUsername(u);
+    loadUser(u);
+    try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",p);}catch(e){}
+    setTimeout(()=>triggerDaily('login'),300);
+    const pending=sessionStorage.getItem("pendingRoom");
+    if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}
+    else setScreen("home");
+  },[authTab,fUser,fPass,loadUser,triggerDaily]);
+
+  const broadcast=(msg)=>{connsRef.current.forEach(c=>{try{c.send(msg);}catch(e){}});};
+
+  // ── removePlayer ──
+  const removePlayer=useCallback((name)=>{
+    if(!playersRef.current[name])return;
+    delete playersRef.current[name];
+    const list=Object.keys(playersRef.current);
+    setRoomPlayers([...list]);setLiveScores({...playersRef.current});
+    broadcast({type:"players",list});broadcast({type:"scores",data:{...playersRef.current}});
+    const qI=qIdxRef.current;
+    if(!answeredRef.current[qI])answeredRef.current[qI]=new Set();
+    answeredRef.current[qI].add(name);
+    const total=Object.keys(playersRef.current).length;
+    if(total===0){broadcast({type:"gameOver"});setScreen("result");return;}
+    if(answeredRef.current[qI].size>=total){clearTimeout(forceRef.current);doAdvance(qI);}
+  },[]);
+
+  // ── hostRecordAnswered ──
+  const hostRecordAnswered=useCallback((qI,name,wasAFK)=>{
+    if(!answeredRef.current[qI])answeredRef.current[qI]=new Set();
+    if(answeredRef.current[qI].has(name))return;
+    answeredRef.current[qI].add(name);
+    if(wasAFK){
+      if(!afkCountRef.current[name])afkCountRef.current[name]=0;
+      afkCountRef.current[name]++;
+      if(afkCountRef.current[name]>=3){
+        broadcast({type:"kicked",name});
+        setKickedPlayers(kp=>[...kp,name]);
+        removePlayer(name);return;
+      }
+    } else afkCountRef.current[name]=0;
+    const total=Object.keys(playersRef.current).length;
+    const answered=answeredRef.current[qI].size;
+    broadcast({type:"waitCount",answered,total});
+    setWaitCount({answered,total});
+    if(answered>=total){clearTimeout(forceRef.current);doAdvance(qI);}
+  },[removePlayer]);
+
+  // ── doAdvance ──
+  const doAdvance=useCallback((qI)=>{
+    clearTimeout(forceRef.current);
+    broadcast({type:"reveal"});
+    setRevealed(true);
+    const nextQIdx=qI+1;
+    setTimeout(()=>{
+      if(nextQIdx>=questionsRef.current.length){
+        broadcast({type:"gameOver"});
+        setTimeout(()=>setScreen("result"),100);
+      } else {
+        broadcast({type:"advanceQ",newQIdx:nextQIdx});
+        advanceToQ(nextQIdx);
+      }
+    },1800);
+  },[]);
+
+  const advanceToQ=useCallback((nqi)=>{
+    setQIdx(nqi);setSel(null);setSel2(null);setTl(15);
+    setFeedback(false);setRevealed(false);setWaiting(false);
+    setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);
+    pendingSfxRef.current=null;
+    setWaitCount({answered:0,total:Object.keys(playersRef.current).length||1});
+  },[]);
+
+  // ── createRoom ──
+  const createRoom=useCallback(()=>{
+    if(peerRef.current)peerRef.current.destroy();
+    isHostRef.current=true;playersRef.current={[username]:0};answeredRef.current={};afkCountRef.current={};
+    setRoomPlayers([username]);setLiveScores({[username]:0});setConnStatus("connecting");setKickedPlayers([]);
+    const peer=new Peer();peerRef.current=peer;
+    peer.on("open",id=>{setInviteLink(window.location.href.split("#")[0]+"#room="+id);setConnStatus("connected");setScreen("lobby-host");});
+    peer.on("connection",conn=>{
+      conn.on("open",()=>{connsRef.current.push(conn);conn.send({type:"welcome",host:usernameRef.current});});
+      conn.on("data",msg=>{
+        if(msg.type==="join"){playersRef.current[msg.name]=0;afkCountRef.current[msg.name]=0;const list=Object.keys(playersRef.current);setRoomPlayers([...list]);setLiveScores({...playersRef.current});broadcast({type:"players",list});}
+        if(msg.type==="score"){playersRef.current[msg.name]=msg.score;setLiveScores({...playersRef.current});broadcast({type:"scores",data:{...playersRef.current}});}
+        if(msg.type==="answered")hostRecordAnswered(msg.qIdx,msg.name,msg.wasAFK);
+      });
+      conn.on("close",()=>{connsRef.current=connsRef.current.filter(c=>c!==conn);});
+    });
+    peer.on("error",e=>{setConnStatus("error");});
+    // Stats & daily
+    const ns=getStats(username);ns.rooms=(ns.rooms||0)+1;setStats(ns);saveStatsLS(username,ns);
+    triggerDaily('createRoom');
+  },[username,hostRecordAnswered,triggerDaily]);
+
+  // ── joinAsClient ──
+  const joinAsClient=useCallback((uname,hostPeerId)=>{
+    isHostRef.current=false;setConnStatus("connecting");setScreen("lobby-guest");
+    if(peerRef.current)peerRef.current.destroy();
+    const peer=new Peer();peerRef.current=peer;
+    peer.on("open",()=>{
+      const conn=peer.connect(hostPeerId,{reliable:true});hostConnRef.current=conn;
+      conn.on("open",()=>{conn.send({type:"join",name:uname||usernameRef.current});setConnStatus("connected");});
+      conn.on("data",msg=>{
+        if(msg.type==="welcome")setRoomPlayers([msg.host]);
+        if(msg.type==="players")setRoomPlayers(msg.list);
+        if(msg.type==="scores")setLiveScores(msg.data);
+        if(msg.type==="waitCount")setWaitCount({answered:msg.answered,total:msg.total});
+        if(msg.type==="reveal"){setRevealed(true);setFeedback(true);}
+        if(msg.type==="kicked"&&msg.name===usernameRef.current){setScreen("home");alert("3 soruya cevap vermediğiniz için oyundan çıkarıldınız.");}
+        if(msg.type==="start"){
+          const pl=msg.players||[];const initS={};pl.forEach(p=>{initS[p]=0;});
+          if(!initS[usernameRef.current])initS[usernameRef.current]=0;
+          playersRef.current=initS;setWaitCount({answered:0,total:pl.length||1});
+          launchGame(msg.questions,msg.qCount,"multi",pl,msg.category||"karışık");
+        }
+        if(msg.type==="advanceQ")advanceToQ(msg.newQIdx);
+        if(msg.type==="gameOver")setTimeout(()=>setScreen("result"),100);
+        if(msg.type==="rematch"){
+          setQuestions([]);setQIdx(0);setScore(0);scoreRef.current=0;
+          setAnswers([]);setSel(null);setSel2(null);setRevealed(false);setWaiting(false);setFeedback(false);
+          setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);
+          playersRef.current={};setLiveScores({});setGoldEarned(0);setKickedPlayers([]);
+          setScreen("setup");
+        }
+      });
+      conn.on("close",()=>setConnStatus("error"));
+      conn.on("error",()=>setConnStatus("error"));
+    });
+    peer.on("error",()=>setConnStatus("error"));
+  },[advanceToQ]);
+
+  // ── auto-login ──
+  useEffect(()=>{
+    const hash=window.location.hash.slice(1);
+    let pending=null;
+    if(hash&&hash.startsWith("room=")){pending=hash.slice(5);history.replaceState(null,"",window.location.pathname+window.location.search);}
+    try{
+      const su=localStorage.getItem("ba_user"),sp=localStorage.getItem("ba_pass");
+      if(su&&sp){USERS.current.set(su,sp);setUsername(su);loadUser(su);setTimeout(()=>triggerDaily('login'),300);
+        if(pending)joinAsClient(su,pending);else setScreen("home");return;}
+    }catch(e){}
+    if(pending)sessionStorage.setItem("pendingRoom",pending);
+  },[]);
+
+  // ── Start game ──
+  const startGame=useCallback((isMulti)=>{
+    setScreen("loading");setMusicStarted(false);setGoldEarned(0);setKickedPlayers([]);
+    const qs=getQsByCategory(category,qCount,usernameRef.current);
+    setTimeout(()=>{
+      const pl=Object.keys(playersRef.current);
+      if(isMulti&&isHostRef.current)broadcast({type:"start",questions:qs,qCount,players:pl,category});
+      launchGame(qs,qCount,isMulti?"multi":"solo",pl,category);
+    },700);
+  },[category,qCount]);
+
+  const launchGame=useCallback((qs,cnt,m,players,cat)=>{
+    const pl=players&&players.length>0?players:roomPlayers;
+    const initS={};pl.forEach(p=>{initS[p]=0;});
+    if(!initS[usernameRef.current])initS[usernameRef.current]=0;
+    questionsRef.current=qs;answeredRef.current={};
+    setQuestions(qs);setQIdx(0);setScore(0);scoreRef.current=0;setAnswers([]);setSel(null);setSel2(null);setTl(15);
+    setFeedback(false);setRevealed(false);setWaiting(false);setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);
+    setLiveScores(initS);setWaitCount({answered:0,total:pl.length||1});pendingSfxRef.current=null;
+    if(cat)setCategory(cat);
+    setMode(m);modeRef.current=m;setScreen("game");
+  },[]);
+
+  // ── submitAnswer ──
+  const submitAnswer=useCallback((di1,di2,q)=>{
+    clearInterval(timerRef.current);
+    const sh=seededShuffle(q.o,usernameRef.current+String(qIdxRef.current));
+    const orig1=di1===null?null:sh[di1].i;
+    const orig2=di2!==null?sh[di2].i:null;
+    const ok=orig1===q.a||(orig2!==null&&orig2===q.a);
+    let pts=ok?calcScore(tlRef.current):0;
+    if(pwX2Ref.current&&ok)pts=pts*2;
+    const ns=scoreRef.current+pts;scoreRef.current=ns;setScore(ns);
+    setFeedback(true);
+    setAnswers(a=>[...a,{q:q.q,o:q.o,a:q.a,sel:orig1,sel2:orig2,tl:tlRef.current,pts}]);
+    pendingSfxRef.current=ok;
+    if(modeRef.current==="multi"){
+      setWaiting(true);
+      if(isHostRef.current){
+        playersRef.current[usernameRef.current]=ns;setLiveScores({...playersRef.current});
+        broadcast({type:"scores",data:{...playersRef.current}});
+        hostRecordAnswered(qIdxRef.current,usernameRef.current,di1===null);
+        clearTimeout(forceRef.current);forceRef.current=setTimeout(()=>doAdvance(qIdxRef.current),22000);
+      } else if(hostConnRef.current){
+        try{hostConnRef.current.send({type:"score",name:usernameRef.current,score:ns});hostConnRef.current.send({type:"answered",qIdx:qIdxRef.current,name:usernameRef.current,wasAFK:di1===null});}catch(e){}
+      }
+    } else {
+      setRevealed(true);
+      setTimeout(()=>{
+        const ni=qIdxRef.current+1;
+        if(ni<questionsRef.current.length){setQIdx(ni);setSel(null);setSel2(null);setTl(15);setFeedback(false);setRevealed(false);setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);pendingSfxRef.current=null;}
+        else setScreen("result");
+      },1500);
+    }
+  },[hostRecordAnswered,doAdvance]);
+
+  // ── doAnswer ──
+  const doAnswer=useCallback((displayIdx)=>{
+    const q=questionsRef.current[qIdxRef.current];if(!q)return;
+    if(selRef.current!==null&&(!pwDoubleRef.current||sel2Ref.current!==null))return;
+    if(pwDoubleRef.current){
+      if(selRef.current===null){setSel(displayIdx);return;}
+      if(displayIdx!==selRef.current){setSel2(displayIdx);submitAnswer(selRef.current,displayIdx,q);return;}
+      return;
+    }
+    setSel(displayIdx);submitAnswer(displayIdx,null,q);
+  },[submitAnswer]);
+
+  // ── timer ──
+  useEffect(()=>{
+    if(screen!=="game")return;
+    clearInterval(timerRef.current);setTl(15);
+    timerRef.current=setInterval(()=>{
+      setTl(t=>{
+        if(t<=1){clearInterval(timerRef.current);if(selRef.current===null){const q=questionsRef.current[qIdxRef.current];if(q)setTimeout(()=>submitAnswer(null,null,q),0);}return 0;}
+        return t-1;
+      });
+    },1000);
+    return()=>clearInterval(timerRef.current);
+  },[screen,qIdx,submitAnswer]);
+
+  useEffect(()=>()=>{clearInterval(timerRef.current);clearTimeout(forceRef.current);if(peerRef.current)peerRef.current.destroy();stopMusic();},[]);
+
+  const copyLink=()=>{
+    const txt=inviteLink||window.location.href;
+    const fb=()=>{const ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;opacity:0;top:0;left:0";document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);setCopied(true);setTimeout(()=>setCopied(false),2500);};
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(fb);}else fb();}catch(e){fb();}
+  };
+  const sortedLive=Object.entries(liveScores).sort((a,b)=>b[1]-a[1]);
+  const rankBG=i=>RANK_BG[i]||"#1e1e4a";
+  const getLB=()=>{
+    if(mode==="solo")return[{name:username,score,correct:answers.filter(a=>a.sel===a.a).length,isMe:true}];
+    return Object.entries(liveScores).map(([n,sc])=>({name:n,score:sc,correct:n===username?answers.filter(a=>a.sel===a.a).length:0,isMe:n===username})).sort((a,b)=>b.score-a.score);
+  };
+
+  // ── Power activate ──
+  const activatePw=useCallback((type)=>{
+    if(selRef.current!==null)return;
+    const cur=getPowers(usernameRef.current);
+    const costs={double:200,elim:200,x2:300};
+    const active={double:pwDoubleRef.current,elim:pwElim,x2:pwX2Ref.current};
+    if(active[type])return;
+    if(cur[type]>0){const np={...cur,[type]:cur[type]-1};setPowers(np);savePowersLS(usernameRef.current,np);}
+    else{if(gold<costs[type])return;playSfx('spend');setGold(g=>{const ng=g-costs[type];saveGoldLS(usernameRef.current,ng);return ng;});}
+    if(type==='double')setPwDouble(true);
+    else if(type==='elim'){
+      setPwElim(true);
+      const q=questionsRef.current[qIdxRef.current];
+      if(q){const sh=seededShuffle(q.o,usernameRef.current+String(qIdxRef.current));setEliminated(sh.map((it,di)=>({di,i:it.i})).filter(x=>x.i!==q.a).slice(0,2).map(x=>x.di));}
+    }
+    else if(type==='x2')setPwX2(true);
+  },[gold,pwElim]);
+
+  // ── Friend search ──
+  const searchFriend=useCallback(async()=>{
+    const input=friendSearchInput.trim();
+    if(!input){setFriendSearchErr("Kullanıcı adı veya #kod girin");return;}
+    if(input===username||input===getUserCode(usernameRef.current)){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
+    setFriendSearchErr("🔍 Aranıyor...");
+    let found=null;
+    if(typeof fbSearchByUsername!=="undefined"){
+      try{
+        const r=input.startsWith("#")?await fbSearchByCode(input):await fbSearchByUsername(input);
+        if(r) found=r.username;
+      }catch(e){}
+    }
+    if(!found){
+      const db=getUsernames();
+      if(db[input]&&input!==username) found=input;
+      else{const c=Object.keys(db).find(u=>getUserCode(u)===input);if(c&&c!==username)found=c;}
+    }
+    if(found){
+      if(friends.some(f=>(f.username||f)===found)){setFriendSearchErr("Bu kişi zaten arkadaşın");setFriendSearchResult(null);return;}
+      setFriendSearchResult(found);setFriendSearchErr("");
+    } else {
+      setFriendSearchErr("Kullanıcı bulunamadı. Firebase ile kayıt olanlar aranır.");
+      setFriendSearchResult(null);
+    }
+  },[friendSearchInput,username,friends]);──────────
+// TOP-LEVEL STABLE COMPONENTS (keyboard fix)
+// Defined outside App so they don't remount on state change
+// ─────────────────────────────────────────────
+
+function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
+  return(
+    <div className="shop-overlay" onClick={onClose}>
+      <div className="shop-panel" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#f0eeff"}}>⚙️ Ayarlar</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#6b5fa8",fontSize:22,cursor:"pointer"}}>✕</button>
+        </div>
+        {[{l:"🔊 Ses Efektleri",v:sfxOn,fn:(nv)=>{setSfxOn(nv);setSfxEnabledG(nv);}},{l:"🎵 Oyun Müziği",v:musicOn,fn:(nv)=>{setMusicOn(nv);setMusicEnabledG(nv);}}].map((s,i)=>(
+          <div key={i} style={{background:"#1e1555",border:"1.5px solid #5035b0",borderRadius:12,padding:"13px 15px",marginBottom:9,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#f0eeff"}}>{s.l}</span>
+            <div className={"toggle"+(s.v?" on":"")} onClick={()=>s.fn(!s.v)}><div className="toggle-knob"/></div>
+          </div>
+        ))}
+        <div style={{marginTop:12}}>
+          <button className="sbtn" style={{fontSize:13,padding:"10px"}} onClick={onLogout}>🚪 Çıkış Yap</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AvatarEditor({avatar,levelInfo,onSave,onClose}){
+  const [av,setAv]=useState({...avatar});
+  return(
+    <div className="shop-overlay" onClick={onClose}>
+      <div className="shop-panel" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f0eeff"}}>🎨 Karakter</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#6b5fa8",fontSize:22,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:14,background:"#1e1555",borderRadius:16,padding:16}}>
+          <AvatarSVG {...av} level={levelInfo.level} size={100}/>
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Cinsiyet</div>
+        <div style={{display:"flex",gap:8,marginBottom:12}}>
+          {[{v:'m',l:'👦 Erkek'},{v:'f',l:'👧 Kız'}].map(o=>(
+            <button key={o.v} onClick={()=>setAv({...av,gender:o.v,hairStyle:0,beardStyle:0})}
+              style={{flex:1,padding:"9px",borderRadius:10,border:av.gender===o.v?"2px solid #00f0ff":"2px solid #5035b0",background:av.gender===o.v?"rgba(0,240,255,.08)":"#1e1555",color:"#f0eeff",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13}}>
+              {o.l}</button>))}
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Ten</div>
+        <div style={{display:"flex",gap:9,marginBottom:12}}>{SKIN.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,skinIdx:i})} style={{width:34,height:34,borderRadius:"50%",background:c,border:av.skinIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Rengi</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,hairColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.hairColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Stili</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,hairStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.hairStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender={av.gender} skinIdx={av.skinIdx} hairStyle={i} hairColorIdx={av.hairColorIdx} beardStyle={0} size={36}/></div>))}</div>
+        {av.gender==='m'&&<>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,beardStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.beardStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender="m" skinIdx={av.skinIdx} hairStyle={av.hairStyle} hairColorIdx={av.hairColorIdx} beardStyle={i} beardColorIdx={av.beardColorIdx||0} size={36}/></div>))}</div>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal Rengi</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,beardColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.beardColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        </>}
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Gözlük</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>
+          {[{l:"Yok",icon:"🚫"},{l:"Yuvarlak",icon:"🕶️"},{l:"Kare",icon:"👓"},{l:"Güneş",icon:"😎"}].map((g,i)=>(
+            <div key={i} onClick={()=>setAv({...av,glassStyle:i})} style={{flex:1,height:50,borderRadius:10,border:(av.glassStyle||0)===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:"pointer",gap:2}}>
+              <span style={{fontSize:16}}>{g.icon}</span>
+              <span style={{fontSize:9,color:"#8b7fd4"}}>{g.l}</span>
+            </div>
+          ))}
+        </div>
+        {(av.glassStyle||0)>0&&<>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Gözlük Rengi</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{["#1a1a3a","#C0C0C0","#ffd700","#00f0ff","#ff4466"].map((c,i)=>(<div key={i} onClick={()=>setAv({...av,glassColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:(av.glassColorIdx||0)===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        </>}
+        <button className="pbtn" onClick={()=>onSave(av)}>✅ Kaydet</button>
+      </div>
+    </div>
+  );
+}
+
+// Bilgi Arena v9 - Clean JSX App
+const {useState,useEffect,useRef,useCallback,memo}=React;
+
+// ── W Wrapper (stable, outside App) ──
+const W=memo(function W({children}){
+  return React.createElement('div',{className:"app"},
+    React.createElement('div',{className:"phone"},children));
+});
+
+// ── Timer Ring ──
+function TimerRing({tl,total}){
+  total=total||15;
+  const r=36,circ=2*Math.PI*r,off=circ*(1-tl/total);
+  const col=tl>8?"#6ee7f7":tl>4?"#fbbf24":"#f87171";
+  return(
+    <div style={{position:"relative",width:88,height:88,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <svg width="88" height="88" style={{position:"absolute",transform:"rotate(-90deg)"}}>
+        <circle cx="44" cy="44" r={r} fill="none" stroke="#1e1e4a" strokeWidth="7"/>
+        <circle cx="44" cy="44" r={r} fill="none" stroke={col} strokeWidth="7"
+          strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
+          style={{transition:"stroke-dashoffset 0.95s linear,stroke 0.3s"}}/>
+      </svg>
+      <span style={{fontSize:24,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:col,zIndex:1}}>{tl}</span>
+    </div>
+  );
+}
+
+// ── Avatar ──
+function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorIdx,glassStyle,glassColorIdx,size,level}){
+  size=size||60;level=level||1;
+  const sk=SKIN[skinIdx||0];
+  const hc=HAIR_COL[hairColorIdx||0];
+  const bc=HAIR_COL[beardColorIdx||0];
+  const gc=GLASS_COL[glassColorIdx||0];
+  const fr=getFrame(level);
+
+  // Female hair paths
+  const fhp=[[
+    <path key="f0a" d="M16,40 Q45,6 74,40 L74,30 Q45,4 16,30Z" fill={hc}/>,
+    <path key="f0b" d="M16,38 C10,55 9,78 12,90 C14,82 15,65 18,50Z" fill={hc}/>,
+    <path key="f0c" d="M74,38 C80,55 81,78 78,90 C76,82 75,65 72,50Z" fill={hc}/>,
+    <ellipse key="f0d" cx="45" cy="20" rx="30" ry="16" fill={hc}/>,
+  ],[
+    <path key="f1a" d="M16,40 Q45,8 74,40 L74,30 Q45,6 16,30Z" fill={hc}/>,
+    <circle key="f1b" cx="45" cy="7" r="16" fill={hc}/>,
+    <circle key="f1c" cx="45" cy="7" r="9" fill={hc} opacity="0.55"/>,
+    <circle key="f1d" cx="45" cy="7" r="4" fill="rgba(255,255,255,0.15)"/>,
+    <path key="f1e" d="M22,28 Q17,21 19,16" stroke={hc} strokeWidth="4.5" fill="none" strokeLinecap="round"/>,
+    <path key="f1f" d="M68,28 Q73,21 71,16" stroke={hc} strokeWidth="4.5" fill="none" strokeLinecap="round"/>,
+  ],[
+    <path key="f2a" d="M16,40 Q45,7 74,40 L74,30 Q45,5 16,30Z" fill={hc}/>,
+    <path key="f2b" d="M16,38 Q8,52 10,66 Q12,76 14,83" stroke={hc} strokeWidth="13" fill="none" strokeLinecap="round"/>,
+    <path key="f2c" d="M74,38 Q82,52 80,66 Q78,76 76,83" stroke={hc} strokeWidth="13" fill="none" strokeLinecap="round"/>,
+    <path key="f2d" d="M12,48 Q7,57 12,65" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>,
+    <path key="f2e" d="M78,48 Q83,57 78,65" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>,
+  ],[
+    <path key="f3a" d="M16,40 Q45,7 74,40 L74,30 Q45,5 16,30Z" fill={hc}/>,
+    <path key="f3b" d="M16,36 Q14,47 18,55 Q27,64 45,66 Q63,64 72,55 Q76,47 74,36" fill={hc}/>,
+    <ellipse key="f3c" cx="45" cy="55" rx="28" ry="11" fill={hc}/>,
+  ]];
+
+  // Male hair paths
+  const mhp=[[
+    <path key="m0" d="M18,36 Q18,10 45,8 Q72,10 72,36 L72,28 Q72,6 45,6 Q18,6 18,28Z" fill={hc}/>,
+  ],[
+    <path key="m1a" d="M18,36 Q18,10 45,8 Q72,10 72,36 L72,28 Q72,6 45,6 Q18,6 18,28Z" fill={hc}/>,
+    <polygon key="m1b" points="27,26 22,7 32,20" fill={hc}/>,
+    <polygon key="m1c" points="38,20 35,3 44,16" fill={hc}/>,
+    <polygon key="m1d" points="52,20 55,3 46,16" fill={hc}/>,
+    <polygon key="m1e" points="63,26 68,7 58,20" fill={hc}/>,
+  ],[
+    <path key="m2a" d="M16,36 Q14,10 45,7 Q76,10 74,36 L74,26 Q72,5 45,5 Q18,5 16,26Z" fill={hc}/>,
+    <path key="m2b" d="M18,22 Q26,14 36,20 Q45,13 54,20 Q63,14 72,22" stroke={hc} strokeWidth="7" fill="none" strokeLinecap="round"/>,
+    <path key="m2c" d="M28,15 Q36,8 45,10 Q54,8 62,15" fill={hc}/>,
+  ],[
+    <path key="m3" d="M22,38 Q20,16 45,13 Q70,16 68,38 L68,30 Q66,10 45,10 Q24,10 22,30Z" fill={hc}/>,
+  ]];
+
+  // Beard paths
+  const bdp=[null,
+    <g key="bd1"><ellipse cx="45" cy="63" rx="19" ry="10" fill={bc} opacity="0.32"/><ellipse cx="33" cy="59" rx="7" ry="5.5" fill={bc} opacity="0.28"/><ellipse cx="57" cy="59" rx="7" ry="5.5" fill={bc} opacity="0.28"/></g>,
+    <path key="bd2" d="M28,55 Q25,73 45,78 Q65,73 62,55 Q56,64 45,65 Q34,64 28,55Z" fill={bc} opacity="0.88"/>,
+    <g key="bd3"><path d="M25,51 Q19,75 45,82 Q71,75 65,51 Q58,65 45,67 Q32,65 25,51Z" fill={bc}/><rect x="31" y="51" width="28" height="7" rx="3.5" fill={bc}/></g>,
+  ];
+
+  // Glasses
+  const glsp=[null,
+    <g key="gl1"><circle cx="33" cy="40" r="8.5" fill="none" stroke={gc} strokeWidth="2.5"/><circle cx="57" cy="40" r="8.5" fill="none" stroke={gc} strokeWidth="2.5"/><line x1="41.5" y1="40" x2="48.5" y2="40" stroke={gc} strokeWidth="2.5"/><line x1="24.5" y1="40" x2="24.5" y2="40" stroke={gc} strokeWidth="2.5"/></g>,
+    <g key="gl2"><rect x="23" y="33" width="18" height="14" rx="2.5" fill="none" stroke={gc} strokeWidth="2.5"/><rect x="49" y="33" width="18" height="14" rx="2.5" fill="none" stroke={gc} strokeWidth="2.5"/><line x1="41" y1="40" x2="49" y2="40" stroke={gc} strokeWidth="2.5"/></g>,
+    <g key="gl3"><rect x="23" y="34" width="18" height="11" rx="5.5" fill={gc} opacity="0.75"/><rect x="49" y="34" width="18" height="11" rx="5.5" fill={gc} opacity="0.75"/><line x1="41" y1="39" x2="49" y2="39" stroke={gc} strokeWidth="2"/></g>,
+  ];
+
+  const hp=gender==='f'?fhp[hairStyle%4]:mhp[hairStyle%4];
+  const bp=gender==='m'?bdp[beardStyle||0]:null;
+  const gp=glsp[glassStyle||0];
+
+  return(
+    <div style={{position:"relative",display:"inline-flex",flexShrink:0,marginBottom:level>1?10:0}}>
+      <svg width={size} height={size} viewBox="0 0 90 90" style={{borderRadius:"50%",boxShadow:fr?fr.s:"none"}}>
+        {/* Body */}
+        <ellipse cx="45" cy="86" rx="32" ry="13" fill={gender==='f'?"#818cf8":"#6ee7f7"}/>
+        {/* Neck */}
+        <rect x="39" y="59" width="12" height="13" fill={sk} rx="2"/>
+        {/* Head */}
+        <ellipse cx="45" cy="43" rx="27" ry="30" fill={sk}/>
+        {/* Hair */}
+        {hp}
+        {/* Ears */}
+        <ellipse cx="18" cy="45" rx="5.5" ry="6.5" fill={sk}/>
+        <ellipse cx="72" cy="45" rx="5.5" ry="6.5" fill={sk}/>
+        <ellipse cx="18" cy="45" rx="3" ry="4" fill={SKIN[Math.min((skinIdx||0)+1,3)]} opacity="0.5"/>
+        <ellipse cx="72" cy="45" rx="3" ry="4" fill={SKIN[Math.min((skinIdx||0)+1,3)]} opacity="0.5"/>
+        {/* Eyes white */}
+        <ellipse cx="33" cy="41" rx="5.5" ry="6" fill="white"/>
+        <ellipse cx="57" cy="41" rx="5.5" ry="6" fill="white"/>
+        {/* Pupils */}
+        <circle cx="34" cy="42" r="3.2" fill="#1a1a3a"/>
+        <circle cx="58" cy="42" r="3.2" fill="#1a1a3a"/>
+        {/* Shine */}
+        <circle cx="35" cy="41" r="1.3" fill="white"/>
+        <circle cx="59" cy="41" r="1.3" fill="white"/>
+        {/* Eyebrows */}
+        <path d="M27,33 Q33,29 39,33" stroke={HAIR_COL[hairColorIdx||0]} strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.85"/>
+        <path d="M51,33 Q57,29 63,33" stroke={HAIR_COL[hairColorIdx||0]} strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.85"/>
+        {/* Nose */}
+        <path d="M43,49 Q42,54 45,55 Q48,54 47,49" fill="none" stroke={SKIN[Math.min((skinIdx||0)+1,3)]} strokeWidth="1.8" strokeLinecap="round"/>
+        {/* Beard */}
+        {bp}
+        {/* Mouth */}
+        <path d="M36,61 Q45,68 54,61" fill="none" stroke="#b05060" strokeWidth="2.5" strokeLinecap="round"/>
+        {/* Blush */}
+        {gender==='f'&&<><ellipse cx="27" cy="53" rx="7" ry="4" fill="#f8a4b0" opacity="0.35"/><ellipse cx="63" cy="53" rx="7" ry="4" fill="#f8a4b0" opacity="0.35"/></>}
+        {/* Glasses */}
+        {gp}
+      </svg>
+      {fr&&<div style={{position:"absolute",bottom:-2,right:-2,background:fr.c,borderRadius:"50%",width:Math.max(14,size*.22),height:Math.max(14,size*.22),display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(7,size*.12),border:"1.5px solid rgba(0,0,0,.2)"}}>⭐</div>}
+      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#130d35",border:"1.5px solid "+(fr?fr.c:"#5035b0"),borderRadius:20,padding:"1px 7px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#00f0ff",whiteSpace:"nowrap"}}>Sv.{level}</div>}
+    </div>
+  );
+}
+
+
+// ── Confetti ──
+function Confetti(){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const cv=ref.current;if(!cv)return;
+    const ctx=cv.getContext('2d');cv.width=390;cv.height=500;
+    const P=Array.from({length:80},()=>({x:Math.random()*390,y:-30-Math.random()*80,vx:(Math.random()-.5)*5,vy:1.5+Math.random()*3.5,w:8+Math.random()*8,h:4+Math.random()*4,rot:Math.random()*360,rv:(Math.random()-.5)*8,col:['#6ee7f7','#fbbf24','#34d399','#f87171','#818cf8','#c084fc'][Math.floor(Math.random()*6)]}));
+    let raf,done=false;
+    const tick=()=>{ctx.clearRect(0,0,390,500);let any=false;P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.07;if(p.y<520)any=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,1-p.y/480);ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(any&&!done)raf=requestAnimationFrame(tick);};
+    tick();return()=>{done=true;cancelAnimationFrame(raf);};
+  },[]);
+  return <canvas ref={ref} style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:50}}/>;
+}
+
+// ── Chest Modal ──
+function ChestModal({onClose}){
+  const [st,setSt]=useState('shake');
+  useEffect(()=>{playSfx('earn');},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <style>{`@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.1)}}`}</style>
+      <div style={{textAlign:"center",padding:32}}>
+        <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
+        {st==='shake'&&<>
+          <div onClick={()=>{setSt('open');playSfx('earn');}} style={{fontSize:110,cursor:"pointer",display:"inline-block",animation:"shake .15s infinite",filter:"drop-shadow(0 0 20px #fbbf24)"}}>🎁</div>
+          <div style={{fontSize:13,color:"#6ee7f7",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
+        </>}
+        {st==='open'&&<>
+          <div style={{fontSize:90,animation:"pop .4s ease",display:"inline-block",filter:"drop-shadow(0 0 30px #fbbf24)"}}>🎁</div>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:48,fontWeight:700,color:"#fbbf24",marginTop:8}}>+100 🪙</div>
+          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:20}}>Altın Kazandın!</div>
+          <button onClick={onClose} style={{background:"linear-gradient(135deg,#6ee7f7,#818cf8)",border:"none",borderRadius:14,padding:"14px 40px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
+        </>}
+      </div>
+    </div>
+  );
+}
+
+// ── Level Up Modal ──
+function LevelUpModal({newLevel,rewards,onClose}){
+  useEffect(()=>{playSfx('levelup');},[]);
+  const fr=getFrame(newLevel);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div style={{background:"#0a0a1f",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
+        <div style={{fontSize:12,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:72,fontWeight:700,color:"#fbbf24",lineHeight:1}}>{newLevel}</div>
+        <div style={{fontSize:14,color:"#e2e4f0",marginBottom:16}}>Seviye {newLevel}</div>
+        {fr&&newLevel%5===0&&<div style={{background:"rgba(0,0,0,.2)",border:"2px solid "+fr.c,borderRadius:12,padding:"8px",marginBottom:12,fontSize:13,fontWeight:700,color:fr.c}}>🖼️ {fr.name} Çerçeve!</div>}
+        <div style={{marginBottom:16}}>
+          {rewards.map((r,i)=>(
+            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:20}}>{r.type==='gold'?"🪙":r.type==='frame'?"🖼️":"⚡"}</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{r.type==='gold'?"+"+r.amount+" Altın":r.type==='frame'?r.name+" Çerçeve":{double:"🎯 Çift Seçim",elim:"❌ 2 Yanlışı Ele",x2:"⚡ x2 Puan"}[r.pw]||r.pw}</span>
+            </div>
+          ))}
+        </div>
+        <button onClick={onClose} style={{background:"linear-gradient(135deg,#fbbf24,#f59e0b)",border:"none",borderRadius:14,padding:"13px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:15,cursor:"pointer",width:"100%"}}>Devam Et →</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main App ──
+function App(){
+  const [screen,setScreen]=useState("auth");
+  const [authTab,setAuthTab]=useState("login");
+  const [fUser,setFUser]=useState("");
+  const [fPass,setFPass]=useState("");
+  const [fErr,setFErr]=useState("");
+  const [username,setUsername]=useState("");
+  const [avatar,setAvatar]=useState({gender:'m',skinIdx:0,hairStyle:0,hairColorIdx:0,beardStyle:0,beardColorIdx:0});
+
+  // game config
+  const [mode,setMode]=useState("solo");
+  const [qCount,setQCount]=useState(7);
+  const [category,setCategory]=useState("karışık");
+
+  // multiplayer
+  const [inviteLink,setInviteLink]=useState("");
+  const [roomPlayers,setRoomPlayers]=useState([]);
+  const [connStatus,setConnStatus]=useState("idle");
+  const [copied,setCopied]=useState(false);
+
+  // game state
+  const [questions,setQuestions]=useState([]);
+  const [qIdx,setQIdx]=useState(0);
+  const [sel,setSel]=useState(null);
+  const [sel2,setSel2]=useState(null);
+  const [tl,setTl]=useState(15);
+  const [score,setScore]=useState(0);
+  const [answers,setAnswers]=useState([]);
+  const [feedback,setFeedback]=useState(false);
+  const [revealed,setRevealed]=useState(false);
+  const [liveScores,setLiveScores]=useState({});
+  const [waiting,setWaiting]=useState(false);
+  const [waitCount,setWaitCount]=useState({answered:0,total:1});
+  const [shuffled,setShuffled]=useState([]);
+  const [eliminated,setEliminated]=useState([]);
+
+  // economy & progression
+  const [gold,setGold]=useState(1000);
+  const [powers,setPowers]=useState({double:0,elim:0,x2:0});
+  const [pwDouble,setPwDouble]=useState(false);
+  const [pwElim,setPwElim]=useState(false);
+  const [pwX2,setPwX2]=useState(false);
+  const [totalXP,setTotalXP]=useState(0);
+  const [levelInfo,setLevelInfo]=useState({level:1,currentXP:0,neededXP:100});
+  const [stats,setStats]=useState({correct:0,games:0,wins:0,rooms:0});
+  const [missions,setMissions]=useState({});
+  const [dailyData,setDailyData]=useState({done:{},pts:0,chestClaimed:false});
+  const [userTitle,setUserTitle]=useState("");
+  const [goldEarned,setGoldEarned]=useState(0);
+  const [kickedPlayers,setKickedPlayers]=useState([]);
+
+  // friends
+  const [friends,setFriends]=useState([]);
+  const [friendSearchInput,setFriendSearchInput]=useState("");
+  const [friendSearchResult,setFriendSearchResult]=useState(null);
+  const [friendSearchErr,setFriendSearchErr]=useState("");
+
+  // UI
+  const [homeTab,setHomeTab]=useState("home");
+  const [showShop,setShowShop]=useState(false);
+  const [showSettings,setShowSettings]=useState(false);
+  const [showAvEd,setShowAvEd]=useState(false);
+  const [sfxOn,setSfxOn]=useState(true);
+  const [musicOn,setMusicOn]=useState(true);
+  const [musicStarted,setMusicStarted]=useState(false);
+  const [levelUpQueue,setLevelUpQueue]=useState([]);
+  const [chestModal,setChestModal]=useState(false);
+  const [gmailInput,setGmailInput]=useState("");
+  const [leagueData,setLeagueData]=useState({league:'bronze',weeklyPts:0,weekKey:'',prevLeague:'bronze'});
+  const [referralInput,setReferralInput]=useState("");
+  const [joinCodeInput,setJoinCodeInput]=useState("");
+  const [joinCodeErr,setJoinCodeErr]=useState("");
+  const [referralMsg,setReferralMsg]=useState("");
   const [userCode,setUserCode]=useState("");
 
   // refs
@@ -1963,14 +2791,16 @@ function App(){
     // ══ SCREENS ══
 
   if(screen==="auth"){
+    const [authLoading,setAuthLoading]=React.useState(false);
+    const [fEmail,setFEmail]=React.useState("");
     return(
       <W><div className="sc fi">
         <div className="logo" style={{textAlign:"center",paddingTop:16}}>
-          <h1>BİLGİ ARENA</h1><p>Kim Kazanacak? · Rakibini geç!</p>
+          <h1>BİLGİ ARENA</h1><p>Bilgini sına · Rakibini geç</p>
         </div>
         <div className="tabs" style={{marginBottom:16}}>
-          <button className={"tb "+(authTab==="login"?"on":"off")} onClick={()=>{setAuthTab("login");setFErr("");setFEmail("");setAuthLoading(false);}}>Giriş Yap</button>
-          <button className={"tb "+(authTab==="register"?"on":"off")} onClick={()=>{setAuthTab("register");setFErr("");setFEmail("");setAuthLoading(false);}}>Kayıt Ol</button>
+          <button className={"tb "+(authTab==="login"?"on":"off")} onClick={()=>{setAuthTab("login");setFErr("");}}>Giriş Yap</button>
+          <button className={"tb "+(authTab==="register"?"on":"off")} onClick={()=>{setAuthTab("register");setFErr("");}}>Kayıt Ol</button>
         </div>
         {typeof firebase==='undefined'&&<div style={{background:"rgba(255,215,0,.12)",border:"1.5px solid #ffd700",borderRadius:10,padding:"9px 12px",marginBottom:12,fontSize:11,color:"#ffd700",textAlign:"center"}}>⚙️ Firebase kurulmamış — misafir olarak oynayabilirsin</div>}
         {authTab==="register"&&<input className="inp" placeholder="Kullanıcı adı (min 3 karakter)" value={fUser} onChange={e=>{setFUser(e.target.value.replace(/\s/g,''));setFErr("");}} autoComplete="username"/>}
@@ -2454,6 +3284,26 @@ function App(){
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
         <button className="pbtn" style={{marginTop:4}} onClick={createRoom}>🏠 Oda Oluştur & Link Al</button>
+        <div style={{textAlign:"center",fontSize:12,color:"#c4b0ff",margin:"14px 0 8px"}}>── veya mevcut odaya katıl ──</div>
+        <div style={{display:"flex",gap:8}}>
+          <input className="inp" style={{margin:0,flex:1,letterSpacing:6,fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,textAlign:"center"}}
+            placeholder="000000" value={joinCodeInput}
+            onChange={e=>setJoinCodeInput(e.target.value.replace(/[^0-9]/g,"").slice(0,6))}
+            onKeyDown={e=>{if(e.key==="Enter"&&joinCodeInput.length===6){
+              const pid=getRoomPeerId(joinCodeInput);
+              if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
+              else setJoinCodeErr("Kod bulunamadı!");
+            }}}
+            maxLength={6} inputMode="numeric"/>
+          <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={async()=>{
+            if(joinCodeInput.length!==6){setJoinCodeErr("6 haneli kod girin");return;}
+            let pid=getRoomPeerId(joinCodeInput);
+            if(!pid&&typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
+            if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
+            else setJoinCodeErr("Kod geçersiz veya süresi dolmuş.");
+          }}>Katıl →</button>
+        </div>
+        {joinCodeErr&&<div style={{fontSize:11,color:"#ff4466",marginTop:5,textAlign:"center"}}>⚠ {joinCodeErr}</div>}
       )}
     </div></W>
   );
@@ -2468,8 +3318,13 @@ function App(){
       <div style={{background:"rgba(52,211,153,.08)",border:"1px solid rgba(52,211,153,.2)",borderRadius:10,padding:"9px 12px",display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
         <span>🟢</span><span style={{fontSize:12,color:"#34d399",fontWeight:700}}>Bağlantı hazır!</span>
       </div>
+      <div style={{background:"linear-gradient(135deg,rgba(0,240,255,.1),rgba(157,80,255,.1))",border:"2px solid #00f0ff",borderRadius:16,padding:"14px",marginBottom:12,textAlign:"center"}}>
+        <div style={{fontSize:10,color:"#c4b0ff",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Oda Kodu</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:44,fontWeight:700,color:"#00f0ff",letterSpacing:8,textShadow:"0 0 20px rgba(0,240,255,.5)"}}>{roomCode||"------"}</div>
+        <div style={{fontSize:10,color:"#c4b0ff",marginTop:2}}>Arkadaşına bu kodu söyle veya linki paylaş</div>
+      </div>
       <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
-      <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
+      <div style={{fontSize:12,color:"#c4b0ff",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
         {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#3d3d6b",fontSize:12}}>⏳ Bekleniyor...</div>}
       </div>
