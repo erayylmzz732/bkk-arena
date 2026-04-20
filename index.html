@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- BKK-ARENA v10 BUILD: OK -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -9,17 +8,14 @@
 <meta name="apple-mobile-web-app-title" content="Bilgi Arena: Kim Kazanacak?">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#060e1e">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <title>Bilgi Arena: Kim Kazanacak?</title>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-app-compat.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-auth-compat.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-firestore-compat.min.js"></script>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.10/babel.min.js"></script>
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -69,7 +65,7 @@ body{background:#060e1e}
 .qcnt{font-size:13px;color:#a8c4e0}
 .qcnt span{color:#4cc9f0;font-weight:700}
 .scdisp{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#ffd166}
-.pb{height:5px;background:#1e3a6e;border-radius:2px;margin-bottom:18px;overflow:hidden}
+.pb{height:3px;background:#1e1e4a;border-radius:2px;margin-bottom:18px;overflow:hidden}
 .pbi{height:100%;background:linear-gradient(90deg,#4cc9f0,#9b5de5);border-radius:2px;transition:width .4s ease}
 .qcard{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:18px;padding:18px;margin-bottom:14px}
 .qt{font-size:16px;font-weight:700;color:#e2e4f0;line-height:1.6}
@@ -152,20 +148,7 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 .toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}
 .toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .toggle.on .toggle-knob{left:25px}
-
-.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}
-.ob.elim{opacity:.15;pointer-events:none}
-.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0800);border:1.5px solid #ffd166;box-shadow:0 0 10px rgba(255,209,102,.3);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}
-.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
-.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}.pw-btn:disabled{opacity:.3;cursor:default}
-.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15);box-shadow:0 0 10px rgba(255,209,102,.3)}
-.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}
-.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 18px 34px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}
-.shop-panel::-webkit-scrollbar{width:0}
-.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
-.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}.toggle.on .toggle-knob{left:25px}
-</style>
+.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}.ob.elim{opacity:.15;pointer-events:none}.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0800);border:1.5px solid #ffd166;box-shadow:0 0 10px rgba(255,209,102,.3);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}.pw-btn:disabled{opacity:.3;cursor:default}.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15)}.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 18px 34px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}.shop-panel::-webkit-scrollbar{width:0}.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}.toggle.on .toggle-knob{left:25px}</style>
 </head>
 <body>
 <div id="root"></div>
@@ -1542,6 +1525,478 @@ function App(){
   },[]);
 
   // -- AUTH --
+  const handleAuth=useCallback(async()=>{
+    setFErr("");setAuthLoading(true);
+    const email=fEmail.trim(),pass=fPass.trim(),uname=fUser.trim();
+    if(authTab==="register"&&uname.length<3){setFErr("Kullanici adi min 3 karakter");setAuthLoading(false);return;}
+    if(!email.includes("@")){setFErr("Gecerli e-posta girin");setAuthLoading(false);return;}
+    if(pass.length<6){setFErr("Sifre min 6 karakter");setAuthLoading(false);return;}
+    let result;
+    try{
+      if(typeof fbRegister!=="undefined"&&typeof firebase!=="undefined"&&firebase.apps&&firebase.apps.length){
+        result=authTab==="register"?await fbRegister(email,pass,uname):await fbLogin(email,pass);
+      }else{const u=uname||email.split("@")[0];result={ok:true,uid:"local_"+u,username:u};}
+    }catch(e){result={ok:false,err:"Baglanti hatasi: "+e.message};}
+    if(!result.ok){setFErr(result.err||"Hata olustu");setAuthLoading(false);return;}
+    const u=result.username||(uname||email.split("@")[0]);
+    setUsername(u);
+    try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",pass);if(result.uid)localStorage.setItem("ba_fb_uid",result.uid);}catch(e){}
+    loadUser(u);if(result.gold)setGold(result.gold);if(result.avatar)setAvatar(result.avatar);
+    setTimeout(()=>doTriggerDaily("login"),400);
+    const pending=sessionStorage.getItem("pendingRoom");
+    if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}else setScreen("home");
+    setAuthLoading(false);
+  },[authTab,fUser,fPass,fEmail,authLoading]);
+// TOP-LEVEL STABLE COMPONENTS (keyboard fix)
+// Defined outside App so they don't remount on state change
+// ---------------------------------------------
+
+function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.95)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div style={{background:"#060e1e",border:"2px solid #2a5a8e",borderRadius:20,padding:20,width:"100%",maxWidth:340}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffffff"}}>Ayarlar</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#a8c4e0",fontSize:24,cursor:"pointer",lineHeight:1,padding:0}}>X</button>
+        </div>
+        {[{l:"Ses Efektleri",v:sfxOn,fn:(v)=>{setSfxOn(v);setSfxEnabledG(v);}},{l:"Oyun Muzigi",v:musicOn,fn:(v)=>{setMusicOn(v);setMusicEnabledG(v);}}].map((s,i)=>(
+          <div key={i} style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#ffffff"}}>{s.l}</span>
+            <div className={"toggle"+(s.v?" on":"")} onClick={()=>s.fn(!s.v)}><div className="toggle-knob"/></div>
+          </div>
+        ))}
+        <button className="sbtn" style={{fontSize:13,padding:11,marginTop:8,width:"100%"}} onClick={onLogout}>Cikis Yap</button>
+      </div>
+    </div>
+  );
+}
+
+
+function AvatarEditor({avatar,levelInfo,onSave,onClose}){
+  const [av,setAv]=useState({...avatar});
+  return(
+    <div className="shop-overlay" onClick={onClose}>
+      <div className="shop-panel" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f0eeff"}}>🎨 Karakter</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#6b5fa8",fontSize:22,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:14,background:"#1e1555",borderRadius:16,padding:16}}>
+          <AvatarSVG {...av} level={levelInfo.level} size={100}/>
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Cinsiyet</div>
+        <div style={{display:"flex",gap:8,marginBottom:12}}>
+          {[{v:'m',l:'👦 Erkek'},{v:'f',l:'👧 Kız'}].map(o=>(
+            <button key={o.v} onClick={()=>setAv({...av,gender:o.v,hairStyle:0,beardStyle:0})}
+              style={{flex:1,padding:"9px",borderRadius:10,border:av.gender===o.v?"2px solid #00f0ff":"2px solid #5035b0",background:av.gender===o.v?"rgba(0,240,255,.08)":"#1e1555",color:"#f0eeff",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13}}>
+              {o.l}</button>))}
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Ten</div>
+        <div style={{display:"flex",gap:9,marginBottom:12}}>{SKIN.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,skinIdx:i})} style={{width:34,height:34,borderRadius:"50%",background:c,border:av.skinIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Rengi</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,hairColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.hairColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Stili</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,hairStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.hairStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender={av.gender} skinIdx={av.skinIdx} hairStyle={i} hairColorIdx={av.hairColorIdx} beardStyle={0} size={36}/></div>))}</div>
+        {av.gender==='m'&&<>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,beardStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.beardStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender="m" skinIdx={av.skinIdx} hairStyle={av.hairStyle} hairColorIdx={av.hairColorIdx} beardStyle={i} beardColorIdx={av.beardColorIdx} size={36}/></div>))}</div>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal Rengi</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,beardColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.beardColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        </>}
+        <button className="pbtn" onClick={()=>onSave(av)}>✅ Kaydet</button>
+      </div>
+    </div>
+  );
+}
+
+// Bilgi Arena v9 - Clean JSX App
+const {useState,useEffect,useRef,useCallback,memo}=React;
+
+// -- W Wrapper (stable, outside App) --
+const W=memo(function W({children}){
+  return React.createElement('div',{className:"app"},
+    React.createElement('div',{className:"phone"},children));
+});
+
+// -- Timer Ring --
+function TimerRing({tl,total}){
+  total=total||15;
+  const r=36,circ=2*Math.PI*r,off=circ*(1-tl/total);
+  const col=tl>8?"#6ee7f7":tl>4?"#fbbf24":"#f87171";
+  return(
+    <div style={{position:"relative",width:88,height:88,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <svg width="88" height="88" style={{position:"absolute",transform:"rotate(-90deg)"}}>
+        <circle cx="44" cy="44" r={r} fill="none" stroke="#1e1e4a" strokeWidth="7"/>
+        <circle cx="44" cy="44" r={r} fill="none" stroke={col} strokeWidth="7"
+          strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
+          style={{transition:"stroke-dashoffset 0.95s linear,stroke 0.3s"}}/>
+      </svg>
+      <span style={{fontSize:24,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:col,zIndex:1}}>{tl}</span>
+    </div>
+  );
+}
+
+// -- Avatar --
+function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorIdx,size,level}){
+  size=size||60;level=level||1;
+  const sk=SKIN[skinIdx||0],hc=HAIR_COL[hairColorIdx||0],bc=HAIR_COL[beardColorIdx||0];
+  const fr=getFrame(level);
+  const fh=[
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="l" d="M17,36 Q10,50 11,65 Q12,75 14,82 Q15,78 14,65 Q13,52 18,38Z" fill={hc}/>,<path key="r" d="M73,36 Q80,50 79,65 Q78,75 76,82 Q75,78 76,65 Q77,52 72,38Z" fill={hc}/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<ellipse key="b" cx="45" cy="5" rx="16" ry="13" fill={hc}/>,<path key="w" d="M29,14 Q37,18 45,17 Q53,18 61,14" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="l" d="M17,36 Q8,48 10,58 Q8,68 11,76 Q13,82 14,82 Q13,76 15,68 Q13,58 15,48Z" fill={hc}/>,<path key="r" d="M73,36 Q82,48 80,58 Q82,68 79,76 Q77,82 76,82 Q77,76 75,68 Q77,58 75,48Z" fill={hc}/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="b" d="M17,36 Q15,44 17,50 Q21,55 31,58 Q38,60 45,60 Q52,60 59,58 Q69,55 73,50 Q75,44 73,36 Q67,48 45,50 Q23,48 17,36Z" fill={hc}/>],
+  ];
+  const mh=[
+    [<path key="h" d="M16,32 Q16,8 45,8 Q74,8 74,32 L74,24 Q74,4 45,4 Q16,4 16,24Z" fill={hc}/>],
+    [<path key="h" d="M16,32 Q16,8 45,8 Q74,8 74,32 L74,24 Q74,4 45,4 Q16,4 16,24Z" fill={hc}/>,<polygon key="s1" points="28,22 24,5 33,18" fill={hc}/>,<polygon key="s2" points="45,18 43,2 50,16" fill={hc}/>,<polygon key="s3" points="62,22 58,5 67,18" fill={hc}/>],
+    [<path key="h" d="M16,32 Q14,10 45,8 Q76,10 74,32 L74,26 Q72,6 45,6 Q18,6 16,26Z" fill={hc}/>,<path key="w" d="M18,20 Q26,14 34,19 Q42,14 50,19 Q58,14 66,19 Q72,16 74,20" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>],
+    [<path key="h" d="M22,36 Q20,14 45,12 Q70,14 68,36 L68,30 Q66,10 45,10 Q24,10 22,30Z" fill={hc}/>],
+  ];
+  const bd=[null,
+    <g key="b1"><ellipse cx="45" cy="62" rx="16" ry="8" fill={bc} opacity=".4"/><ellipse cx="35" cy="58" rx="5" ry="4" fill={bc} opacity=".35"/><ellipse cx="55" cy="58" rx="5" ry="4" fill={bc} opacity=".35"/></g>,
+    <g key="b2"><path d="M29,54 Q28,70 45,74 Q62,70 61,54 Q55,60 45,61 Q35,60 29,54Z" fill={bc} opacity=".85"/></g>,
+    <g key="b3"><path d="M26,50 Q22,72 45,78 Q68,72 64,50 Q58,62 45,64 Q32,62 26,50Z" fill={bc}/><ellipse cx="45" cy="52" rx="18" ry="6" fill={bc}/></g>,
+  ];
+  const hp=gender==='f'?fh[hairStyle%4]:mh[hairStyle%4];
+  const bp=gender==='m'?bd[beardStyle||0]:null;
+  return(
+    <div style={{position:"relative",display:"inline-flex",flexShrink:0,marginBottom:level>1?10:0}}>
+      <svg width={size} height={size} viewBox="0 0 90 90" style={{borderRadius:"50%",boxShadow:fr?fr.s:"none"}}>
+        <ellipse cx="45" cy="85" rx="30" ry="14" fill={gender==='f'?"#818cf8":"#6ee7f7"}/>
+        <rect x="39" y="58" width="12" height="13" fill={sk} rx="2"/>
+        <ellipse cx="45" cy="42" rx="27" ry="29" fill={sk}/>
+        {hp}
+        <ellipse cx="18" cy="44" rx="5" ry="6" fill={sk}/><ellipse cx="72" cy="44" rx="5" ry="6" fill={sk}/>
+        <ellipse cx="34" cy="40" rx="5" ry="5.5" fill="white"/><ellipse cx="56" cy="40" rx="5" ry="5.5" fill="white"/>
+        <circle cx="35.2" cy="41" r="3" fill="#1a1a3a"/><circle cx="57.2" cy="41" r="3" fill="#1a1a3a"/>
+        <circle cx="36" cy="40" r="1.2" fill="white"/><circle cx="58" cy="40" r="1.2" fill="white"/>
+        <path d="M29,33 Q34,30 39,33" stroke="#3a2a1a" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".7"/>
+        <path d="M51,33 Q56,30 61,33" stroke="#3a2a1a" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".7"/>
+        <path d="M43,47 Q42,52 45,53 Q48,52 47,47" fill="none" stroke={SKIN[Math.min((skinIdx||0)+1,3)]} strokeWidth="1.5" strokeLinecap="round"/>
+        {bp}
+        <path d="M37,59 Q45,66 53,59" fill="none" stroke="#b05060" strokeWidth="2.2" strokeLinecap="round"/>
+        {gender==='f'&&<><ellipse cx="28" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/><ellipse cx="62" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/></>}
+      </svg>
+      {fr&&<div style={{position:"absolute",bottom:-2,right:-2,background:fr.c,borderRadius:"50%",width:Math.max(14,size*.22),height:Math.max(14,size*.22),display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(8,size*.13),border:"1.5px solid rgba(0,0,0,.2)"}}>⭐</div>}
+      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#111130",border:"1.5px solid "+(fr?fr.c:"#1e1e4a"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#6ee7f7",whiteSpace:"nowrap"}}>Sv.{level}</div>}
+    </div>
+  );
+}
+
+// -- Confetti --
+function Confetti(){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const cv=ref.current;if(!cv)return;
+    const ctx=cv.getContext('2d');cv.width=390;cv.height=500;
+    const P=Array.from({length:80},()=>({x:Math.random()*390,y:-30-Math.random()*80,vx:(Math.random()-.5)*5,vy:1.5+Math.random()*3.5,w:8+Math.random()*8,h:4+Math.random()*4,rot:Math.random()*360,rv:(Math.random()-.5)*8,col:['#6ee7f7','#fbbf24','#34d399','#f87171','#818cf8','#c084fc'][Math.floor(Math.random()*6)]}));
+    let raf,done=false;
+    const tick=()=>{ctx.clearRect(0,0,390,500);let any=false;P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.07;if(p.y<520)any=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,1-p.y/480);ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(any&&!done)raf=requestAnimationFrame(tick);};
+    tick();return()=>{done=true;cancelAnimationFrame(raf);};
+  },[]);
+  return <canvas ref={ref} style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:50}}/>;
+}
+
+// -- Chest Modal --
+function ChestModal({onClose}){
+  const [st,setSt]=useState('shake');
+  useEffect(()=>{playSfx('earn');},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <style>{`@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.1)}}`}</style>
+      <div style={{textAlign:"center",padding:32}}>
+        <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
+        {st==='shake'&&<>
+          <div onClick={()=>{setSt('open');playSfx('earn');}} style={{fontSize:110,cursor:"pointer",display:"inline-block",animation:"shake .15s infinite",filter:"drop-shadow(0 0 20px #fbbf24)"}}>🎁</div>
+          <div style={{fontSize:13,color:"#6ee7f7",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
+        </>}
+        {st==='open'&&<>
+          <div style={{fontSize:90,animation:"pop .4s ease",display:"inline-block",filter:"drop-shadow(0 0 30px #fbbf24)"}}>🎁</div>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:48,fontWeight:700,color:"#fbbf24",marginTop:8}}>+100 🪙</div>
+          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:20}}>Altın Kazandın!</div>
+          <button onClick={onClose} style={{background:"linear-gradient(135deg,#6ee7f7,#818cf8)",border:"none",borderRadius:14,padding:"14px 40px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
+        </>}
+      </div>
+    </div>
+  );
+}
+
+// -- Level Up Modal --
+function LevelUpModal({newLevel,rewards,onClose}){
+  useEffect(()=>{playSfx('levelup');},[]);
+  const fr=getFrame(newLevel);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div style={{background:"#0a0a1f",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
+        <div style={{fontSize:12,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:72,fontWeight:700,color:"#fbbf24",lineHeight:1}}>{newLevel}</div>
+        <div style={{fontSize:14,color:"#e2e4f0",marginBottom:16}}>Seviye {newLevel}</div>
+        {fr&&newLevel%5===0&&<div style={{background:"rgba(0,0,0,.2)",border:"2px solid "+fr.c,borderRadius:12,padding:"8px",marginBottom:12,fontSize:13,fontWeight:700,color:fr.c}}>🖼️ {fr.name} Çerçeve!</div>}
+        <div style={{marginBottom:16}}>
+          {rewards.map((r,i)=>(
+            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:20}}>{r.type==='gold'?"🪙":r.type==='frame'?"🖼️":"⚡"}</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{r.type==='gold'?"+"+r.amount+" Altın":r.type==='frame'?r.name+" Çerçeve":{double:"🎯 Çift Seçim",elim:"❌ 2 Yanlışı Ele",x2:"⚡ x2 Puan"}[r.pw]||r.pw}</span>
+            </div>
+          ))}
+        </div>
+        <button onClick={onClose} style={{background:"linear-gradient(135deg,#fbbf24,#f59e0b)",border:"none",borderRadius:14,padding:"13px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:15,cursor:"pointer",width:"100%"}}>Devam Et →</button>
+      </div>
+    </div>
+  );
+}
+
+// -- Main App --
+function App(){
+  const [screen,setScreen]=useState("auth");
+  const [authTab,setAuthTab]=useState("login");
+  const [fUser,setFUser]=useState("");
+  const [fPass,setFPass]=useState("");
+  const [fErr,setFErr]=useState("");
+  const [username,setUsername]=useState("");
+  const [avatar,setAvatar]=useState({gender:'m',skinIdx:0,hairStyle:0,hairColorIdx:0,beardStyle:0,beardColorIdx:0});
+
+  // game config
+  const [mode,setMode]=useState("solo");
+  const [qCount,setQCount]=useState(7);
+  const [category,setCategory]=useState("karışık");
+
+  // multiplayer
+  const [inviteLink,setInviteLink]=useState("");
+  const [roomCode,setRoomCode]=useState("");
+  const [roomPlayers,setRoomPlayers]=useState([]);
+  const [connStatus,setConnStatus]=useState("idle");
+  const [copied,setCopied]=useState(false);
+
+  // game state
+  const [questions,setQuestions]=useState([]);
+  const [qIdx,setQIdx]=useState(0);
+  const [sel,setSel]=useState(null);
+  const [sel2,setSel2]=useState(null);
+  const [tl,setTl]=useState(15);
+  const [score,setScore]=useState(0);
+  const [answers,setAnswers]=useState([]);
+  const [feedback,setFeedback]=useState(false);
+  const [revealed,setRevealed]=useState(false);
+  const [liveScores,setLiveScores]=useState({});
+  const [waiting,setWaiting]=useState(false);
+  const [waitCount,setWaitCount]=useState({answered:0,total:1});
+  const [shuffled,setShuffled]=useState([]);
+  const [eliminated,setEliminated]=useState([]);
+
+  // economy & progression
+  const [gold,setGold]=useState(1000);
+  const [powers,setPowers]=useState({double:0,elim:0,x2:0});
+  const [pwDouble,setPwDouble]=useState(false);
+  const [pwElim,setPwElim]=useState(false);
+  const [pwX2,setPwX2]=useState(false);
+  const [totalXP,setTotalXP]=useState(0);
+  const [levelInfo,setLevelInfo]=useState({level:1,currentXP:0,neededXP:100});
+  const [stats,setStats]=useState({correct:0,games:0,wins:0,rooms:0});
+  const [missions,setMissions]=useState({});
+  const [dailyData,setDailyData]=useState({done:{},pts:0,chestClaimed:false});
+  const [userTitle,setUserTitle]=useState("");
+  const [goldEarned,setGoldEarned]=useState(0);
+  const [kickedPlayers,setKickedPlayers]=useState([]);
+
+  // friends
+  const [friends,setFriends]=useState([]);
+  const [friendSearchInput,setFriendSearchInput]=useState("");
+  const [friendSearchResult,setFriendSearchResult]=useState(null);
+  const [friendSearchErr,setFriendSearchErr]=useState("");
+
+  // UI
+  const [homeTab,setHomeTab]=useState("home");
+  const [showShop,setShowShop]=useState(false);
+  const [showSettings,setShowSettings]=useState(false);
+  const [showAvEd,setShowAvEd]=useState(false);
+  const [sfxOn,setSfxOn]=useState(true);
+  const [musicOn,setMusicOn]=useState(true);
+  const [musicStarted,setMusicStarted]=useState(false);
+  const [levelUpQueue,setLevelUpQueue]=useState([]);
+  const [chestModal,setChestModal]=useState(false);
+  const [gmailInput,setGmailInput]=useState("");
+  const [authLoading,setAuthLoading]=useState(false);
+  const [fEmail,setFEmail]=useState("");
+  const [joinCodeInput,setJoinCodeInput]=useState("");
+  const [joinCodeErr,setJoinCodeErr]=useState("");
+  const [showTournament,setShowTournament]=useState(false);
+  const [tournamentData,setTournamentData]=useState(null);
+  const [userCode,setUserCode]=useState("");
+
+  // refs
+  const USERS=useRef(new Map());
+  const peerRef=useRef(null);
+  const connsRef=useRef([]);
+  const hostConnRef=useRef(null);
+  const timerRef=useRef(null);
+  const forceRef=useRef(null);
+  const selRef=useRef(null); selRef.current=sel;
+  const sel2Ref=useRef(null); sel2Ref.current=sel2;
+  const usernameRef=useRef(""); usernameRef.current=username;
+  const scoreRef=useRef(0);
+  const isHostRef=useRef(false);
+  const modeRef=useRef("solo"); modeRef.current=mode;
+  const playersRef=useRef({});
+  const answeredRef=useRef({});
+  const questionsRef=useRef([]);
+  const qIdxRef=useRef(0); qIdxRef.current=qIdx;
+  const tlRef=useRef(15); tlRef.current=tl;
+  const pwX2Ref=useRef(false); pwX2Ref.current=pwX2;
+  const pwDoubleRef=useRef(false); pwDoubleRef.current=pwDouble;
+  const sfxOnRef=useRef(true); sfxOnRef.current=sfxOn;
+  const categoryRef=useRef("karışık"); categoryRef.current=category;
+  const afkCountRef=useRef({});
+  const pendingSfxRef=useRef(null);
+  const pingIntervalRef=useRef(null);
+
+  // -- Load user --
+  const loadUser=useCallback((u)=>{
+    const xp=getTotalXP(u);
+    const li=calcLevelInfo(xp);
+    setTotalXP(xp); setLevelInfo(li);
+    setGold(getGold(u));
+    setPowers(getPowers(u));
+    setStats(getStats(u));
+    setMissions(getMissions(u));
+    const dd=getDailyData(u);
+    setDailyData(dd);
+    setAvatar(getAvatar(u));
+    setUserCode(getUserCode(u));
+    setGmailInput(getGmail(u));
+    setUserTitle(getTitleLS(u));
+    setFriends(getFriends(u));
+    getUserCode(u); // ensure code generated
+  },[]);
+
+  // -- Online ping --
+  useEffect(()=>{
+    if(!username)return;
+    pingOnline(username);
+    pingIntervalRef.current=setInterval(()=>pingOnline(usernameRef.current),30000);
+    return()=>clearInterval(pingIntervalRef.current);
+  },[username]);
+
+  // -- Reveal SFX --
+  useEffect(()=>{
+    if(revealed&&pendingSfxRef.current!==null&&sfxOnRef.current){
+      playSfx(pendingSfxRef.current?'correct':'wrong');
+      pendingSfxRef.current=null;
+    }
+  },[revealed]);
+
+  // -- Gold award on result --
+  useEffect(()=>{
+    if(screen!=="result")return;
+    const lb=getLB();
+    const myRank=lb.findIndex(p=>p.isMe);
+    const rankGold=[100,50,25][myRank]||0;
+    if(rankGold>0){
+      if(sfxOnRef.current)playSfx('earn');
+      setGold(g=>{const ng=g+rankGold;saveGoldLS(usernameRef.current,ng);return ng;});
+      setGoldEarned(rankGold);
+    }
+    // XP from correct answers
+    const correctCount=answers.filter(a=>a.sel===a.a).length;
+    if(correctCount>0) addXP(correctCount*5);
+    // Update stats
+    const ns=getStats(usernameRef.current);
+    ns.games=(ns.games||0)+1;
+    ns.correct=(ns.correct||0)+correctCount;
+    if(myRank===0&&mode==='multi') ns.wins=(ns.wins||0)+1;
+    // Category stats
+    const catMap={bilim:'sci_correct',spor:'sport_correct',coğrafya:'geo_correct',tarih:'hist_correct',sanat:'art_correct'};
+    if(catMap[categoryRef.current]) ns[catMap[categoryRef.current]]=(ns[catMap[categoryRef.current]]||0)+correctCount;
+    setStats(ns);
+    saveStatsLS(usernameRef.current,ns);
+    checkMissions(ns,calcLevelInfo(getTotalXP(usernameRef.current)).level);
+    // Daily
+    triggerDaily('gameComplete');
+    if(correctCount>0) triggerDaily('firstCorrect');
+  },[screen]);
+
+  // -- Music --
+  useEffect(()=>{
+    if(screen==="game"&&!musicStarted){setMusicStarted(true);if(musicOn)playMusic(0);}
+    if((screen==="result"||screen==="home"||screen==="auth")&&musicStarted){stopMusic();setMusicStarted(false);}
+  },[screen]);
+
+  // -- Shuffle --
+  useEffect(()=>{
+    if(!questions[qIdx])return;
+    const seed=usernameRef.current+String(qIdx);
+    const sh=seededShuffle(questions[qIdx].o,seed);
+    setShuffled(sh);
+    if(pwElim){
+      const wrong=sh.map((it,di)=>({di,i:it.i})).filter(x=>x.i!==questions[qIdx].a);
+      setEliminated(wrong.slice(0,2).map(x=>x.di));
+    } else setEliminated([]);
+  },[qIdx,questions]);
+
+  // -- addXP --
+  const addXP=useCallback((amount)=>{
+    const u=usernameRef.current;if(!u)return;
+    const oldXP=getTotalXP(u);
+    const newXP=oldXP+amount;
+    setTotalXP(newXP);
+    saveTotalXP(u,newXP);
+    const oldLI=calcLevelInfo(oldXP);
+    const newLI=calcLevelInfo(newXP);
+    setLevelInfo(newLI);
+    const queue=[];
+    for(let lv=oldLI.level+1;lv<=newLI.level;lv++){
+      const rewards=getLevelRewards(lv);
+      queue.push({newLevel:lv,rewards});
+      let g2=0;
+      const np={...getPowers(u)};
+      rewards.forEach(r=>{
+        if(r.type==='gold'){g2+=r.amount;}
+        if(r.type==='power'){np[r.pw]=(np[r.pw]||0)+1;}
+      });
+      if(g2>0){setGold(g=>{const ng=g+g2;saveGoldLS(u,ng);return ng;});}
+      if(Object.values(np).some(v=>v>0)){setPowers(np);savePowersLS(u,np);}
+    }
+    if(queue.length>0)setLevelUpQueue(q=>[...q,...queue]);
+  },[]);
+
+  // -- checkMissions --
+  const checkMissions=useCallback((ns,currentLevel)=>{
+    const u=usernameRef.current;
+    const ms=getMissions(u);
+    let changed=false;
+    MISSIONS_DEF.forEach(md=>{
+      if(ms[md.id]==='done')return;
+      const val=md.stat==='level'?currentLevel:(ns[md.stat]||0);
+      if(val>=md.target){
+        ms[md.id]='done';changed=true;
+        addXP(md.xp);
+        setGold(g=>{const ng=g+md.gold;saveGoldLS(u,ng);return ng;});
+        if(md.title_reward){setUserTitle(md.title_reward);saveTitleLS(u,md.title_reward);}
+      }
+    });
+    if(changed){setMissions({...ms});saveMissionsLS(u,ms);}
+  },[addXP]);
+
+  // -- triggerDaily --
+  const triggerDaily=useCallback((event)=>{
+    const u=usernameRef.current;if(!u)return;
+    const dd=getDailyData(u);
+    const def=DAILY_DEF.find(d=>d.event===event);
+    if(!def||dd.done[def.id])return;
+    const newDone={...dd.done,[def.id]:true};
+    const newPts=(dd.pts||0)+def.pts;
+    const shouldChest=newPts>=20&&!dd.chestClaimed;
+    const newDD={done:newDone,pts:newPts,chestClaimed:dd.chestClaimed||shouldChest};
+    setDailyData(newDD);
+    saveDailyDataLS(u,newDD);
+    if(shouldChest){
+      setChestModal(true);
+      setGold(g=>{const ng=g+100;saveGoldLS(u,ng);return ng;});
+    }
+  },[]);
+
+  // -- AUTH --
   const handleAuth=useCallback(()=>{
     const u=fUser.trim(),p=fPass.trim();
     setFErr("");
@@ -1786,6 +2241,8 @@ function App(){
     try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(()=>{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);});}else{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}}catch(e){fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}
   };
     try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(fb);}else{fb();setCopied(true);setTimeout(()=>setCopied(false),2500);}}catch(e){fb();setCopied(true);setTimeout(()=>setCopied(false),2500);}
+  };
+  const sortedLive=Object.entries(liveScores).sort((a,b)=>b[1]-a[1]);
   const rankBG=i=>RANK_BG[i]||"#1e1e4a";
   const getLB=()=>{
     if(mode==="solo")return[{name:username,score,correct:answers.filter(a=>a.sel===a.a).length,isMe:true}];
@@ -1925,7 +2382,7 @@ function App(){
           <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#0d1a30,#1a0820)",border:"2px solid #ff4d6d",cursor:"pointer"}}>
             <div style={{fontSize:26,marginBottom:4}}>🏆</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Modu</div>
-            <div style={{fontSize:11,color:"#a8c4e0"}}>2-8 oyuncu eleme sistemi</div>
+            <div style={{fontSize:11,color:"#a8c4e0"}}>2-8 oyuncu eleme</div>
             <div style={{marginTop:5}}><span style={{background:"rgba(255,77,109,.15)",color:"#ff4d6d",border:"1px solid rgba(255,77,109,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>YENI</span></div>
           </div>
           </div>
@@ -1937,28 +2394,22 @@ function App(){
           const lg=allLgs.find(l=>l.id===(ld.league||"bronze"))||allLgs[0];
           const nextLg=allLgs[allLgs.findIndex(l=>l.id===lg.id)+1];
           const pts=ld.weeklyPts||0;
-          const fakeBoard=[{name:username,pts,isMe:true},...["Ali","Ayse","Mehmet","Fatma","Ahmet","Zeynep","Mustafa","Elif"].map((n,i)=>({name:n,pts:Math.max(0,pts+(Math.floor(Math.random()*200)*(i%2?1:-1))),isMe:false}))].sort((a,b)=>b.pts-a.pts).slice(0,10);
-          return(
-            <div>
-              <div style={{background:"linear-gradient(135deg,"+lg.color+"22,"+lg.color+"11)",border:"2px solid "+lg.color,borderRadius:14,padding:14,marginBottom:10,textAlign:"center"}}>
-                <div style={{fontSize:36,marginBottom:2}}>{lg.icon}</div>
-                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:lg.color}}>{lg.name} Ligi</div>
-                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:28,fontWeight:700,color:"#fff",margin:"3px 0"}}>{pts.toLocaleString()} <span style={{fontSize:11,color:"#a8c4e0"}}>puan</span></div>
-                {nextLg&&<><div style={{fontSize:10,color:"#a8c4e0",marginTop:4}}>{nextLg.icon} {nextLg.name} icin <b style={{color:"#06d6a0"}}>{Math.max(0,nextLg.minPts-pts)} puan</b> daha</div>
-                <div style={{height:4,background:"rgba(255,255,255,.1)",borderRadius:2,marginTop:5,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:Math.min(100,(pts-lg.minPts)/((nextLg.minPts||9999)-lg.minPts)*100)+"%",background:lg.color,borderRadius:2}}/>
-                </div></>}
-              </div>
-              <div style={{fontSize:11,fontWeight:700,color:"#a8c4e0",marginBottom:7}}>Bu Haftaki Siralama</div>
-              {fakeBoard.map((p,i)=>(
-                <div key={i} style={{background:p.isMe?"rgba(76,201,240,.08)":"#0f2040",border:p.isMe?"2px solid #4cc9f0":"1.5px solid #1e3a6e",borderRadius:10,padding:"8px 11px",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
-                  <div style={{width:24,height:24,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#162848",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:i<3?"#060e1e":"#a8c4e0",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
-                  <div style={{flex:1,fontWeight:700,color:p.isMe?"#4cc9f0":"#fff",fontSize:12}}>{p.isMe?"Sen":p.name}</div>
-                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,fontWeight:700,color:lg.color}}>{p.pts.toLocaleString()}</div>
-                </div>
-              ))}
+          const bd=[{name:username,pts,isMe:true},...["Ali","Ayse","Mehmet","Fatma","Ahmet","Zeynep","Mustafa"].map((n,i)=>({name:n,pts:Math.max(0,pts+Math.floor(Math.random()*200)*(i%2?1:-1)),isMe:false}))].sort((a,b)=>b.pts-a.pts).slice(0,8);
+          return(<div>
+            <div style={{background:"linear-gradient(135deg,"+lg.color+"22,"+lg.color+"11)",border:"2px solid "+lg.color,borderRadius:14,padding:14,marginBottom:10,textAlign:"center"}}>
+              <div style={{fontSize:36,marginBottom:2}}>{lg.icon}</div>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:lg.color}}>{lg.name} Ligi</div>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:28,fontWeight:700,color:"#fff",margin:"3px 0"}}>{pts.toLocaleString()} <span style={{fontSize:11,color:"#a8c4e0"}}>puan</span></div>
+              {nextLg&&<div style={{fontSize:10,color:"#a8c4e0",marginTop:4}}>{nextLg.icon} {nextLg.name} icin <b style={{color:"#06d6a0"}}>{Math.max(0,nextLg.minPts-pts)}</b> puan daha</div>}
             </div>
-          );
+            {bd.map((p,i)=>(
+              <div key={i} style={{background:p.isMe?"rgba(76,201,240,.08)":"#0f2040",border:p.isMe?"2px solid #4cc9f0":"1.5px solid #1e3a6e",borderRadius:10,padding:"8px 11px",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:24,height:24,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#162848",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:i<3?"#060e1e":"#a8c4e0",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+                <div style={{flex:1,fontWeight:700,color:p.isMe?"#4cc9f0":"#fff",fontSize:12}}>{p.isMe?"Sen":p.name}</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,fontWeight:700,color:lg.color}}>{p.pts.toLocaleString()}</div>
+              </div>
+            ))}
+          </div>);
         })()}
 
         {homeTab==="friends"&&<>
@@ -1991,35 +2442,17 @@ function App(){
 
         {homeTab==="stats"&&(()=>{
           const st=(typeof getDetailedStats!=="undefined")?getDetailedStats(username):{};
-          const history=(typeof getWeeklyHistory!=="undefined")?getWeeklyHistory(username):[];
-          const last7=[];
-          for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split("T")[0];const dd=history.filter(h=>h.d===k);last7.push({day:["Pz","Pt","Sa","Ca","Pe","Cu","Ct"][d.getDay()],pts:dd.reduce((s,h)=>s+(h.pts||0),0)});}
-          const maxP=Math.max(...last7.map(d=>d.pts),1);
-          const acc=st.games>0?Math.round((st.correct||0)/Math.max((st.games||0)*7,1)*100):0;
-          return(
-            <div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,marginBottom:12}}>
-                {[{v:st.games||0,l:"Oyun",i:"🎮",c:"#4cc9f0"},{v:st.correct||0,l:"Dogru",i:"✅",c:"#06d6a0"},{v:"%"+acc,l:"Isabet",i:"🎯",c:"#ffd166"},{v:st.wins||0,l:"Galibiyet",i:"👑",c:"#9b5de5"},{v:(leagueData&&leagueData.weeklyPts)||0,l:"Haftalik",i:"🏆",c:"#ff4d6d"},{v:0,l:"Davet",i:"👥",c:"#06d6a0"}].map((s,i)=>(
-                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+s.c+"44",borderRadius:10,padding:"9px 5px",textAlign:"center"}}>
-                    <div style={{fontSize:14}}>{s.i}</div>
-                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:s.c}}>{s.v}</div>
-                    <div style={{fontSize:9,color:"#a8c4e0"}}>{s.l}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:12,padding:12,marginBottom:10}}>
-                <div style={{fontSize:11,fontWeight:700,color:"#a8c4e0",marginBottom:8}}>Son 7 Gun</div>
-                <div style={{display:"flex",gap:3,alignItems:"flex-end",height:55}}>
-                  {last7.map((d,i)=>(
-                    <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
-                      <div style={{width:"100%",borderRadius:"2px 2px 0 0",background:d.pts>0?"linear-gradient(180deg,#4cc9f0,#9b5de5)":"#162848",height:Math.max(2,d.pts/maxP*48)+"px"}}/>
-                      <div style={{fontSize:8,color:d.pts>0?"#a8c4e0":"#2a4060",fontWeight:700}}>{d.day}</div>
-                    </div>
-                  ))}
+          return(<div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,marginBottom:12}}>
+              {[{v:st.games||0,l:"Oyun",i:"🎮",c:"#4cc9f0"},{v:st.correct||0,l:"Dogru",i:"✅",c:"#06d6a0"},{v:"%"+(st.games>0?Math.round((st.correct||0)/Math.max((st.games||0)*7,1)*100):0),l:"Isabet",i:"🎯",c:"#ffd166"},{v:st.wins||0,l:"Galibiyet",i:"👑",c:"#9b5de5"},{v:(leagueData&&leagueData.weeklyPts)||0,l:"Haftalik",i:"🏆",c:"#ff4d6d"},{v:0,l:"Davet",i:"👥",c:"#06d6a0"}].map((s,i)=>(
+                <div key={i} style={{background:"#0f2040",border:"1.5px solid "+s.c+"44",borderRadius:10,padding:"9px 5px",textAlign:"center"}}>
+                  <div style={{fontSize:14}}>{s.i}</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:s.c}}>{s.v}</div>
+                  <div style={{fontSize:9,color:"#a8c4e0"}}>{s.l}</div>
                 </div>
-              </div>
+              ))}
             </div>
-          );
+          </div>);
         })()}
 
         {homeTab==="missions"&&<>
@@ -2150,8 +2583,7 @@ function App(){
                 <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)"}} onClick={()=>{
                   const pl=tournamentData.players.length?tournamentData.players:[username];
                   if(pl.length<2){alert("En az 2 oyuncu!");return;}
-                  const sh=[...pl].sort(()=>Math.random()-.5);
-                  const br=[];
+                  const sh=[...pl].sort(()=>Math.random()-.5);const br=[];
                   for(let i=0;i<sh.length;i+=2){if(i+1<sh.length)br.push({p1:sh[i],p2:sh[i+1],winner:null});else br.push({p1:sh[i],p2:"BYE",winner:sh[i]});}
                   setTournamentData({players:pl,started:true,bracket:br,round:1});
                 }}>Turnuvayi Basla</button>
@@ -2169,11 +2601,7 @@ function App(){
                     {!m.winner&&m.p2!=="BYE"&&<div style={{display:"flex",gap:5}}>
                       {[m.p1,m.p2].map(w=><button key={w} onClick={()=>{
                         const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);
-                        if(nb.every(bm=>bm.winner)){
-                          const ws=nb.map(bm=>bm.winner);
-                          if(ws.length===1){alert("Sampiyon: "+ws[0]+"!");setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}
-                          else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}
-                        } else setTournamentData(d=>({...d,bracket:nb}));
+                        if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){alert("Sampiyon: "+ws[0]+"!");setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));
                       }} style={{flex:1,background:"rgba(6,214,160,.08)",border:"1.5px solid #06d6a0",borderRadius:8,padding:"6px",color:"#06d6a0",fontWeight:800,cursor:"pointer",fontSize:11}}>{w} Kazandi</button>)}
                     </div>}
                     {m.winner&&<div style={{textAlign:"center",color:"#06d6a0",fontWeight:700,fontSize:11}}>Kazanan: {m.winner}</div>}
@@ -2261,7 +2689,7 @@ function App(){
       {mode==="solo"?(
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
-        <><button className="pbtn" style={{marginTop:4}} onClick={createRoom}>Oda Olustur</button>
+        <><button className="pbtn" style={{marginTop:4}} onClick={()=>{createRoom();if(typeof fbSaveRoomCode!=="undefined"){}}} >Oda Olustur</button>
         <div style={{textAlign:"center",fontSize:12,color:"#a8c4e0",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
         <div style={{display:"flex",gap:8}}>
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
@@ -2275,13 +2703,10 @@ function App(){
             maxLength={6} inputMode="numeric"/>
           <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={async()=>{
             if(joinCodeInput.length!==6){setJoinCodeErr("6 haneli kod girin");return;}
-            setJoinCodeErr("Baglaniliyor...");
             let pid=getRoomPeerId(joinCodeInput);
-            if(!pid&&typeof fbGetRoomPeerId!=="undefined"){
-              try{pid=await fbGetRoomPeerId(joinCodeInput);}catch(e){}
-            }
+            if(!pid&&typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
             if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
-            else setJoinCodeErr("Kod gecersiz veya suresi dolmus.");
+            else setJoinCodeErr("Kod gecersiz veya süresi dolmus.");
           }}>Katil</button>
         </div>
         {joinCodeErr&&<div style={{fontSize:11,color:"#ff4d6d",marginTop:4,textAlign:"center"}}>{joinCodeErr}</div>}</>
