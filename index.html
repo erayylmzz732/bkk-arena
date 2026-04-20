@@ -2731,7 +2731,7 @@ function App(){
       {mode==="solo"?(
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
-        <><button className="pbtn" style={{marginTop:4}} onClick={()=>{createRoom();if(typeof fbSaveRoomCode!=="undefined"){}}} >Oda Olustur</button>
+        <><button className="pbtn" style={{marginTop:4}} onClick={createRoom}>Oda Olustur</button>
         <div style={{textAlign:"center",fontSize:12,color:"#a8c4e0",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
         <div style={{display:"flex",gap:8}}>
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
@@ -2745,10 +2745,13 @@ function App(){
             maxLength={6} inputMode="numeric"/>
           <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={async()=>{
             if(joinCodeInput.length!==6){setJoinCodeErr("6 haneli kod girin");return;}
+            setJoinCodeErr("Baglaniliyor...");
             let pid=getRoomPeerId(joinCodeInput);
-            if(!pid&&typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
+            if(!pid&&typeof fbGetRoomPeerId!=="undefined"){
+              try{pid=await fbGetRoomPeerId(joinCodeInput);}catch(e){}
+            }
             if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
-            else setJoinCodeErr("Kod gecersiz veya süresi dolmus.");
+            else setJoinCodeErr("Kod gecersiz veya suresi dolmus.");
           }}>Katil</button>
         </div>
         {joinCodeErr&&<div style={{fontSize:11,color:"#ff4d6d",marginTop:4,textAlign:"center"}}>{joinCodeErr}</div>}</>
