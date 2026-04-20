@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<!-- BKK-ARENA v10 BUILD: OK -->
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bilgi Arena: Kim Kazanacak?">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#060e1e">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Bilgi Arena: Kim Kazanacak?</title>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-app-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-firestore-compat.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#060e1e}
+.app{min-height:100vh;background:linear-gradient(160deg,#0a1628 0%,#060e1e 60%,#0d0a20 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
+.phone{width:390px;min-height:840px;background:#0a1628;border-radius:38px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(76,201,240,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
+.sc::-webkit-scrollbar{width:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ping{0%{transform:scale(1);opacity:1}75%,100%{transform:scale(1.6);opacity:0}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.fi{animation:fadeUp .25s ease both}
+.logo{text-align:center;padding:32px 0 24px}
+.logo h1{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#4cc9f0 0%,#9b5de5 60%,#c084fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo p{font-size:12px;color:#a8c4e0;margin-top:5px;letter-spacing:1px;text-transform:uppercase}
+.tabs{display:flex;background:#0f2040;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
+.tb{flex:1;padding:10px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;transition:all .2s}
+.tb.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5);color:#0a0a1f}
+.tb.off{background:transparent;color:#a8c4e0}
+.inp{width:100%;padding:13px 15px;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;margin-bottom:10px;outline:none;transition:border-color .2s,box-shadow .2s}
+.inp:focus{border-color:#4cc9f0;box-shadow:0 0 0 3px rgba(76,201,240,.1)}
+.inp::placeholder{color:#4a6080}
+.inp.err{border-color:#ff4d6d}
+.errmsg{font-size:12px;color:#ff4d6d;margin:-6px 0 8px 4px}
+.pbtn{width:100%;padding:14px;background:linear-gradient(135deg,#4cc9f0,#9b5de5);border:none;border-radius:14px;color:#0a0a1f;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .2s}
+.pbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(76,201,240,.28)}
+.pbtn:active{transform:translateY(0)}
+.pbtn:disabled{opacity:.5;cursor:default;transform:none}
+.sbtn{width:100%;padding:12px;background:transparent;border:1.5px solid #1e3a6e;border-radius:14px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.sbtn:hover{border-color:#4cc9f0;background:rgba(76,201,240,.04)}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4cc9f0,#9b5de5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.av{width:37px;height:37px;background:linear-gradient(135deg,#4cc9f0,#9b5de5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0a0a1f}
+.mc{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
+.mc:hover{border-color:#4cc9f0;transform:translateY(-2px);box-shadow:0 8px 32px rgba(76,201,240,.1)}
+.stitle{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700;color:#e2e4f0}
+.bk{background:transparent;border:none;color:#a8c4e0;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
+.bk:hover{color:#4cc9f0}
+.shdr{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.cc{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s}
+.cc.sel{border-color:#4cc9f0;background:rgba(76,201,240,.05);box-shadow:0 0 20px rgba(76,201,240,.08)}
+.cc:hover:not(.sel){border-color:#4cc9f0;opacity:.9}
+.cn{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:#4cc9f0;min-width:48px}
+.gh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.qcnt{font-size:13px;color:#a8c4e0}
+.qcnt span{color:#4cc9f0;font-weight:700}
+.scdisp{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#ffd166}
+.pb{height:5px;background:#1e3a6e;border-radius:2px;margin-bottom:18px;overflow:hidden}
+.pbi{height:100%;background:linear-gradient(90deg,#4cc9f0,#9b5de5);border-radius:2px;transition:width .4s ease}
+.qcard{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:18px;padding:18px;margin-bottom:14px}
+.qt{font-size:16px;font-weight:700;color:#e2e4f0;line-height:1.6}
+.tc{display:flex;justify-content:center;margin-bottom:14px}
+.ob{width:100%;padding:12px 14px;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s}
+.ob:hover:not(:disabled){border-color:#4cc9f066;background:rgba(76,201,240,.03)}
+.ob:disabled{cursor:default}
+.ob.ok{border-color:#06d6a0;background:rgba(6,214,160,.09);color:#06d6a0}
+.ob.ng{border-color:#ff4d6d;background:rgba(255,77,109,.09);color:#ff4d6d}
+.ob.dm{opacity:.35;border-color:#1e1e4a}
+.ol{width:26px;height:26px;background:#1e1e4a;border-radius:7px;display:"flex";align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;flex-shrink:0}
+.ok .ol{background:rgba(6,214,160,.2);color:#06d6a0}
+.ng .ol{background:rgba(255,77,109,.2);color:#ff4d6d}
+.fdb{text-align:center;padding:10px 14px;border-radius:12px;font-weight:700;font-size:14px;margin-top:4px}
+.lbpanel{background:#0a1628;border:1.5px solid #1e3a6e;border-radius:14px;padding:11px 12px;margin-top:10px}
+.lbptitle{font-size:10px;color:#a8c4e0;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.lbprow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
+.lbprow::-webkit-scrollbar{height:0}
+.plchip{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:7px 6px;border-radius:10px}
+.plchip.me{background:rgba(76,201,240,.1);border:1px solid rgba(76,201,240,.2)}
+.plchip.other{background:#0f2040;border:1px solid transparent}
+.plavc{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0a0a1f;margin-bottom:3px;position:relative}
+.rh{text-align:center;padding:24px 0 16px}
+.re{font-size:58px;margin-bottom:8px}
+.rs{font-family:'Rajdhani',sans-serif;font-size:54px;font-weight:700;color:#ffd166;text-shadow:0 0 28px rgba(255,209,102,.3)}
+.rsl{font-size:12px;color:#a8c4e0;margin-top:2px}
+.rstats{display:flex;gap:9px;margin:14px 0}
+.scard{flex:1;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;padding:12px 8px;text-align:center}
+.sv{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700}
+.sl{font-size:11px;color:#a8c4e0;margin-top:1px}
+.lblist{margin:12px 0 16px}
+.lbtit{font-size:11px;color:#a8c4e0;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
+.lbrow{display:flex;align-items:center;gap:10px;padding:9px 13px;background:#0f2040;border-radius:10px;margin-bottom:5px}
+.lbrank{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;width:22px;text-align:center}
+.lbname{flex:1;font-size:14px;font-weight:700}
+.lbscore{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#ffd166}
+.rbtns{display:flex;flex-direction:column;gap:8px}
+.ri{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:13px;padding:14px;margin-bottom:10px}
+.rqn{font-size:10px;color:#a8c4e0;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.rqt{font-size:14px;font-weight:700;color:#e2e4f0;margin-bottom:8px;line-height:1.5}
+.ro{padding:7px 10px;border-radius:8px;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.ro.ca{background:rgba(6,214,160,.1);color:#06d6a0}
+.ro.wa{background:rgba(255,77,109,.1);color:#ff4d6d}
+.ro.na{color:#2a2a52}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700}
+.be{background:rgba(6,214,160,.12);color:#06d6a0}
+.bm{background:rgba(255,209,102,.12);color:#ffd166}
+.spin{width:44px;height:44px;border:3px solid #1e1e4a;border-top-color:#4cc9f0;border-radius:50%;animation:spin .65s linear infinite}
+.lo{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:14px}
+.linkbox{background:linear-gradient(135deg,rgba(76,201,240,.06),rgba(155,93,229,.06));border:1.5px solid rgba(76,201,240,.25);border-radius:18px;padding:18px;margin:14px 0}
+.linktxt{font-size:12px;color:#4cc9f0;word-break:break-all;font-family:monospace;line-height:1.5}
+.copybtn{margin-top:10px;background:rgba(76,201,240,.1);border:1px solid rgba(76,201,240,.2);color:#4cc9f0;padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;transition:all .2s;width:100%}
+.copybtn:hover{background:rgba(76,201,240,.2)}
+.playerlist{background:#0f2040;border-radius:14px;padding:12px}
+.plitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;animation:slideIn .25s ease both}
+.plitem:not(:last-child){border-bottom:1px solid #1a1a40}
+.plavatarsm{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4cc9f0,#9b5de5);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0a0a1f;flex-shrink:0}
+.pingdot{width:8px;height:8px;border-radius:50%;background:#06d6a0;position:relative}
+.pingdot::after{content:'';position:absolute;inset:0;border-radius:50%;background:#06d6a0;animation:ping 1.2s ease-out infinite}
+.statusbar{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#030312;overscroll-behavior:none}
+
+.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.12);color:#c4b5fd}
+.ob.elim{opacity:.15;pointer-events:none;border-color:#1e1e4a;color:#2a2a52}
+.gold-bar{display:flex;align-items:center;gap:5px;background:#1a1a30;border:1.5px solid #ffd166;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;transition:all .2s;user-select:none}
+.pw-row{display:flex;gap:6px;margin-bottom:10px}
+.pw-btn{flex:1;background:#0f2040;border:1.5px solid #1e3a6e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
+.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}
+.pw-btn:disabled{opacity:.3;cursor:default}
+.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.1)}
+.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}
+.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}
+.shop-overlay{position:fixed;inset:0;background:rgba(3,3,18,.9);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.shop-panel{background:#0a1628;border:1.5px solid #1e3a6e;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:88vh;overflow-y:auto}
+.shop-panel::-webkit-scrollbar{width:0}
+.gold-earned{background:rgba(255,209,102,.08);border:1.5px solid rgba(255,209,102,.25);border-radius:14px;padding:14px;text-align:center;margin-bottom:14px}
+.toggle{width:48px;height:26px;border-radius:13px;background:#1e1e4a;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
+.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}
+.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle.on .toggle-knob{left:25px}
+
+.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}
+.ob.elim{opacity:.15;pointer-events:none}
+.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0800);border:1.5px solid #ffd166;box-shadow:0 0 10px rgba(255,209,102,.3);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}
+.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
+.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}.pw-btn:disabled{opacity:.3;cursor:default}
+.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15);box-shadow:0 0 10px rgba(255,209,102,.3)}
+.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}
+.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 18px 34px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}
+.shop-panel::-webkit-scrollbar{width:0}
+.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
+.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}.toggle.on .toggle-knob{left:25px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>const FIREBASE_CONFIG={apiKey:"AIzaSyBO3HaX0rI37mUEwEWVu3soTW2GkAenZNo",authDomain:"bilgiarena-new.firebaseapp.com",projectId:"bilgiarena-new",storageBucket:"bilgiarena-new.firebasestorage.app",messagingSenderId:"1066315851875",appId:"1:1066315851875:web:7ddebd56fdccd04b41b056"};
+// ═══════════════════════════════════════════════════════
+// BİLGİ ARENA — FİREBASE BACKEND
+// ═══════════════════════════════════════════════════════
+// 
+// KURULUM (5 dakika):
+// 1. https://console.firebase.google.com → Proje oluştur
+// 2. Authentication → Email/Şifre aktif et
+// 3. Firestore Database → Üretim modunda oluştur
+// 4. Proje Ayarları → Web uygulaması ekle → Config kopyala
+// 5. Aşağıdaki FIREBASE_CONFIG bloğuna yapıştır
+// ═══════════════════════════════════════════════════════
+
+// ── Firebase başlat ──
+let _fbApp=null, _fbAuth=null, _fbDB=null, _fbReady=false;
+function initFirebase(){
+  if(_fbReady) return true;
+  if(typeof firebase==='undefined') return false;
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    _fbApp=firebase.app();
+    _fbAuth=firebase.auth();
+    _fbDB=firebase.firestore();
+    _fbReady=true;
+    console.log("✅ Firebase bağlandı");
+    return true;
+  }catch(e){console.warn("Firebase başlatılamadı:",e);return false;}
+}
+
+// ── Firestore helper ──
+function db(){
+  if(!_fbReady&&!initFirebase()) return null;
+  return _fbDB;
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════
+async function fbRegister(email, password, username){
+  if(!initFirebase()) return {ok:false,err:"Firebase bağlantısı yok"};
+  try{
+    // Check username unique
+    const snap=await db().collection("usernames").doc(username).get();
+    if(snap.exists) return {ok:false,err:"Bu kullanıcı adı zaten alınmış"};
+    
+    const cred=await _fbAuth.createUserWithEmailAndPassword(email, password);
+    const uid=cred.user.uid;
+    const code="#"+(100000+Math.floor(Math.random()*900000));
+    const ref=getReferralCodeLocal(username);
+    
+    // Save user data
+    await db().collection("users").doc(uid).set({
+      username, email, uid,
+      gold:1000, xp:0, level:1,
+      avatar:{gender:'m',skinIdx:0,hairStyle:0,hairColorIdx:0,beardStyle:0,beardColorIdx:0,glassStyle:0,glassColorIdx:0},
+      code, referralCode:ref,
+      stats:{correct:0,games:0,wins:0,rooms:0,sci_correct:0,sport_correct:0,geo_correct:0,hist_correct:0,art_correct:0},
+      friends:[], createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // Reserve username
+    await db().collection("usernames").doc(username).set({uid,code});
+    
+    // Cache locally
+    cacheUser(uid,{username,gold:1000,xp:0,code,avatar:getAvatar(username)});
+    return {ok:true, uid, username};
+  }catch(e){
+    const msgs={
+      'auth/email-already-in-use':'Bu e-posta zaten kayıtlı',
+      'auth/weak-password':'Şifre en az 6 karakter olmalı',
+      'auth/invalid-email':'Geçersiz e-posta adresi',
+    };
+    return {ok:false, err:msgs[e.code]||e.message};
+  }
+}
+
+async function fbLogin(email, password){
+  if(!initFirebase()) return {ok:false,err:"Firebase bağlantısı yok"};
+  try{
+    const cred=await _fbAuth.signInWithEmailAndPassword(email, password);
+    const uid=cred.user.uid;
+    const doc=await db().collection("users").doc(uid).get();
+    if(!doc.exists) return {ok:false,err:"Kullanıcı verisi bulunamadı"};
+    const data=doc.data();
+    cacheUser(uid, data);
+    return {ok:true, uid, ...data};
+  }catch(e){
+    const msgs={
+      'auth/user-not-found':'Bu e-posta ile kayıt bulunamadı',
+      'auth/wrong-password':'Şifre hatalı',
+      'auth/invalid-credential':'E-posta veya şifre hatalı',
+      'auth/too-many-requests':'Çok fazla deneme. Biraz bekle.',
+    };
+    return {ok:false, err:msgs[e.code]||'Giriş başarısız'};
+  }
+}
+
+function fbLogout(){
+  if(_fbAuth) _fbAuth.signOut();
+  localStorage.removeItem("ba_fb_uid");
+  localStorage.removeItem("ba_fb_user");
+}
+
+function fbCurrentUser(){
+  return _fbAuth?._fbAuth.currentUser||null;
+}
+
+// ── Local cache ──
+function cacheUser(uid, data){
+  try{
+    localStorage.setItem("ba_fb_uid", uid);
+    localStorage.setItem("ba_fb_user", JSON.stringify({uid,...data}));
+  }catch(e){}
+}
+function getCachedUser(){
+  try{
+    const s=localStorage.getItem("ba_fb_user");
+    return s?JSON.parse(s):null;
+  }catch(e){return null;}
+}
+
+// ═══════════════════════════════════════════════════════
+// USER DATA SYNC
+// ═══════════════════════════════════════════════════════
+async function fbSaveGold(uid, gold){
+  saveGoldLS("__fb__", gold);
+  if(!db()) return;
+  try{await db().collection("users").doc(uid).update({gold});}catch(e){}
+}
+async function fbSaveXP(uid, xp, level){
+  if(!db()) return;
+  try{await db().collection("users").doc(uid).update({xp,level});}catch(e){}
+}
+async function fbSaveAvatar(uid, avatar){
+  if(!db()) return;
+  try{await db().collection("users").doc(uid).update({avatar});}catch(e){}
+}
+async function fbSaveStats(uid, stats){
+  if(!db()) return;
+  try{await db().collection("users").doc(uid).update({stats});}catch(e){}
+}
+async function fbSavePowers(uid, powers){
+  if(!db()) return;
+  try{await db().collection("users").doc(uid).update({powers});}catch(e){}
+}
+
+// Get fresh user data
+async function fbGetUser(uid){
+  if(!db()) return getCachedUser();
+  try{
+    const doc=await db().collection("users").doc(uid).get();
+    if(doc.exists){const d={uid,...doc.data()};cacheUser(uid,d);return d;}
+  }catch(e){}
+  return getCachedUser();
+}
+
+// ═══════════════════════════════════════════════════════
+// ROOM CODES (Cross-device!)
+// ═══════════════════════════════════════════════════════
+async function fbSaveRoomCode(code, peerId){
+  // Local (same device/network)
+  saveRoomCode(code, peerId);
+  // Cloud (cross-device)
+  if(!db()) return;
+  try{
+    await db().collection("rooms").doc(code).set({
+      peerId, createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      expiresAt:new Date(Date.now()+2*60*60*1000)
+    });
+  }catch(e){}
+}
+
+async function fbGetRoomPeerId(code){
+  // Try local first (faster)
+  const local=getRoomPeerId(code);
+  if(local) return local;
+  // Try cloud
+  if(!db()) return null;
+  try{
+    const doc=await db().collection("rooms").doc(code).get();
+    if(doc.exists){
+      const d=doc.data();
+      if(d.expiresAt?.toDate()>new Date()) return d.peerId;
+    }
+  }catch(e){}
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════
+// FRIENDS (Cross-device!)
+// ═══════════════════════════════════════════════════════
+async function fbAddFriend(uid, friendUid, friendUsername){
+  if(!db()) return false;
+  try{
+    await db().collection("users").doc(uid).update({
+      friends: firebase.firestore.FieldValue.arrayUnion({uid:friendUid,username:friendUsername})
+    });
+    return true;
+  }catch(e){return false;}
+}
+
+async function fbGetFriends(uid){
+  if(!db()) return [];
+  try{
+    const doc=await db().collection("users").doc(uid).get();
+    return doc.exists?(doc.data().friends||[]):[];
+  }catch(e){return [];}
+}
+
+async function fbSearchByCode(code){
+  if(!db()) return null;
+  try{
+    const snap=await db().collection("usernames").where("code","==",code).limit(1).get();
+    if(!snap.empty){const d=snap.docs[0].data();return {uid:d.uid,username:snap.docs[0].id,code};}
+  }catch(e){}
+  return null;
+}
+
+async function fbSearchByUsername(username){
+  if(!db()) return null;
+  try{
+    const doc=await db().collection("usernames").doc(username).get();
+    if(doc.exists){return {uid:doc.data().uid,username,code:doc.data().code};}
+  }catch(e){}
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════
+// LEAGUE (Real leaderboard!)
+// ═══════════════════════════════════════════════════════
+async function fbAddLeaguePts(uid, username, league, pts){
+  if(!db()) return;
+  const weekKey=getWeekKey();
+  try{
+    const ref=db().collection("leagues").doc(weekKey).collection("scores").doc(uid);
+    const doc=await ref.get();
+    const cur=doc.exists?doc.data():{username,pts:0,league,uid};
+    const newPts=(cur.pts||0)+pts;
+    const newLeague=getNewLeague(newPts);
+    await ref.set({username,pts:newPts,league:newLeague,uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  }catch(e){}
+}
+
+async function fbGetLeagueBoard(leagueId, uid){
+  if(!db()) return null;
+  const weekKey=getWeekKey();
+  try{
+    const snap=await db().collection("leagues").doc(weekKey).collection("scores")
+      .where("league","==",leagueId).orderBy("pts","desc").limit(20).get();
+    return snap.docs.map(d=>({...d.data(),isMe:d.id===uid}));
+  }catch(e){return null;}
+}
+
+function getNewLeague(pts){
+  for(let i=LEAGUES.length-1;i>=0;i--){if(pts>=LEAGUES[i].minPts)return LEAGUES[i].id;}
+  return 'bronze';
+}
+
+// ═══════════════════════════════════════════════════════
+// REFERRAL (Real cross-device!)
+// ═══════════════════════════════════════════════════════
+function getReferralCodeLocal(username){
+  return 'REF'+Math.random().toString(36).substr(2,6).toUpperCase();
+}
+
+async function fbApplyReferral(uid, username, refCode){
+  if(!db()) return {ok:false,msg:"Firebase bağlantısı yok"};
+  try{
+    // Check already used
+    const userDoc=await db().collection("users").doc(uid).get();
+    if(userDoc.data()?.referralUsed) return {ok:false,msg:"Davet kodunu zaten kullandınız"};
+    // Find referrer
+    const snap=await db().collection("users").where("referralCode","==",refCode).limit(1).get();
+    if(snap.empty) return {ok:false,msg:"Geçersiz davet kodu"};
+    const referrerDoc=snap.docs[0];
+    if(referrerDoc.id===uid) return {ok:false,msg:"Kendi kodunuzu kullanamazsınız"};
+    // Apply rewards
+    const batch=db().batch();
+    batch.update(db().collection("users").doc(uid),{
+      gold:firebase.firestore.FieldValue.increment(200), referralUsed:refCode
+    });
+    batch.update(db().collection("users").doc(referrerDoc.id),{
+      gold:firebase.firestore.FieldValue.increment(100),
+      referralCount:firebase.firestore.FieldValue.increment(1)
+    });
+    await batch.commit();
+    return {ok:true,msg:"Davet kodu uygulandı! +200 🪙 kazandın!"};
+  }catch(e){return {ok:false,msg:"Hata: "+e.message};}
+}
+
+// ═══════════════════════════════════════════════════════
+// ONLINE STATUS
+// ═══════════════════════════════════════════════════════
+async function fbSetOnline(uid){
+  if(!db()) return;
+  try{
+    await db().collection("online").doc(uid).set({
+      ts:firebase.firestore.FieldValue.serverTimestamp(),at:Date.now()
+    });
+  }catch(e){}
+}
+async function fbIsOnline(uid){
+  if(!db()) return isOnline(uid); // fallback to localStorage
+  try{
+    const doc=await db().collection("online").doc(uid).get();
+    if(doc.exists) return(Date.now()-doc.data().at)<120000;
+  }catch(e){}
+  return false;
+}
+</script>
+<script>/* ═══ GLOBAL DATA (plain JS, no Babel) ═══ */
+"use strict";
+
+// ── Questions by category ──
+const ALL_QS={
+karışık:[
+{q:"Türkiye'nin başkenti hangi şehirdir?",o:["İstanbul","Ankara","İzmir","Bursa"],a:1},
+{q:"Güneş sistemimizde kaç gezegen vardır?",o:["7","8","9","10"],a:1},
+{q:"Pi sayısının yaklaşık değeri nedir?",o:["3.14","2.71","1.61","1.73"],a:0},
+{q:"Osmanlı İmparatorluğu hangi yılda kurulmuştur?",o:["1071","1299","1453","1517"],a:1},
+{q:"2022 FIFA Dünya Kupası'nı hangi ülke kazandı?",o:["Brezilya","Fransa","Arjantin","Portekiz"],a:2},
+{q:"DNA'nın açılımı nedir?",o:["Deoksiribonükleik Asit","Dinamik Nükleer Ajan","Direk Nükleotid Asit","Dinamik Nükleik Asit"],a:0},
+{q:"Mona Lisa tablosunu kim yapmıştır?",o:["Michelangelo","Raphael","Leonardo da Vinci","Botticelli"],a:2},
+{q:"İlk iPhone hangi yılda tanıtıldı?",o:["2005","2006","2007","2008"],a:2},
+{q:"Türkiye'de kaç il bulunmaktadır?",o:["73","79","81","83"],a:2},
+{q:"Hangi element 'Au' sembolüyle gösterilir?",o:["Gümüş","Bakır","Altın","Alüminyum"],a:2},
+{q:"Bir dairenin alanı formülü nedir?",o:["2πr","πr²","πd","2πd"],a:1},
+{q:"Türkiye Cumhuriyeti hangi yılda kurulmuştur?",o:["1919","1921","1923","1925"],a:2},
+{q:"Mozart kaç yaşında hayata gözlerini yummuştur?",o:["25","31","35","42"],a:2},
+{q:"Dünyanın en büyük deniz canlısı hangisidir?",o:["Büyük Beyaz Köpekbalığı","Mavi Balina","Dev Kalamar","Fok"],a:1},
+{q:"Hangi gezegen 'Kızıl Gezegen' olarak bilinir?",o:["Jüpiter","Satürn","Mars","Neptün"],a:2},
+{q:"'Anna Karenina' kitabının yazarı kimdir?",o:["Dostoyevski","Çehov","Tolstoy","Turgenyev"],a:2},
+{q:"HTML'nin açılımı nedir?",o:["Hyperlink Text Markup Language","HyperText Markup Language","High Text Modular Language","HyperTransfer Markup Language"],a:1},
+{q:"Hangi organ insülin üretir?",o:["Karaciğer","Böbrek","Pankreas","Tiroid"],a:2},
+{q:"Van Gogh'un en ünlü tablosu nedir?",o:["Mona Lisa","Yıldızlı Gece","Son Akşam Yemeği","Guernica"],a:1},
+{q:"Lozan Antlaşması hangi yılda imzalanmıştır?",o:["1920","1921","1923","1924"],a:2},
+{q:"Hangi uygarlık çivi yazısını icat etmiştir?",o:["Mısırlılar","Hititler","Sümerler","Babilliler"],a:2},
+{q:"Linux işletim sistemini kim geliştirmiştir?",o:["Bill Gates","Steve Jobs","Linus Torvalds","Dennis Ritchie"],a:2},
+{q:"Türkiye'nin en yüksek dağı hangisidir?",o:["Süphan Dağı","Erciyes","Ağrı Dağı","Kaçkar"],a:2},
+{q:"E=mc² formülünü kim ortaya koymuştur?",o:["Newton","Tesla","Einstein","Bohr"],a:2},
+{q:"Operade en yüksek erkek ses tonu hangisidir?",o:["Bariton","Bas","Tenor","Kontrbas"],a:2},
+],
+coğrafya:[
+{q:"Dünya'nın en büyük okyanusu hangisidir?",o:["Atlantik","Hint","Arktik","Pasifik"],a:3},
+{q:"Japonya'nın en yüksek dağı hangisidir?",o:["Asahi","Fuji","Shirouma","Hotaka"],a:1},
+{q:"Afrika'nın en büyük ülkesi hangisidir?",o:["Sudan","Etiyopya","Cezayir","Kongo"],a:2},
+{q:"Hangi nehir Kahire'den geçer?",o:["Kongo","Zambezi","Nil","Niger"],a:2},
+{q:"Dünya'nın en uzun nehri hangisidir?",o:["Amazon","Nil","Yangtze","Mississippi"],a:1},
+{q:"Dünya'nın en yüksek dağı hangisidir?",o:["K2","Kangchenjunga","Everest","Lhotse"],a:2},
+{q:"Türkiye'nin en uzun nehri hangisidir?",o:["Fırat","Dicle","Kızılırmak","Sakarya"],a:2},
+{q:"Türkiye'nin en büyük gölü hangisidir?",o:["Beyşehir","Eğirdir","Tuz Gölü","Van Gölü"],a:3},
+{q:"Avrupa'nın en uzun nehri hangisidir?",o:["Ren","Tuna","Volga","Elbe"],a:2},
+{q:"Dünya'nın en derin gölü hangisidir?",o:["Hazar Denizi","Superior Gölü","Baykal Gölü","Victoria Gölü"],a:2},
+{q:"Hangi ülke hem Asya'da hem Avrupa'da yer alır?",o:["Mısır","İran","Türkiye","Irak"],a:2},
+{q:"Panama Kanalı hangi iki okyanusu birbirine bağlar?",o:["Hint-Pasifik","Atlantik-Pasifik","Atlantik-Hint","Kuzey-Güney"],a:1},
+{q:"İspanya'nın başkenti neresidir?",o:["Barselona","Sevilla","Valencia","Madrid"],a:3},
+{q:"Yunanistan'ın başkenti neresidir?",o:["Selanik","Atina","Girit","Patras"],a:1},
+{q:"Türkiye'nin en batısındaki ili hangisidir?",o:["İzmir","Çanakkale","Muğla","Edirne"],a:3},
+{q:"Hangi kıtada Kilimanjaro Dağı bulunur?",o:["Asya","Güney Amerika","Afrika","Avustralya"],a:2},
+{q:"İstanbul Boğazı hangi iki denizi birbirine bağlar?",o:["Akdeniz-Karadeniz","Karadeniz-Marmara","Marmara-Ege","Ege-Akdeniz"],a:1},
+{q:"Türkiye kaç komşu ülkeyle sınır komşusudur?",o:["6","7","8","9"],a:2},
+{q:"Dünyanın en büyük çölü hangisidir?",o:["Gobi","Arabistan","Antarktika","Sahara"],a:2},
+{q:"Nil Nehri hangi denize dökülür?",o:["Kızıldeniz","Hint Okyanusu","Akdeniz","Ege Denizi"],a:2},
+{q:"Kanada'nın başkenti neresidir?",o:["Toronto","Ottawa","Vancouver","Montreal"],a:1},
+{q:"Brezilya'nın başkenti neresidir?",o:["Rio de Janeiro","São Paulo","Brasília","Salvador"],a:2},
+{q:"Avustralya'nın başkenti hangisidir?",o:["Sidney","Melbourne","Canberra","Perth"],a:2},
+{q:"Süveyş Kanalı hangi iki denizi birbirine bağlar?",o:["Atlantik-Hint","Kızıldeniz-Akdeniz","Hint-Pasifik","Karadeniz-Ege"],a:1},
+{q:"Türkiye'nin en büyük barajı hangisidir?",o:["Atatürk Barajı","Keban Barajı","Karakaya Barajı","Birecik Barajı"],a:0},
+],
+tarih:[
+{q:"Osmanlı İmparatorluğu hangi yılda kurulmuştur?",o:["1071","1299","1453","1517"],a:1},
+{q:"Türkiye Cumhuriyeti hangi yılda kurulmuştur?",o:["1919","1921","1923","1925"],a:2},
+{q:"İstanbul hangi yılda fethedilmiştir?",o:["1399","1423","1453","1481"],a:2},
+{q:"Kurtuluş Savaşı hangi yılda başlamıştır?",o:["1918","1919","1920","1921"],a:1},
+{q:"Birinci Dünya Savaşı hangi yılda başlamıştır?",o:["1912","1914","1916","1918"],a:1},
+{q:"İkinci Dünya Savaşı hangi yılda sona ermiştir?",o:["1943","1944","1945","1946"],a:2},
+{q:"Atatürk hangi şehirde doğmuştur?",o:["İstanbul","Ankara","Selanik","Edirne"],a:2},
+{q:"Magna Carta hangi yılda imzalanmıştır?",o:["1015","1115","1215","1315"],a:2},
+{q:"Sovyetler Birliği hangi yılda dağılmıştır?",o:["1989","1990","1991","1992"],a:2},
+{q:"Kristof Kolomb Amerika'ya hangi yılda ulaşmıştır?",o:["1488","1490","1492","1498"],a:2},
+{q:"Osmanlı Devleti'nin kurucusu kimdir?",o:["Ertuğrul Gazi","Osman Gazi","Orhan Gazi","Murat I"],a:1},
+{q:"Lozan Antlaşması hangi yılda imzalanmıştır?",o:["1920","1921","1923","1924"],a:2},
+{q:"Hangi uygarlık çivi yazısını icat etmiştir?",o:["Mısırlılar","Hititler","Sümerler","Babilliler"],a:2},
+{q:"Fransız Devrimi hangi yılda başlamıştır?",o:["1776","1789","1804","1815"],a:1},
+{q:"Selçuklu Devleti hangi yılda kurulmuştur?",o:["1037","1040","1071","1077"],a:1},
+{q:"Atatürk hangi yılda vefat etmiştir?",o:["1936","1937","1938","1939"],a:2},
+{q:"Anadolu Selçuklu Devleti'nin başkenti neresidir?",o:["Bursa","Konya","Sivas","Kayseri"],a:1},
+{q:"Çanakkale Savaşı hangi yılda yaşanmıştır?",o:["1913","1914","1915","1916"],a:2},
+{q:"Büyük Taarruz hangi yılda gerçekleşmiştir?",o:["1919","1920","1921","1922"],a:3},
+{q:"Amerika Birleşik Devletleri hangi yılda bağımsızlığını ilan etmiştir?",o:["1774","1776","1781","1783"],a:1},
+{q:"Osmanlı'nın son padişahı kimdir?",o:["Abdülhamid II","Mehmed V","Mehmed VI","Abdülmecid II"],a:2},
+{q:"Türk-Yunan Nüfus Mübadelesi hangi yılda gerçekleşmiştir?",o:["1920","1923","1925","1928"],a:1},
+{q:"Atatürk Latin alfabesini hangi yılda kabul ettirmiştir?",o:["1924","1926","1928","1930"],a:2},
+{q:"Roma İmparatorluğu'nun başkenti neresidir?",o:["Kartaca","Atina","Roma","İskenderiye"],a:2},
+{q:"Versay Antlaşması hangi savaşı sona erdirmiştir?",o:["Kırım Savaşı","Birinci Dünya Savaşı","İkinci Dünya Savaşı","Napoleon Savaşları"],a:1},
+],
+spor:[
+{q:"2022 FIFA Dünya Kupası'nı hangi ülke kazandı?",o:["Brezilya","Fransa","Arjantin","Portekiz"],a:2},
+{q:"Futbolda bir maçın normal süresi kaç dakikadır?",o:["80","85","90","95"],a:2},
+{q:"Olimpiyat Oyunları kaç yılda bir düzenlenir?",o:["2","3","4","5"],a:2},
+{q:"NBA'in açılımı nedir?",o:["National Baseball Association","National Basketball Association","North Basketball Alliance","National Ball Arena"],a:1},
+{q:"Hangi ülke en fazla FIFA Dünya Kupası kazanmıştır?",o:["Almanya","Arjantin","İtalya","Brezilya"],a:3},
+{q:"Wimbledon hangi ülkede düzenlenir?",o:["Fransa","Avustralya","ABD","İngiltere"],a:3},
+{q:"Basketbolda bir maç NBA'de kaç dakikadır?",o:["36","40","48","60"],a:2},
+{q:"Tour de France hangi sporu kapsar?",o:["Yüzme","Atletizm","Bisiklet","Triatlon"],a:2},
+{q:"Formula 1'de bir yarışın en hızlı turunu yapan pilota verilen ek puan kaçtır?",o:["1","2","3","5"],a:0},
+{q:"2024 Avrupa Şampiyonası'nı hangi ülke kazandı?",o:["Fransa","İspanya","İngiltere","Portekiz"],a:1},
+{q:"Türkiye futbol tarihinde en fazla gol atan isim kimdir?",o:["Hakan Şükür","Metin Oktay","Nihat Kahveci","Tuncay Şanlı"],a:0},
+{q:"Voleybolda bir takımda kaç oyuncu sahada bulunur?",o:["5","6","7","8"],a:1},
+{q:"Tenis'te 'Grand Slam' kaç turnuvadan oluşur?",o:["2","3","4","5"],a:2},
+{q:"Formula 1'de en fazla dünya şampiyonluğu olan pilot kimdir?",o:["Ayrton Senna","Michael Schumacher","Lewis Hamilton","Sebastian Vettel"],a:2},
+{q:"Galatasaray kaç kez Şampiyonlar Ligi'nde çeyrek finale çıkmıştır?",o:["1","2","3","4"],a:1},
+{q:"Türkiye futbol tarihinin en çok kez şampiyon olan takımı hangisidir?",o:["Beşiktaş","Fenerbahçe","Galatasaray","Trabzonspor"],a:2},
+{q:"Voleybolda servis kazanımı ile skor artışına ne denir?",o:["Ace","Blok","Ralli","Servis"],a:0},
+{q:"Olimpiyat Oyunları ilk kez hangi yılda düzenlenmiştir?",o:["776 MÖ","490 MÖ","323 MÖ","146 MÖ"],a:0},
+{q:"Bir tenis setini kazanmak için minimum kaç oyun kazanmak gerekir?",o:["4","5","6","7"],a:2},
+{q:"Güreşte hangi Türk olimpiyat madalyası açısından en başarılı branşımızdır?",o:["Boks","Güreş","Judo","Halter"],a:1},
+{q:"FIFA Dünya Kupası'nda en fazla gol atan oyuncu kimdir?",o:["Ronaldo","Messi","Miroslav Klose","Gerd Müller"],a:2},
+{q:"Bir golf deliğini par'dan bir eksik tamamlamak için kullanılan terim nedir?",o:["Birdie","Eagle","Bogey","Albatross"],a:0},
+{q:"Türkiye 2002 Dünya Kupası'nda kaçıncı olmuştur?",o:["İkinci","Üçüncü","Dördüncü","Sekizinci"],a:1},
+{q:"NFL'de bir touchdownun skoru kaçtır?",o:["3","5","6","7"],a:2},
+{q:"Hangi ülke en fazla Olimpiyat altın madalyası kazanmıştır?",o:["Rusya","Çin","İngiltere","ABD"],a:3},
+],
+bilim:[
+{q:"Işığın havadaki hızı yaklaşık kaç km/s?",o:["150.000","200.000","300.000","400.000"],a:2},
+{q:"DNA'nın açılımı nedir?",o:["Deoksiribonükleik Asit","Dinamik Nükleer Ajan","Direk Nükleotid Asit","Dinamik Nükleik Asit"],a:0},
+{q:"Hangi element atom numarası 1'dir?",o:["Helyum","Lityum","Hidrojen","Oksijen"],a:2},
+{q:"E=mc² formülünü kim ortaya koymuştur?",o:["Newton","Tesla","Einstein","Bohr"],a:2},
+{q:"Güneş'in enerjisini ürettiği süreç nedir?",o:["Fisyon","Füzyon","Oksidasyon","Katalizm"],a:1},
+{q:"İnsan gözünde kaç tür renk alıcısı vardır?",o:["2","3","4","5"],a:1},
+{q:"Hangi element en iyi elektrik iletkenliğine sahiptir?",o:["Bakır","Altın","Gümüş","Alüminyum"],a:2},
+{q:"Hangi organ insülin üretir?",o:["Karaciğer","Böbrek","Pankreas","Tiroid"],a:2},
+{q:"Rüzgar hızını ölçen alet hangisidir?",o:["Barometre","Higrometre","Anemometre","Plüviyometre"],a:2},
+{q:"Depremleri ölçen alet hangisidir?",o:["Barograf","Termograf","Seizmograf","Higrometre"],a:2},
+{q:"Newton'un kaç hareket yasası vardır?",o:["2","3","4","5"],a:1},
+{q:"Suyun kimyasal formülü nedir?",o:["HO","H2O","H2O2","H3O"],a:1},
+{q:"Hangi vitamin eksikliği gece körlüğüne yol açar?",o:["Vitamin C","Vitamin B","Vitamin A","Vitamin E"],a:2},
+{q:"İnsan vücudunda kaç kemik bulunur?",o:["186","196","206","216"],a:2},
+{q:"Hangi element 'Fe' sembolüyle gösterilir?",o:["Flor","Fosfor","Demir","Fermiyum"],a:2},
+{q:"Ses hızı yaklaşık kaç m/s'dir?",o:["234","343","432","521"],a:1},
+{q:"Periyodik tabloda kaç element bulunmaktadır?",o:["108","112","118","124"],a:2},
+{q:"DNA ikili sarmal yapısını kim keşfetmiştir?",o:["Pasteur-Koch","Watson-Crick","Darwin-Mendel","Curie-Rutherford"],a:1},
+{q:"Hangi gezegen en büyük halkalara sahiptir?",o:["Jüpiter","Uranüs","Neptün","Satürn"],a:3},
+{q:"Fotosentez hangi organelde gerçekleşir?",o:["Mitokondri","Ribozom","Kloroplast","Çekirdek"],a:2},
+{q:"Evren yaklaşık kaç milyar yaşındadır?",o:["4,6","8","13,8","20"],a:2},
+{q:"İnsan vücudundaki en büyük organ hangisidir?",o:["Karaciğer","Akciğer","Beyin","Deri"],a:3},
+{q:"Kan basıncı neyi ölçer?",o:["Kan şekerini","Kandaki oksijeni","Damar duvarına uygulanan basıncı","Kalp atış ritmini"],a:2},
+{q:"Hangi mineral kemik ve diş sağlığı için kritiktir?",o:["Demir","Çinko","Kalsiyum","Magnezyum"],a:2},
+{q:"Dünya'nın çapı yaklaşık kaç km'dir?",o:["10.700","12.742","14.000","16.500"],a:1},
+],
+sanat:[
+{q:"Mona Lisa tablosunu kim yapmıştır?",o:["Michelangelo","Raphael","Leonardo da Vinci","Botticelli"],a:2},
+{q:"Shakespeare'in en ünlü trajedisi hangisidir?",o:["Macbeth","Othello","Hamlet","Kral Lear"],a:2},
+{q:"Van Gogh'un en ünlü tablosu nedir?",o:["Mona Lisa","Yıldızlı Gece","Son Akşam Yemeği","Guernica"],a:1},
+{q:"'Anna Karenina' kitabının yazarı kimdir?",o:["Dostoyevski","Çehov","Tolstoy","Turgenyev"],a:2},
+{q:"Guernica tablosunu kim çizmiştir?",o:["Monet","Dali","Picasso","Matisse"],a:2},
+{q:"'Sefiller' (Les Misérables) kitabını kim yazmıştır?",o:["Balzac","Flaubert","Victor Hugo","Zola"],a:2},
+{q:"'Çalıkuşu' romanının yazarı kimdir?",o:["Halide Edib","Yakup Kadri","Reşat Nuri","Ömer Seyfettin"],a:2},
+{q:"Sistine Şapeli'nin tavanını kim boyamıştır?",o:["Raphael","Leonardo","Michelangelo","Titian"],a:2},
+{q:"'Don Kişot' kitabını kim yazmıştır?",o:["Cervantes","Lorca","Borges","Neruda"],a:0},
+{q:"Michelangelo'nun en ünlü heykeli nedir?",o:["Venüs","Apollo","David","Musa"],a:2},
+{q:"Picasso hangi ülkelidir?",o:["Fransız","İtalyan","İspanyol","Portekizli"],a:2},
+{q:"'Şeker Portakalı' kitabının yazarı kimdir?",o:["Pablo Neruda","José Mauro de Vasconcelos","Jorge Amado","Gabriel Garcia Marquez"],a:1},
+{q:"Mozart kaç yaşında hayata gözlerini yummuştur?",o:["25","31","35","42"],a:2},
+{q:"Beethoven'ın 9. Senfoni'si hangi süreçte yazılmıştır?",o:["Sağırlığı öncesi","Tamamen sağır iken","Kısmen duyarken","Görme kaybında"],a:1},
+{q:"Operade en yüksek erkek ses tonu hangisidir?",o:["Bariton","Bas","Tenor","Kontrbas"],a:2},
+{q:"Türk edebiyatında Servet-i Fünun akımının öncüsü kimdir?",o:["Namık Kemal","Tevfik Fikret","Ziya Gökalp","Ahmet Haşim"],a:1},
+{q:"'Dede Korkut Hikayeleri' hangi kültüre aittir?",o:["Arap","Pers","Türk","Moğol"],a:2},
+{q:"Türk Sanat Müziği'nde makamlara göre öncü isim kimdir?",o:["Itrı","Dede Efendi","Hacı Arif Bey","Münir Nurettin"],a:0},
+{q:"Caz müziğinin anavatanı olarak bilinen şehir neresidir?",o:["Chicago","Miami","New York","New Orleans"],a:3},
+{q:"Türk edebiyatının ilk romanı olarak kabul edilen eser hangisidir?",o:["Araba Sevdası","Taaşşuk-ı Talat ve Fitnat","İntibah","Şıpsevdi"],a:1},
+{q:"'Suç ve Ceza' kitabını kim yazmıştır?",o:["Tolstoy","Çehov","Dostoyevski","Gorki"],a:2},
+{q:"Nazım Hikmet hangi şiir türüyle tanınmaktadır?",o:["Divan","Hece","Serbest","Aruz"],a:2},
+{q:"Edvard Munch'un en ünlü eseri nedir?",o:["Yaratılış","Çığlık","Dans","Düşünür"],a:1},
+{q:"Salvador Dali hangi sanat akımına aittir?",o:["Kübizm","İzlenimcilik","Dışavurumculuk","Sürrealizm"],a:3},
+{q:"'Savaş ve Barış' romanını kim yazmıştır?",o:["Dostoyevski","Tolstoy","Turgenyev","Çehov"],a:1},
+]
+};
+
+// flatten for 'karışık' - combine all
+const EXTRA_MIXED=[];
+['coğrafya','tarih','spor','bilim','sanat'].forEach(cat=>{
+  ALL_QS[cat].forEach(q=>{
+    EXTRA_MIXED.push({...q,cat});
+  });
+});
+ALL_QS.karışık=[...ALL_QS.karışık,...EXTRA_MIXED.slice(0,25)];
+
+const CATEGORIES=[
+  {id:'karışık',label:'Karışık',icon:'🎲',desc:'Tüm kategorilerden'},
+  {id:'coğrafya',label:'Coğrafya',icon:'🌍',desc:'Ülkeler, şehirler, nehirler'},
+  {id:'tarih',label:'Tarih',icon:'⏳',desc:'Olaylar ve tarihler'},
+  {id:'spor',label:'Spor',icon:'⚽',desc:'Futbol, olimpiyat ve daha fazlası'},
+  {id:'bilim',label:'Bilim',icon:'🔬',desc:'Fizik, kimya, biyoloji'},
+  {id:'sanat',label:'Sanat & Edebiyat',icon:'🎨',desc:'Resim, müzik, edebiyat'},
+];
+
+function getQsByCategory(cat,count){
+  const pool=[...(ALL_QS[cat]||ALL_QS.karışık)].sort(()=>Math.random()-.5);
+  return pool.slice(0,count);
+}
+
+// ── Level system ──
+function getLvlXP(lv){return Math.floor(100*Math.pow(1.48,lv-1));}
+function calcLevelInfo(totalXP){
+  let lv=1,rem=totalXP;
+  while(lv<100){const need=getLvlXP(lv);if(rem<need)break;rem-=need;lv++;}
+  return{level:lv,currentXP:rem,neededXP:getLvlXP(lv)};
+}
+function getLevelRewards(lv){
+  const r=[{type:'gold',amount:50*lv}];
+  const fr=getFrame(lv);
+  if(lv%5===0){if(fr)r.push({type:'frame',name:fr.name,color:fr.c});r.push({type:'gold',amount:150*lv});}
+  if(lv%10===0){['double','elim','x2'].forEach(p=>r.push({type:'power',pw:p}));}
+  return r;
+}
+function getTotalXP(u){try{return parseInt(localStorage.getItem("ba_xp_"+u)||"0");}catch(e){return 0;}}
+function saveTotalXP(u,v){try{localStorage.setItem("ba_xp_"+u,String(v));}catch(e){}}
+
+// ── Frames ──
+const FRAMES_DEF=[
+  {min:5,name:"Bronz",c:"#CD7F32",s:"0 0 0 3px #8B4513"},
+  {min:10,name:"Gümüş",c:"#C0C0C0",s:"0 0 0 3px #808080"},
+  {min:15,name:"Altın",c:"#FFD700",s:"0 0 12px #FFD700,0 0 0 3px #DAA520"},
+  {min:20,name:"Zümrüt",c:"#50C878",s:"0 0 12px #50C878,0 0 0 3px #2E8B57"},
+  {min:25,name:"Safir",c:"#1E90FF",s:"0 0 12px #1E90FF,0 0 0 3px #0000CD"},
+  {min:30,name:"Yakut",c:"#E0115F",s:"0 0 14px #E0115F,0 0 0 3px #8B0000"},
+  {min:40,name:"Elmas",c:"#B9F2FF",s:"0 0 16px #B9F2FF,0 0 0 3px #00BFFF"},
+  {min:50,name:"Kristal",c:"#c084fc",s:"0 0 16px #c084fc,0 0 0 3px #7c3aed"},
+  {min:75,name:"Ejderha",c:"#FF4500",s:"0 0 20px #FF4500,0 0 0 3px #FF0000"},
+  {min:100,name:"Efsane",c:"#FFD700",s:"0 0 24px #fbbf24,0 0 48px #f59e0b,0 0 0 3px #FFD700"},
+];
+function getFrame(lv){let f=null;for(const fd of FRAMES_DEF){if(lv>=fd.min)f=fd;}return f;}
+
+// ── Missions ──
+const MISSIONS_DEF=[
+  {id:'m1',icon:'✅',title:'100 Doğru Cevap',desc:'Toplam 100 doğru cevap ver',target:100,stat:'correct',xp:75,gold:100,title_reward:null},
+  {id:'m2',icon:'⭐',title:'500 Doğru Cevap',desc:'Toplam 500 doğru cevap ver',target:500,stat:'correct',xp:300,gold:1000,title_reward:null},
+  {id:'m3',icon:'🎮',title:'25 Oyun Bitir',desc:'Toplam 25 oyun tamamla',target:25,stat:'games',xp:50,gold:100,title_reward:"Deneyimli"},
+  {id:'m4',icon:'👑',title:'10 Grup Galibiyeti',desc:'Çoklu modda 10 kez 1. ol',target:10,stat:'wins',xp:100,gold:200,title_reward:"Şampiyon"},
+  {id:'m5',icon:'🏠',title:'5 Oda Kur',desc:'Çoklu modda 5 oda oluştur',target:5,stat:'rooms',xp:50,gold:100,title_reward:null},
+  {id:'m6',icon:'🔬',title:'100 Bilim Sorusu',desc:'Bilim kategorisinde 100 doğru cevap',target:100,stat:'sci_correct',xp:150,gold:300,title_reward:"Bilim İnsanı"},
+  {id:'m7',icon:'⚽',title:'100 Spor Sorusu',desc:'Spor kategorisinde 100 doğru cevap',target:100,stat:'sport_correct',xp:150,gold:300,title_reward:"Sporcu"},
+  {id:'m8',icon:'🌍',title:'100 Coğrafya Sorusu',desc:'Coğrafya kategorisinde 100 doğru',target:100,stat:'geo_correct',xp:150,gold:300,title_reward:"Seyyah"},
+  {id:'m9',icon:'⏳',title:'100 Tarih Sorusu',desc:'Tarih kategorisinde 100 doğru cevap',target:100,stat:'hist_correct',xp:150,gold:300,title_reward:"Tarihçi"},
+  {id:'m10',icon:'🎨',title:'100 Sanat Sorusu',desc:'Sanat kategorisinde 100 doğru cevap',target:100,stat:'art_correct',xp:150,gold:300,title_reward:"Sanatçı"},
+  {id:'m11',icon:'⚡',title:'Seviye 10',desc:'10. seviyeye ulaş',target:10,stat:'level',xp:200,gold:500,title_reward:"Usta"},
+  {id:'m12',icon:'🔥',title:'Seviye 50',desc:'50. seviyeye ulaş',target:50,stat:'level',xp:500,gold:2000,title_reward:"Efsane"},
+];
+const DAILY_DEF=[
+  {id:'d1',icon:'🌅',title:'Günlük Giriş',desc:'Bugün giriş yap',event:'login',pts:5},
+  {id:'d2',icon:'🎮',title:'Oyun Oyna',desc:'Herhangi bir oyunu bitir',event:'gameComplete',pts:5},
+  {id:'d3',icon:'✅',title:'Doğru Cevap',desc:'En az 1 soruyu doğru cevapla',event:'firstCorrect',pts:5},
+  {id:'d4',icon:'👥',title:'Grup Kur',desc:'Çoklu modda oda oluştur',event:'createRoom',pts:5},
+];
+
+// ── Storage helpers ──
+function getGold(u){try{return parseInt(localStorage.getItem("ba_gold_"+u)||"1000");}catch(e){return 1000;}}
+function saveGoldLS(u,v){try{localStorage.setItem("ba_gold_"+u,String(Math.max(0,v)));}catch(e){}}
+function getPowers(u){try{const s=localStorage.getItem("ba_pw_"+u);if(s)return JSON.parse(s);}catch(e){}return{double:0,elim:0,x2:0};}
+function savePowersLS(u,v){try{localStorage.setItem("ba_pw_"+u,JSON.stringify(v));}catch(e){}}
+function getAvatar(u){try{const s=localStorage.getItem("ba_av_"+u);if(s)return JSON.parse(s);}catch(e){}return{gender:'m',skinIdx:0,hairStyle:0,hairColorIdx:0,beardStyle:0,beardColorIdx:0};}
+function saveAvatar(u,av){try{localStorage.setItem("ba_av_"+u,JSON.stringify(av));}catch(e){}}
+function getStats(u){try{const s=localStorage.getItem("ba_stats_"+u);if(s)return JSON.parse(s);}catch(e){}return{correct:0,games:0,wins:0,rooms:0,goldEarned:0,pwUsed:0,sci_correct:0,sport_correct:0,geo_correct:0,hist_correct:0,art_correct:0};}
+function saveStatsLS(u,v){try{localStorage.setItem("ba_stats_"+u,JSON.stringify(v));}catch(e){}}
+function getMissions(u){try{const s=localStorage.getItem("ba_ms_"+u);if(s)return JSON.parse(s);}catch(e){}return{};}
+function saveMissionsLS(u,v){try{localStorage.setItem("ba_ms_"+u,JSON.stringify(v));}catch(e){}}
+function getToday(){return new Date().toISOString().split("T")[0];}
+function getDailyData(u){
+  const key="ba_daily_"+u+"_"+getToday();
+  try{const s=localStorage.getItem(key);if(s)return JSON.parse(s);}catch(e){}
+  return{done:{},pts:0,chestClaimed:false};
+}
+function saveDailyDataLS(u,v){try{localStorage.setItem("ba_daily_"+u+"_"+getToday(),JSON.stringify(v));}catch(e){}}
+function getUserCode(u){
+  try{let c=localStorage.getItem("ba_code_"+u);if(!c){c="#"+(100000+Math.floor(Math.random()*900000));localStorage.setItem("ba_code_"+u,c);}return c;}
+  catch(e){return "#000000";}
+}
+function getGmail(u){try{return localStorage.getItem("ba_gmail_"+u)||"";}catch(e){return "";}}
+function saveGmailLS(u,v){try{localStorage.setItem("ba_gmail_"+u,v);}catch(e){}}
+function getGmailRewarded(u){try{return localStorage.getItem("ba_gmail_rw_"+u)==="1";}catch(e){return false;}}
+function setGmailRewarded(u){try{localStorage.setItem("ba_gmail_rw_"+u,"1");}catch(e){}}
+function getTitleLS(u){try{return localStorage.getItem("ba_title_"+u)||"";}catch(e){return "";}}
+function saveTitleLS(u,v){try{localStorage.setItem("ba_title_"+u,v);}catch(e){}}
+
+// ── Friends system (localStorage-based) ──
+function getFriends(u){try{const s=localStorage.getItem("ba_friends_"+u);return s?JSON.parse(s):[];}catch(e){return [];}}
+function saveFriendsLS(u,v){try{localStorage.setItem("ba_friends_"+u,JSON.stringify(v));}catch(e){}}
+function pingOnline(u){try{localStorage.setItem("ba_online_"+u,Date.now().toString());}catch(e){}}
+function isOnline(u){try{const t=parseInt(localStorage.getItem("ba_online_"+u)||"0");return(Date.now()-t)<120000;}catch(e){return false;}}
+function getUsernames(){try{const s=localStorage.getItem("ba_usernames");return s?JSON.parse(s):{};}catch(e){return {};}}
+function registerUsername(u){
+  try{
+    const db=getUsernames();
+    if(db[u]&&db[u]!==u)return false; // taken by someone else
+    db[u]=u;localStorage.setItem("ba_usernames",JSON.stringify(db));return true;
+  }catch(e){return true;}
+}
+function isUsernameTaken(u){
+  try{const db=getUsernames();return !!db[u];}catch(e){return false;}
+}
+
+// ── Score calculation (15 second timer) ──
+function calcScore(tl){return tl>0?Math.max(1,Math.round(tl*2)):0;}
+// 15s→30pts, 10s→20pts, 5s→10pts, 1s→2pts
+
+// ── Seeded shuffle ──
+function seededShuffle(arr,seed){
+  let s=0;for(let i=0;i<seed.length;i++)s=(s*31+seed.charCodeAt(i))&0x7fffffff;
+  const r=arr.map((v,i)=>({v,i}));
+  for(let i=r.length-1;i>0;i--){s=(s*1664525+1013904223)&0x7fffffff;const j=Math.abs(s)%(i+1);[r[i],r[j]]=[r[j],r[i]];}
+  return r;
+}
+
+const LETTERS=["A","B","C","D"];
+const RANK_BG=["linear-gradient(135deg,#f59e0b,#fbbf24)","linear-gradient(135deg,#94a3b8,#cbd5e1)","linear-gradient(135deg,#92400e,#cd7f32)"];
+const RANK_EMOJI=["🥇","🥈","🥉"];
+const SKIN=["#FDDCB4","#F0B27A","#C68642","#8D5524"];
+const HAIR_COL=["#0a0500","#3B1F0A","#7B3F00","#C8922A","#E8C97A","#D0D0D0","#F0F0F0","#1a1a2e"];
+const EYE_COL=["#1a1a3a","#2d4a1e","#5c3317","#1e3a5f"];
+const GLASS_COL=["#1a1a3a","#C0C0C0","#ffd700","#00f0ff","#ff4466"];
+
+
+// ── Audio ──
+let _ac=null,_musicNodes=[],_musicGain=null,_sfxOn=true,_musicOn=true,_songIdx=0,_musicTO=null;
+const _getAC=()=>{if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();return _ac;};
+function playSfx(type){
+  if(!_sfxOn)return;
+  try{const c=_getAC(),g=c.createGain();g.connect(c.destination);
+    if(type==='correct'){[[0,523],[.1,659],[.2,784],[.3,1047]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(.2,c.currentTime+dt+.03);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.18);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.2);});}
+    else if(type==='wrong'){[[0,320],[.18,240]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.18,c.currentTime+dt);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.22);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.25);});}
+    else if(type==='spend'){const o=c.createOscillator();o.connect(g);o.type='sine';o.frequency.setValueAtTime(700,c.currentTime);o.frequency.exponentialRampToValueAtTime(200,c.currentTime+.18);g.gain.setValueAtTime(.2,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.2);o.start();o.stop(c.currentTime+.22);}
+    else if(type==='earn'){[[0,523],[.1,659],[.2,880]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.frequency.value=f;g.gain.setValueAtTime(.18,c.currentTime+dt);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.18);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.2);});}
+    else if(type==='levelup'){[[0,523],[.08,659],[.16,784],[.24,1047],[.35,1319]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(.25,c.currentTime+dt+.04);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.25);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.28);});}
+  }catch(e){}
+}
+const _n2f=n=>440*Math.pow(2,(n-69)/12);
+const _SONGS=[
+  {bpm:140,seq:[[60,2],[64,1],[65,1],[67,2],[65,1],[64,1],[60,3],[59,1],[60,2],[64,2],[67,2],[69,1],[67,1],[65,4]],vol:.04},
+  {bpm:160,seq:[[67,1],[67,1],[69,2],[67,1],[65,1],[64,2],[62,1],[60,2],[62,1],[64,1],[65,2],[67,4],[60,2],[64,2]],vol:.038},
+  {bpm:125,seq:[[72,2],[71,1],[69,1],[67,2],[65,1],[64,1],[62,2],[60,1],[62,1],[64,2],[65,1],[67,1],[69,2],[72,4]],vol:.04},
+];
+function playMusic(idx){
+  stopMusic();if(!_musicOn)return;
+  try{const c=_getAC(),song=_SONGS[idx%3],beat=60/song.bpm;
+    _musicGain=c.createGain();_musicGain.gain.value=song.vol;_musicGain.connect(c.destination);
+    let t=c.currentTime+.15;
+    for(let rep=0;rep<3;rep++){song.seq.forEach(([note,dur])=>{const o=c.createOscillator(),g2=c.createGain();o.connect(g2);g2.connect(_musicGain);o.type=rep%2===0?'triangle':'sine';o.frequency.value=_n2f(note+(rep>1?12:0));g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(1,t+.025);g2.gain.setValueAtTime(1,t+beat*dur*.75);g2.gain.linearRampToValueAtTime(0,t+beat*dur*.95);o.start(t);o.stop(t+beat*dur);_musicNodes.push(o);t+=beat*dur;});}
+    _musicTO=setTimeout(()=>{_songIdx=(_songIdx+1)%3;playMusic(_songIdx);},(t-c.currentTime+.1)*1000);
+  }catch(e){}
+}
+function stopMusic(){clearTimeout(_musicTO);_musicNodes.forEach(n=>{try{n.stop();}catch(e){}});_musicNodes=[];if(_musicGain){try{_musicGain.disconnect();}catch(e){}_musicGain=null;}}
+function setMusicEnabledG(v){_musicOn=v;if(!v)stopMusic();else playMusic(_songIdx);}
+function setSfxEnabledG(v){_sfxOn=v;}
+
+// ── Question seen tracker (anti-repeat) ──
+function getSeenQs(u){
+  try{const s=localStorage.getItem("ba_seen_"+u);return s?JSON.parse(s):[];}
+  catch(e){return[];}
+}
+function addSeenQs(u,newIds){
+  try{
+    let seen=getSeenQs(u);
+    seen=[...seen,...newIds];
+    // Keep only last 100
+    if(seen.length>100)seen=seen.slice(seen.length-100);
+    localStorage.setItem("ba_seen_"+u,JSON.stringify(seen));
+  }catch(e){}
+}
+function getQsByCategory(cat,count,username){
+  const pool=[...(ALL_QS[cat]||ALL_QS.karışık)];
+  const seen=username?getSeenQs(username):[];
+  // Unseen questions first
+  const unseen=pool.filter((_,i)=>!seen.includes(cat+"_"+i));
+  const seenPool=pool.filter((_,i)=>seen.includes(cat+"_"+i));
+  const shuffled=[
+    ...[...unseen].sort(()=>Math.random()-.5),
+    ...[...seenPool].sort(()=>Math.random()-.5)
+  ];
+  const selected=shuffled.slice(0,count);
+  // Track selected indices
+  if(username){
+    const indices=selected.map(q=>cat+"_"+pool.indexOf(q));
+    addSeenQs(username,indices);
+  }
+  return selected;
+}
+
+// ── Extra Questions (expansion pack) ──
+// Add to existing categories
+(function(){
+  const extra={
+    karışık:[
+      {q:"Türkiye'nin en uzun kıyı şeridi hangi denize aittir?",o:["Karadeniz","Ege Denizi","Akdeniz","Marmara Denizi"],a:1},
+      {q:"Dünyanın en çok konuşulan dili hangisidir?",o:["İspanyolca","Türkçe","İngilizce","Mandarin Çincesi"],a:3},
+      {q:"NASA'nın açılımı nedir?",o:["National Aeronautics and Space Administration","North American Science Agency","National Aerospace Science Association","New Aeronautical Space Agency"],a:0},
+      {q:"İnsanın kaç dişi vardır? (Yetişkin)",o:["28","30","32","34"],a:2},
+      {q:"Hangi ülke futbolda en fazla Dünya Kupası kazanmıştır?",o:["Almanya","Arjantin","İtalya","Brezilya"],a:3},
+      {q:"Hangi element en hafif metaldir?",o:["Sodyum","Lityum","Potasyum","Kalsiyum"],a:1},
+      {q:"Everest Dağı hangi ülkelerin sınırında yer alır?",o:["Hindistan-Çin","Nepal-Çin","Tibet-Pakistan","Bhutan-Hindistan"],a:1},
+      {q:"Kaç renk ışıktan oluşur gökkuşağı?",o:["5","6","7","8"],a:2},
+      {q:"Türkiye'nin en büyük ili hangisidir?",o:["Konya","Ankara","Erzurum","Sivas"],a:0},
+      {q:"Hangi gezegen Güneş'e en yakındır?",o:["Venüs","Mars","Merkür","Dünya"],a:2},
+      {q:"En büyük okyanus hangisidir?",o:["Atlantik","Hint","Arktik","Pasifik"],a:3},
+      {q:"Osmanlı'nın en uzun hüküm süren padişahı kimdir?",o:["Kanuni Sultan Süleyman","II. Abdülhamid","III. Ahmet","I. Mahmut"],a:0},
+      {q:"İnsanın kalbi günde kaç litre kan pompalar?",o:["2000","5000","7570","10000"],a:2},
+      {q:"Hangi ülkede 'Sakura' çiçek festivali düzenlenir?",o:["Çin","Kore","Japonya","Vietnam"],a:2},
+      {q:"pH ölçeğinde 7 neyi ifade eder?",o:["Asidik","Nötr","Bazik","Çok asidik"],a:1},
+    ],
+    coğrafya:[
+      {q:"Türkiye kaç ülkeyle komşudur?",o:["6","7","8","9"],a:2},
+      {q:"Nil Nehri hangi ülkeleri geçer?",o:["Mısır-Sudan","Mısır-Etiyopya","Sudan-Etiyopya-Mısır","Sadece Mısır"],a:2},
+      {q:"Dünya'nın en uzun dağ silsilesi hangisidir?",o:["Himalayalar","And Dağları","Kayalık Dağlar","Atlas Dağları"],a:1},
+      {q:"Hangi şehir iki kıtada birden yer alır?",o:["Moskova","İstanbul","Kahire","Tahran"],a:1},
+      {q:"Japonya kaç adadan oluşur?",o:["1000","3000","6000","6852"],a:3},
+      {q:"Türkiye'nin başkenti neresidir?",o:["İstanbul","İzmir","Bursa","Ankara"],a:3},
+      {q:"Amazon Nehri hangi okyanusa dökülür?",o:["Pasifik","Atlantik","Hint","Arktik"],a:1},
+      {q:"Dünyanın en büyük çölü nerededir?",o:["Orta Afrika","Arabistan","Antarktika","Kuzey Afrika"],a:2},
+      {q:"Volga nehri hangi denize dökülür?",o:["Karadeniz","Hazar Denizi","Baltık","Kızıldeniz"],a:1},
+      {q:"Türkiye hangi yarımadada yer alır?",o:["Balkan","İber","Anadolu","Skandinav"],a:2},
+      {q:"Vatikan hangi şehrin içindedir?",o:["Floransa","Milano","Roma","Napoli"],a:2},
+      {q:"Dünyanın en büyük ülkesi hangisidir?",o:["Kanada","ABD","Çin","Rusya"],a:3},
+      {q:"Mısır'ın başkenti neresidir?",o:["Kahire","İskenderiye","Aswan","Luxor"],a:0},
+      {q:"İngiliz kanalı hangi ülkeleri ayırır?",o:["Fransa-İngiltere","Belçika-İngiltere","İrlanda-İngiltere","Hollanda-İngiltere"],a:0},
+      {q:"Hangi ülke hem Avrupa hem Asya'da yer alır?",o:["Rusya","Mısır","Türkiye","Her ikisi de"],a:3},
+    ],
+    tarih:[
+      {q:"Çin Seddi yaklaşık kaç km uzunluğundadır?",o:["2000","8000","13000","21000"],a:3},
+      {q:"Roma İmparatorluğu ne zaman yıkılmıştır?",o:["276","376","476","576"],a:2},
+      {q:"Atatürk hangi yılda vefat etmiştir?",o:["1936","1937","1938","1939"],a:2},
+      {q:"İlk matbaa kim tarafından icat edilmiştir?",o:["Johannes Gutenberg","Nikola Tesla","Benjamin Franklin","Thomas Edison"],a:0},
+      {q:"Büyük İskender hangi ülkenin hükümdarıydı?",o:["Roma","Pers","Makedonya","Yunan"],a:2},
+      {q:"Fransız Devrimi hangi yılda başlamıştır?",o:["1776","1789","1799","1815"],a:1},
+      {q:"Birinci Dünya Savaşı'nın başlangıç nedeni nedir?",o:["Sömürge kavgası","Arşidük Franz Ferdinand'ın suikasti","Ekonomik kriz","Dini anlaşmazlık"],a:1},
+      {q:"Hangi imparator Roma'yı yakarken arp çalmıştır? (Efsane)",o:["Augustus","Caligula","Neron","Claudius"],a:2},
+      {q:"Çanakkale Savaşı hangi yıl yaşanmıştır?",o:["1913","1914","1915","1916"],a:2},
+      {q:"Selçukluların Anadolu'ya girişi hangi savaşla başlamıştır?",o:["Varna","Malazgirt","Manzikert","Mohaç"],a:1},
+      {q:"Türk milletinin 19 Mayıs 1919'da ne yaşandı?",o:["Kurtuluş Savaşı başladı","Lozan imzalandı","Cumhuriyet ilan edildi","Saltanat kaldırıldı"],a:0},
+      {q:"II. Dünya Savaşı'nda D-Day çıkarması nerede yapılmıştır?",o:["Sicilya","Normandiya","Gallipoli","Kuzey Afrika"],a:1},
+      {q:"Osmanlı Devleti hangi yılda yıkılmıştır?",o:["1919","1920","1922","1923"],a:2},
+      {q:"Kurtuluş Savaşı hangi antlaşmayla tamamlanmıştır?",o:["Sevr","Mudros","Lozan","Mondros"],a:2},
+      {q:"İlk Olimpiyat Oyunları nerede düzenlenmiştir?",o:["Atina","Sparta","Olimpiya","Korint"],a:2},
+    ],
+    spor:[
+      {q:"Formula 1'de dünya rekoru kaç şampiyonluktur?",o:["5","6","7","8"],a:2},
+      {q:"NBA'de topun çapı kaç inch'tir?",o:["28.5","29.5","30","30.5"],a:1},
+      {q:"Galatasaray UEFA Kupası'nı hangi yılda kazandı?",o:["1998","1999","2000","2001"],a:2},
+      {q:"Türkiye Milli Takımı 2002 Dünya Kupası'nda kaçıncı oldu?",o:["2.","3.","4.","Grup aşaması"],a:1},
+      {q:"Teniste 'Grand Slam' dört turnuvadan oluşur. Hangisi değildir?",o:["Wimbledon","Roland Garros","US Open","Dubai"],a:3},
+      {q:"Basketbolda bir quarter kaç dakikadır? (NBA)",o:["10","12","15","20"],a:1},
+      {q:"Hangi kulüp En Çok Şampiyonlar Ligi kazanmıştır?",o:["Barcelona","Manchester United","Bayern Münih","Real Madrid"],a:3},
+      {q:"Usain Bolt'un 100m dünya rekoru kaç saniyedir?",o:["9.49","9.58","9.72","9.81"],a:1},
+      {q:"Türkiye'nin futbolda en çok şampiyonluk kazanan kulübü hangisidir?",o:["Beşiktaş","Fenerbahçe","Galatasaray","Trabzonspor"],a:2},
+      {q:"Buz hokeyi topunun adı nedir?",o:["Puck","Ball","Disk","Cork"],a:0},
+      {q:"Türk dövüş sanatçısı Sanda kim Khabib Nurmagomedov'u geçti?",o:["Kıran","Erol","Islam Makhachev","Dustin Poirier"],a:2},
+      {q:"Maratonun resmi mesafesi kaç km'dir?",o:["40","41.2","42.195","43"],a:2},
+      {q:"Hangi ülke 2024 Paris Olimpiyatları'nda en çok altın madalya kazandı?",o:["ABD","Çin","Avustralya","İngiltere"],a:0},
+      {q:"Voleybolda 'libero' oyuncusu hangi renkli forma giyer?",o:["Takımın ana rengi","Siyah","Kırmızı","Diğer oyunculardan farklı"],a:3},
+      {q:"Halter sporundan kaç kez Olimpiyat altını almış Türk hangi isimdir?",o:["Halil Mutlu","Naim Süleymanoğlu","Rıza Kayaalp","Taner Sağır"],a:1},
+    ],
+    bilim:[
+      {q:"Işık boşlukta saniyede kaç km yol alır?",o:["200.000","300.000","400.000","500.000"],a:1},
+      {q:"Insan beyninin ağırlığı yaklaşık kaç gramdır?",o:["1000","1400","1800","2200"],a:1},
+      {q:"Hangi gaz sera etkisine en çok katkı sağlar?",o:["Oksijen","Azot","Karbondioksit","Hidrojen"],a:2},
+      {q:"DNA çift sarmalını kim keşfetmiştir?",o:["Darwin-Mendel","Watson-Crick","Pasteur-Koch","Curie-Rutherford"],a:1},
+      {q:"Kaç çeşit kan grubu vardır? (ABO sistemi)",o:["2","3","4","5"],a:2},
+      {q:"Hangi organ vücuttaki en büyük bezdir?",o:["Böbrek","Karaciğer","Pankreas","Dalak"],a:1},
+      {q:"Atom çekirdeği hangi parçacıklardan oluşur?",o:["Elektron-proton","Proton-nötron","Nötron-elektron","Kuark-lepton"],a:1},
+      {q:"Bir saniyede ışığın dünyayı kaç kez dolaştığı yaklaşık kaçtır?",o:["3.5","5","7.5","10"],a:2},
+      {q:"Hangi vitaminlerine D vitamini güneş ışığıyla sentezlenir?",o:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"],a:3},
+      {q:"En hafif element hangisidir?",o:["Helyum","Lityum","Hidrojen","Beriliyum"],a:2},
+      {q:"İnsan gözü kaç megapiksel değerinde görüntü algılar?",o:["8","20","576","1000"],a:2},
+      {q:"Kan hücrelerinin ömrü kaç gündür? (alyuvar)",o:["30","60","90","120"],a:3},
+      {q:"Türkiye'nin ilk yapay uydusu hangisidir?",o:["TÜRKSAT","GÖKTÜRK","BİLSAT","RASAT"],a:2},
+      {q:"Yerçekimi ivmesi yaklaşık kaç m/s²?",o:["7.8","9.8","11.2","13.6"],a:1},
+      {q:"Newton'un üçüncü yasası nedir?",o:["Atalet yasası","Kuvvet yasası","Etki-tepki yasası","Enerji yasası"],a:2},
+    ],
+    sanat:[
+      {q:"'Suç ve Ceza' romanını kim yazmıştır?",o:["Tolstoy","Çehov","Dostoyevski","Gorki"],a:2},
+      {q:"Beethoven kaç senfoni bestelemiştir?",o:["7","8","9","10"],a:2},
+      {q:"Salvador Dali hangi sanat akımına aittir?",o:["Kübizm","İzlenimcilik","Dışavurumculuk","Sürrealizm"],a:3},
+      {q:"'1984' romanını kim yazmıştır?",o:["Aldous Huxley","George Orwell","Ray Bradbury","H.G. Wells"],a:1},
+      {q:"Türk sinemasının en önemli ismi kabul edilen yönetmen kimdir?",o:["Fatih Akın","Yılmaz Güney","Nuri Bilge Ceylan","Ferzan Özpetek"],a:1},
+      {q:"Hangi müzik aleti 'Keman' olarak bilinir?",o:["Viyola","Violonsel","Violin","Kontrbas"],a:2},
+      {q:"Orhan Pamuk hangi ödülü kazandı?",o:["Booker Prize","Nobel Edebiyat Ödülü","Man Booker","Pulitzer"],a:1},
+      {q:"'Hamlet' Kim tarafından yazılmıştır?",o:["Marlowe","Chaucer","Shakespeare","Milton"],a:2},
+      {q:"Türk edebiyatının ilk romanı sayılan eser hangisidir?",o:["Araba Sevdası","Taaşşuk-ı Talat ve Fitnat","İntibah","Şıpsevdi"],a:1},
+      {q:"Pablo Neruda hangi ülkelidir?",o:["Arjantin","Kolombiya","Şili","Peru"],a:2},
+      {q:"Mevlana'nın eseri 'Mesnevi' kaç ciltten oluşur?",o:["3","4","5","6"],a:3},
+      {q:"'Otobüs durağı' adlı ünlü eser kimin imzasını taşır?",o:["George Segal","Auguste Rodin","Alberto Giacometti","Henry Moore"],a:0},
+      {q:"Caz müziğinin anavatanı kabul edilen şehir neresidir?",o:["Chicago","New York","New Orleans","Nashville"],a:2},
+      {q:"Türkiye'den ilk Cannes ödülü alan film hangisidir?",o:["Yol","Umut","Sürü","Hazal"],a:0},
+      {q:"Ahmet Hamdi Tanpınar'ın en ünlü romanı hangisidir?",o:["Saatleri Ayarlama Enstitüsü","Huzur","Mahur Beste","Abdullah Efendi'nin Rüyaları"],a:0},
+    ],
+  };
+  Object.keys(extra).forEach(cat=>{
+    if(ALL_QS[cat]) ALL_QS[cat]=[...ALL_QS[cat],...extra[cat]];
+    else ALL_QS[cat]=extra[cat];
+  });
+  // Refresh karışık with all
+  ALL_QS.karışık=[
+    ...ALL_QS.karışık.slice(0,25),
+    ...Object.values(extra).flat().slice(0,50)
+  ];
+})();
+
+// ═══════════════════════════════════════════
+// GROWTH FEATURES
+// ═══════════════════════════════════════════
+
+// ── Weekly League ──
+const LEAGUES=[
+  {id:'bronze',  name:'Bronz',   icon:'🥉', color:'#CD7F32', minPts:0,    maxPts:499,  slots:20},
+  {id:'silver',  name:'Gümüş',   icon:'🥈', color:'#C0C0C0', minPts:500,  maxPts:1499, slots:20},
+  {id:'gold',    name:'Altın',   icon:'🥇', color:'#FFD700', minPts:1500, maxPts:2999, slots:20},
+  {id:'diamond', name:'Elmas',   icon:'💎', color:'#00f0ff', minPts:3000, maxPts:5999, slots:20},
+  {id:'master',  name:'Usta',    icon:'👑', color:'#9d50ff', minPts:6000, maxPts:99999,slots:10},
+];
+function getWeekKey(){
+  const d=new Date(); const jan1=new Date(d.getFullYear(),0,1);
+  return d.getFullYear()+'W'+Math.ceil((((d-jan1)/86400000)+jan1.getDay()+1)/7);
+}
+function getLeagueData(u){
+  try{const s=localStorage.getItem('ba_league_'+u);return s?JSON.parse(s):{league:'bronze',weeklyPts:0,weekKey:getWeekKey(),prevLeague:'bronze'};}
+  catch(e){return{league:'bronze',weeklyPts:0,weekKey:getWeekKey(),prevLeague:'bronze'};}
+}
+function saveLeagueData(u,v){try{localStorage.setItem('ba_league_'+u,JSON.stringify(v));}catch(e){}}
+function addLeaguePts(u,pts){
+  let d=getLeagueData(u);
+  // New week reset
+  if(d.weekKey!==getWeekKey()){d.prevLeague=d.league;d.weeklyPts=0;d.weekKey=getWeekKey();}
+  d.weeklyPts=(d.weeklyPts||0)+pts;
+  // Promotion check
+  for(let i=LEAGUES.length-1;i>=0;i--){
+    if(d.weeklyPts>=LEAGUES[i].minPts){d.league=LEAGUES[i].id;break;}
+  }
+  saveLeagueData(u,d);
+  return d;
+}
+function getLeagueObj(id){return LEAGUES.find(l=>l.id===id)||LEAGUES[0];}
+
+// Fake leaderboard for the same league (simulated opponents)
+const FAKE_NAMES=['Ahmet_K','Zeynep_A','Mert_Y','Elif_S','Can_T','Ayse_D','Burak_O','Selin_K','Ozan_M','Hande_G','Furkan_B','Nisa_Y','Arda_T','Ceren_A','Kaan_S','Irem_K','Baran_O','Dilara_M','Emre_C','Buse_T'];
+function getFakeLeaderboard(userPts,leagueId,username){
+  const seed=leagueId+getWeekKey();
+  let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;
+  const rng=()=>{h=((h*1664525+1013904223)>>>0);return(h>>>0)/0xFFFFFFFF;};
+  const league=getLeagueObj(leagueId);
+  const count=Math.min(19,league.slots-1);
+  const opponents=[];
+  const usedNames=new Set();
+  for(let i=0;i<count;i++){
+    const ni=Math.floor(rng()*FAKE_NAMES.length);
+    const name=FAKE_NAMES[ni]+(usedNames.has(ni)?'_'+i:'');
+    usedNames.add(ni);
+    const pts=Math.floor(rng()*(league.maxPts-league.minPts))+league.minPts;
+    opponents.push({name,pts,isMe:false});
+  }
+  opponents.push({name:username,pts:userPts,isMe:true});
+  return opponents.sort((a,b)=>b.pts-a.pts);
+}
+
+// ── Referral System ──
+function getReferralCode(u){
+  try{
+    let c=localStorage.getItem('ba_ref_'+u);
+    if(!c){c='REF'+Math.random().toString(36).substr(2,6).toUpperCase();localStorage.setItem('ba_ref_'+u,c);}
+    return c;
+  }catch(e){return 'REFXXXXX';}
+}
+function applyReferral(u,code){
+  try{
+    // Check not self-referral
+    if(getReferralCode(u)===code)return{ok:false,msg:'Kendi kodunuzu kullanamazsınız'};
+    // Check already used
+    if(localStorage.getItem('ba_ref_used_'+u))return{ok:false,msg:'Davet kodu zaten kullandınız'};
+    // Check valid code (any user who has this code)
+    let found=null;
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i);
+      if(key&&key.startsWith('ba_ref_')&&!key.includes('used_')){
+        const val=localStorage.getItem(key);
+        if(val===code){found=key.replace('ba_ref_','');break;}
+      }
+    }
+    if(!found)return{ok:false,msg:'Geçersiz davet kodu'};
+    // Mark used
+    localStorage.setItem('ba_ref_used_'+u,'1');
+    // Reward both
+    const curGold=parseInt(localStorage.getItem('ba_gold_'+u)||'1000');
+    localStorage.setItem('ba_gold_'+u,String(curGold+200));
+    const refGold=parseInt(localStorage.getItem('ba_gold_'+found)||'1000');
+    localStorage.setItem('ba_gold_'+found,String(refGold+100));
+    // Track referral count for referrer
+    const cnt=parseInt(localStorage.getItem('ba_ref_count_'+found)||'0')+1;
+    localStorage.setItem('ba_ref_count_'+found,String(cnt));
+    return{ok:true,msg:'Davet kodu uygulandı! +200 🪙 kazandın!'};
+  }catch(e){return{ok:false,msg:'Hata oluştu'};}
+}
+function getReferralCount(u){try{return parseInt(localStorage.getItem('ba_ref_count_'+u)||'0');}catch(e){return 0;}}
+function hasUsedReferral(u){try{return localStorage.getItem('ba_ref_used_'+u)==='1';}catch(e){return false;}}
+
+// ── Statistics ──
+function getDetailedStats(u){
+  try{const s=localStorage.getItem('ba_stats_'+u);return s?JSON.parse(s):{correct:0,games:0,wins:0,rooms:0,sci_correct:0,sport_correct:0,geo_correct:0,hist_correct:0,art_correct:0};}
+  catch(e){return{correct:0,games:0,wins:0,rooms:0,sci_correct:0,sport_correct:0,geo_correct:0,hist_correct:0,art_correct:0};}
+}
+function getWeeklyHistory(u){
+  try{const s=localStorage.getItem('ba_history_'+u);return s?JSON.parse(s):[];}
+  catch(e){return[];}
+}
+function addGameHistory(u,pts,correct,total){
+  try{
+    const h=getWeeklyHistory(u);
+    h.push({d:new Date().toISOString().split('T')[0],pts,correct,total});
+    if(h.length>30)h.shift();
+    localStorage.setItem('ba_history_'+u,JSON.stringify(h));
+  }catch(e){}
+}
+</script>
+<script type="text/babel">
+// ---------------------------------------------
+// TOP-LEVEL STABLE COMPONENTS (keyboard fix)
+// Defined outside App so they don't remount on state change
+// ---------------------------------------------
+
+function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.95)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div style={{background:"#060e1e",border:"2px solid #2a5a8e",borderRadius:20,padding:20,width:"100%",maxWidth:340}} onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffffff"}}>Ayarlar</span>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#a8c4e0",fontSize:22,cursor:"pointer"}}>X</button>
+        </div>
+        <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>Ses Efektleri</span>
+          <div className={"toggle"+(sfxOn?" on":"")} onClick={()=>{setSfxOn(!sfxOn);setSfxEnabledG(!sfxOn);}}><div className="toggle-knob"/></div>
+        </div>
+        <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>Oyun Muzigi</span>
+          <div className={"toggle"+(musicOn?" on":"")} onClick={()=>{setMusicOn(!musicOn);setMusicEnabledG(!musicOn);}}><div className="toggle-knob"/></div>
+        </div>
+        <button className="sbtn" style={{fontSize:13,padding:11,marginTop:8,width:"100%"}} onClick={onLogout}>Cikis Yap</button>
+      </div>
+    </div>
+  );
+}
+
+
+function AvatarEditor({avatar,levelInfo,onSave,onClose}){
+  const [av,setAv]=useState({...avatar});
+  return(
+    <div className="shop-overlay" onClick={onClose}>
+      <div className="shop-panel" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f0eeff"}}>🎨 Karakter</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#6b5fa8",fontSize:22,cursor:"pointer"}}>✕</button>
+        </div>
+        <div style={{display:"flex",justifyContent:"center",marginBottom:14,background:"#1e1555",borderRadius:16,padding:16}}>
+          <AvatarSVG {...av} level={levelInfo.level} size={100}/>
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Cinsiyet</div>
+        <div style={{display:"flex",gap:8,marginBottom:12}}>
+          {[{v:'m',l:'👦 Erkek'},{v:'f',l:'👧 Kız'}].map(o=>(
+            <button key={o.v} onClick={()=>setAv({...av,gender:o.v,hairStyle:0,beardStyle:0})}
+              style={{flex:1,padding:"9px",borderRadius:10,border:av.gender===o.v?"2px solid #00f0ff":"2px solid #5035b0",background:av.gender===o.v?"rgba(0,240,255,.08)":"#1e1555",color:"#f0eeff",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13}}>
+              {o.l}</button>))}
+        </div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Ten</div>
+        <div style={{display:"flex",gap:9,marginBottom:12}}>{SKIN.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,skinIdx:i})} style={{width:34,height:34,borderRadius:"50%",background:c,border:av.skinIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Rengi</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,hairColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.hairColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Saç Stili</div>
+        <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,hairStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.hairStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender={av.gender} skinIdx={av.skinIdx} hairStyle={i} hairColorIdx={av.hairColorIdx} beardStyle={0} size={36}/></div>))}</div>
+        {av.gender==='m'&&<>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{[0,1,2,3].map(i=>(<div key={i} onClick={()=>setAv({...av,beardStyle:i})} style={{flex:1,height:50,borderRadius:10,border:av.beardStyle===i?"2px solid #00f0ff":"2px solid #5035b0",background:"#1e1555",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}><AvatarSVG gender="m" skinIdx={av.skinIdx} hairStyle={av.hairStyle} hairColorIdx={av.hairColorIdx} beardStyle={i} beardColorIdx={av.beardColorIdx} size={36}/></div>))}</div>
+          <div style={{fontSize:11,color:"#8b7fd4",fontWeight:700,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Sakal Rengi</div>
+          <div style={{display:"flex",gap:7,marginBottom:12}}>{HAIR_COL.map((c,i)=>(<div key={i} onClick={()=>setAv({...av,beardColorIdx:i})} style={{width:28,height:28,borderRadius:"50%",background:c,border:av.beardColorIdx===i?"3px solid #00f0ff":"3px solid transparent",cursor:"pointer"}}/>))}</div>
+        </>}
+        <button className="pbtn" onClick={()=>onSave(av)}>✅ Kaydet</button>
+      </div>
+    </div>
+  );
+}
+
+// Bilgi Arena v9 - Clean JSX App
+const {useState,useEffect,useRef,useCallback,memo}=React;
+
+// -- W Wrapper (stable, outside App) --
+const W=memo(function W({children}){
+  return React.createElement('div',{className:"app"},
+    React.createElement('div',{className:"phone"},children));
+});
+
+// -- Timer Ring --
+function TimerRing({tl,total}){
+  total=total||15;
+  const r=36,circ=2*Math.PI*r,off=circ*(1-tl/total);
+  const col=tl>8?"#6ee7f7":tl>4?"#fbbf24":"#f87171";
+  return(
+    <div style={{position:"relative",width:88,height:88,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <svg width="88" height="88" style={{position:"absolute",transform:"rotate(-90deg)"}}>
+        <circle cx="44" cy="44" r={r} fill="none" stroke="#1e1e4a" strokeWidth="7"/>
+        <circle cx="44" cy="44" r={r} fill="none" stroke={col} strokeWidth="7"
+          strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
+          style={{transition:"stroke-dashoffset 0.95s linear,stroke 0.3s"}}/>
+      </svg>
+      <span style={{fontSize:24,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:col,zIndex:1}}>{tl}</span>
+    </div>
+  );
+}
+
+// -- Avatar --
+function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorIdx,size,level}){
+  size=size||60;level=level||1;
+  const sk=SKIN[skinIdx||0],hc=HAIR_COL[hairColorIdx||0],bc=HAIR_COL[beardColorIdx||0];
+  const fr=getFrame(level);
+  const fh=[
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="l" d="M17,36 Q10,50 11,65 Q12,75 14,82 Q15,78 14,65 Q13,52 18,38Z" fill={hc}/>,<path key="r" d="M73,36 Q80,50 79,65 Q78,75 76,82 Q75,78 76,65 Q77,52 72,38Z" fill={hc}/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<ellipse key="b" cx="45" cy="5" rx="16" ry="13" fill={hc}/>,<path key="w" d="M29,14 Q37,18 45,17 Q53,18 61,14" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="l" d="M17,36 Q8,48 10,58 Q8,68 11,76 Q13,82 14,82 Q13,76 15,68 Q13,58 15,48Z" fill={hc}/>,<path key="r" d="M73,36 Q82,48 80,58 Q82,68 79,76 Q77,82 76,82 Q77,76 75,68 Q77,58 75,48Z" fill={hc}/>],
+    [<path key="c" d="M17,38 Q16,12 45,10 Q74,12 73,38 Q73,22 45,20 Q17,22 17,38Z" fill={hc}/>,<path key="b" d="M17,36 Q15,44 17,50 Q21,55 31,58 Q38,60 45,60 Q52,60 59,58 Q69,55 73,50 Q75,44 73,36 Q67,48 45,50 Q23,48 17,36Z" fill={hc}/>],
+  ];
+  const mh=[
+    [<path key="h" d="M16,32 Q16,8 45,8 Q74,8 74,32 L74,24 Q74,4 45,4 Q16,4 16,24Z" fill={hc}/>],
+    [<path key="h" d="M16,32 Q16,8 45,8 Q74,8 74,32 L74,24 Q74,4 45,4 Q16,4 16,24Z" fill={hc}/>,<polygon key="s1" points="28,22 24,5 33,18" fill={hc}/>,<polygon key="s2" points="45,18 43,2 50,16" fill={hc}/>,<polygon key="s3" points="62,22 58,5 67,18" fill={hc}/>],
+    [<path key="h" d="M16,32 Q14,10 45,8 Q76,10 74,32 L74,26 Q72,6 45,6 Q18,6 16,26Z" fill={hc}/>,<path key="w" d="M18,20 Q26,14 34,19 Q42,14 50,19 Q58,14 66,19 Q72,16 74,20" stroke={hc} strokeWidth="5" fill="none" strokeLinecap="round"/>],
+    [<path key="h" d="M22,36 Q20,14 45,12 Q70,14 68,36 L68,30 Q66,10 45,10 Q24,10 22,30Z" fill={hc}/>],
+  ];
+  const bd=[null,
+    <g key="b1"><ellipse cx="45" cy="62" rx="16" ry="8" fill={bc} opacity=".4"/><ellipse cx="35" cy="58" rx="5" ry="4" fill={bc} opacity=".35"/><ellipse cx="55" cy="58" rx="5" ry="4" fill={bc} opacity=".35"/></g>,
+    <g key="b2"><path d="M29,54 Q28,70 45,74 Q62,70 61,54 Q55,60 45,61 Q35,60 29,54Z" fill={bc} opacity=".85"/></g>,
+    <g key="b3"><path d="M26,50 Q22,72 45,78 Q68,72 64,50 Q58,62 45,64 Q32,62 26,50Z" fill={bc}/><ellipse cx="45" cy="52" rx="18" ry="6" fill={bc}/></g>,
+  ];
+  const hp=gender==='f'?fh[hairStyle%4]:mh[hairStyle%4];
+  const bp=gender==='m'?bd[beardStyle||0]:null;
+  return(
+    <div style={{position:"relative",display:"inline-flex",flexShrink:0,marginBottom:level>1?10:0}}>
+      <svg width={size} height={size} viewBox="0 0 90 90" style={{borderRadius:"50%",boxShadow:fr?fr.s:"none"}}>
+        <ellipse cx="45" cy="85" rx="30" ry="14" fill={gender==='f'?"#818cf8":"#6ee7f7"}/>
+        <rect x="39" y="58" width="12" height="13" fill={sk} rx="2"/>
+        <ellipse cx="45" cy="42" rx="27" ry="29" fill={sk}/>
+        {hp}
+        <ellipse cx="18" cy="44" rx="5" ry="6" fill={sk}/><ellipse cx="72" cy="44" rx="5" ry="6" fill={sk}/>
+        <ellipse cx="34" cy="40" rx="5" ry="5.5" fill="white"/><ellipse cx="56" cy="40" rx="5" ry="5.5" fill="white"/>
+        <circle cx="35.2" cy="41" r="3" fill="#1a1a3a"/><circle cx="57.2" cy="41" r="3" fill="#1a1a3a"/>
+        <circle cx="36" cy="40" r="1.2" fill="white"/><circle cx="58" cy="40" r="1.2" fill="white"/>
+        <path d="M29,33 Q34,30 39,33" stroke="#3a2a1a" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".7"/>
+        <path d="M51,33 Q56,30 61,33" stroke="#3a2a1a" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity=".7"/>
+        <path d="M43,47 Q42,52 45,53 Q48,52 47,47" fill="none" stroke={SKIN[Math.min((skinIdx||0)+1,3)]} strokeWidth="1.5" strokeLinecap="round"/>
+        {bp}
+        <path d="M37,59 Q45,66 53,59" fill="none" stroke="#b05060" strokeWidth="2.2" strokeLinecap="round"/>
+        {gender==='f'&&<><ellipse cx="28" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/><ellipse cx="62" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/></>}
+      </svg>
+      {fr&&<div style={{position:"absolute",bottom:-2,right:-2,background:fr.c,borderRadius:"50%",width:Math.max(14,size*.22),height:Math.max(14,size*.22),display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(8,size*.13),border:"1.5px solid rgba(0,0,0,.2)"}}>⭐</div>}
+      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#111130",border:"1.5px solid "+(fr?fr.c:"#1e1e4a"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#6ee7f7",whiteSpace:"nowrap"}}>Sv.{level}</div>}
+    </div>
+  );
+}
+
+// -- Confetti --
+function Confetti(){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const cv=ref.current;if(!cv)return;
+    const ctx=cv.getContext('2d');cv.width=390;cv.height=500;
+    const P=Array.from({length:80},()=>({x:Math.random()*390,y:-30-Math.random()*80,vx:(Math.random()-.5)*5,vy:1.5+Math.random()*3.5,w:8+Math.random()*8,h:4+Math.random()*4,rot:Math.random()*360,rv:(Math.random()-.5)*8,col:['#6ee7f7','#fbbf24','#34d399','#f87171','#818cf8','#c084fc'][Math.floor(Math.random()*6)]}));
+    let raf,done=false;
+    const tick=()=>{ctx.clearRect(0,0,390,500);let any=false;P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.07;if(p.y<520)any=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,1-p.y/480);ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(any&&!done)raf=requestAnimationFrame(tick);};
+    tick();return()=>{done=true;cancelAnimationFrame(raf);};
+  },[]);
+  return <canvas ref={ref} style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:50}}/>;
+}
+
+// -- Chest Modal --
+function ChestModal({onClose}){
+  const [st,setSt]=useState('shake');
+  useEffect(()=>{playSfx('earn');},[]);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <style>{`@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.1)}}`}</style>
+      <div style={{textAlign:"center",padding:32}}>
+        <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
+        {st==='shake'&&<>
+          <div onClick={()=>{setSt('open');playSfx('earn');}} style={{fontSize:110,cursor:"pointer",display:"inline-block",animation:"shake .15s infinite",filter:"drop-shadow(0 0 20px #fbbf24)"}}>🎁</div>
+          <div style={{fontSize:13,color:"#6ee7f7",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
+        </>}
+        {st==='open'&&<>
+          <div style={{fontSize:90,animation:"pop .4s ease",display:"inline-block",filter:"drop-shadow(0 0 30px #fbbf24)"}}>🎁</div>
+          <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:48,fontWeight:700,color:"#fbbf24",marginTop:8}}>+100 🪙</div>
+          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:20}}>Altın Kazandın!</div>
+          <button onClick={onClose} style={{background:"linear-gradient(135deg,#6ee7f7,#818cf8)",border:"none",borderRadius:14,padding:"14px 40px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
+        </>}
+      </div>
+    </div>
+  );
+}
+
+// -- Level Up Modal --
+function LevelUpModal({newLevel,rewards,onClose}){
+  useEffect(()=>{playSfx('levelup');},[]);
+  const fr=getFrame(newLevel);
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div style={{background:"#0a0a1f",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
+        <div style={{fontSize:12,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:72,fontWeight:700,color:"#fbbf24",lineHeight:1}}>{newLevel}</div>
+        <div style={{fontSize:14,color:"#e2e4f0",marginBottom:16}}>Seviye {newLevel}</div>
+        {fr&&newLevel%5===0&&<div style={{background:"rgba(0,0,0,.2)",border:"2px solid "+fr.c,borderRadius:12,padding:"8px",marginBottom:12,fontSize:13,fontWeight:700,color:fr.c}}>🖼️ {fr.name} Çerçeve!</div>}
+        <div style={{marginBottom:16}}>
+          {rewards.map((r,i)=>(
+            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:20}}>{r.type==='gold'?"🪙":r.type==='frame'?"🖼️":"⚡"}</span>
+              <span style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{r.type==='gold'?"+"+r.amount+" Altın":r.type==='frame'?r.name+" Çerçeve":{double:"🎯 Çift Seçim",elim:"❌ 2 Yanlışı Ele",x2:"⚡ x2 Puan"}[r.pw]||r.pw}</span>
+            </div>
+          ))}
+        </div>
+        <button onClick={onClose} style={{background:"linear-gradient(135deg,#fbbf24,#f59e0b)",border:"none",borderRadius:14,padding:"13px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:15,cursor:"pointer",width:"100%"}}>Devam Et →</button>
+      </div>
+    </div>
+  );
+}
+
+// -- Main App --
+function App(){
+  const [screen,setScreen]=useState("auth");
+  const [authTab,setAuthTab]=useState("login");
+  const [fUser,setFUser]=useState("");
+  const [fPass,setFPass]=useState("");
+  const [fErr,setFErr]=useState("");
+  const [username,setUsername]=useState("");
+  const [avatar,setAvatar]=useState({gender:'m',skinIdx:0,hairStyle:0,hairColorIdx:0,beardStyle:0,beardColorIdx:0});
+
+  // game config
+  const [mode,setMode]=useState("solo");
+  const [qCount,setQCount]=useState(7);
+  const [category,setCategory]=useState("karışık");
+
+  // multiplayer
+  const [inviteLink,setInviteLink]=useState("");
+  const [roomCode,setRoomCode]=useState("");
+  const [roomPlayers,setRoomPlayers]=useState([]);
+  const [connStatus,setConnStatus]=useState("idle");
+  const [copied,setCopied]=useState(false);
+
+  // game state
+  const [questions,setQuestions]=useState([]);
+  const [qIdx,setQIdx]=useState(0);
+  const [sel,setSel]=useState(null);
+  const [sel2,setSel2]=useState(null);
+  const [tl,setTl]=useState(15);
+  const [score,setScore]=useState(0);
+  const [answers,setAnswers]=useState([]);
+  const [feedback,setFeedback]=useState(false);
+  const [revealed,setRevealed]=useState(false);
+  const [liveScores,setLiveScores]=useState({});
+  const [waiting,setWaiting]=useState(false);
+  const [waitCount,setWaitCount]=useState({answered:0,total:1});
+  const [shuffled,setShuffled]=useState([]);
+  const [eliminated,setEliminated]=useState([]);
+
+  // economy & progression
+  const [gold,setGold]=useState(1000);
+  const [powers,setPowers]=useState({double:0,elim:0,x2:0});
+  const [pwDouble,setPwDouble]=useState(false);
+  const [pwElim,setPwElim]=useState(false);
+  const [pwX2,setPwX2]=useState(false);
+  const [totalXP,setTotalXP]=useState(0);
+  const [levelInfo,setLevelInfo]=useState({level:1,currentXP:0,neededXP:100});
+  const [stats,setStats]=useState({correct:0,games:0,wins:0,rooms:0});
+  const [missions,setMissions]=useState({});
+  const [dailyData,setDailyData]=useState({done:{},pts:0,chestClaimed:false});
+  const [userTitle,setUserTitle]=useState("");
+  const [goldEarned,setGoldEarned]=useState(0);
+  const [kickedPlayers,setKickedPlayers]=useState([]);
+
+  // friends
+  const [friends,setFriends]=useState([]);
+  const [friendSearchInput,setFriendSearchInput]=useState("");
+  const [friendSearchResult,setFriendSearchResult]=useState(null);
+  const [friendSearchErr,setFriendSearchErr]=useState("");
+
+  // UI
+  const [homeTab,setHomeTab]=useState("home");
+  const [showShop,setShowShop]=useState(false);
+  const [showSettings,setShowSettings]=useState(false);
+  const [showAvEd,setShowAvEd]=useState(false);
+  const [sfxOn,setSfxOn]=useState(true);
+  const [musicOn,setMusicOn]=useState(true);
+  const [musicStarted,setMusicStarted]=useState(false);
+  const [levelUpQueue,setLevelUpQueue]=useState([]);
+  const [chestModal,setChestModal]=useState(false);
+  const [gmailInput,setGmailInput]=useState("");
+  const [authLoading,setAuthLoading]=useState(false);
+  const [fEmail,setFEmail]=useState("");
+  const [joinCodeInput,setJoinCodeInput]=useState("");
+  const [joinCodeErr,setJoinCodeErr]=useState("");
+  const [showTournament,setShowTournament]=useState(false);
+  const [tournamentData,setTournamentData]=useState(null);
+  const [userCode,setUserCode]=useState("");
+
+  // refs
+  const USERS=useRef(new Map());
+  const peerRef=useRef(null);
+  const connsRef=useRef([]);
+  const hostConnRef=useRef(null);
+  const timerRef=useRef(null);
+  const forceRef=useRef(null);
+  const selRef=useRef(null); selRef.current=sel;
+  const sel2Ref=useRef(null); sel2Ref.current=sel2;
+  const usernameRef=useRef(""); usernameRef.current=username;
+  const scoreRef=useRef(0);
+  const isHostRef=useRef(false);
+  const modeRef=useRef("solo"); modeRef.current=mode;
+  const playersRef=useRef({});
+  const answeredRef=useRef({});
+  const questionsRef=useRef([]);
+  const qIdxRef=useRef(0); qIdxRef.current=qIdx;
+  const tlRef=useRef(15); tlRef.current=tl;
+  const pwX2Ref=useRef(false); pwX2Ref.current=pwX2;
+  const pwDoubleRef=useRef(false); pwDoubleRef.current=pwDouble;
+  const sfxOnRef=useRef(true); sfxOnRef.current=sfxOn;
+  const categoryRef=useRef("karışık"); categoryRef.current=category;
+  const afkCountRef=useRef({});
+  const pendingSfxRef=useRef(null);
+  const pingIntervalRef=useRef(null);
+
+  // -- Load user --
+  const loadUser=useCallback((u)=>{
+    const xp=getTotalXP(u);
+    const li=calcLevelInfo(xp);
+    setTotalXP(xp); setLevelInfo(li);
+    setGold(getGold(u));
+    setPowers(getPowers(u));
+    setStats(getStats(u));
+    setMissions(getMissions(u));
+    const dd=getDailyData(u);
+    setDailyData(dd);
+    setAvatar(getAvatar(u));
+    setUserCode(getUserCode(u));
+    setGmailInput(getGmail(u));
+    setUserTitle(getTitleLS(u));
+    setFriends(getFriends(u));
+    getUserCode(u); // ensure code generated
+  },[]);
+
+  // -- Online ping --
+  useEffect(()=>{
+    if(!username)return;
+    pingOnline(username);
+    pingIntervalRef.current=setInterval(()=>pingOnline(usernameRef.current),30000);
+    return()=>clearInterval(pingIntervalRef.current);
+  },[username]);
+
+  // -- Reveal SFX --
+  useEffect(()=>{
+    if(revealed&&pendingSfxRef.current!==null&&sfxOnRef.current){
+      playSfx(pendingSfxRef.current?'correct':'wrong');
+      pendingSfxRef.current=null;
+    }
+  },[revealed]);
+
+  // -- Gold award on result --
+  useEffect(()=>{
+    if(screen!=="result")return;
+    const lb=getLB();
+    const myRank=lb.findIndex(p=>p.isMe);
+    const rankGold=[100,50,25][myRank]||0;
+    if(rankGold>0){
+      if(sfxOnRef.current)playSfx('earn');
+      setGold(g=>{const ng=g+rankGold;saveGoldLS(usernameRef.current,ng);return ng;});
+      setGoldEarned(rankGold);
+    }
+    // XP from correct answers
+    const correctCount=answers.filter(a=>a.sel===a.a).length;
+    if(correctCount>0) addXP(correctCount*5);
+    // Update stats
+    const ns=getStats(usernameRef.current);
+    ns.games=(ns.games||0)+1;
+    ns.correct=(ns.correct||0)+correctCount;
+    if(myRank===0&&mode==='multi') ns.wins=(ns.wins||0)+1;
+    // Category stats
+    const catMap={bilim:'sci_correct',spor:'sport_correct',coğrafya:'geo_correct',tarih:'hist_correct',sanat:'art_correct'};
+    if(catMap[categoryRef.current]) ns[catMap[categoryRef.current]]=(ns[catMap[categoryRef.current]]||0)+correctCount;
+    setStats(ns);
+    saveStatsLS(usernameRef.current,ns);
+    checkMissions(ns,calcLevelInfo(getTotalXP(usernameRef.current)).level);
+    // Daily
+    triggerDaily('gameComplete');
+    if(correctCount>0) triggerDaily('firstCorrect');
+  },[screen]);
+
+  // -- Music --
+  useEffect(()=>{
+    if(screen==="game"&&!musicStarted){setMusicStarted(true);if(musicOn)playMusic(0);}
+    if((screen==="result"||screen==="home"||screen==="auth")&&musicStarted){stopMusic();setMusicStarted(false);}
+  },[screen]);
+
+  // -- Shuffle --
+  useEffect(()=>{
+    if(!questions[qIdx])return;
+    const seed=usernameRef.current+String(qIdx);
+    const sh=seededShuffle(questions[qIdx].o,seed);
+    setShuffled(sh);
+    if(pwElim){
+      const wrong=sh.map((it,di)=>({di,i:it.i})).filter(x=>x.i!==questions[qIdx].a);
+      setEliminated(wrong.slice(0,2).map(x=>x.di));
+    } else setEliminated([]);
+  },[qIdx,questions]);
+
+  // -- addXP --
+  const addXP=useCallback((amount)=>{
+    const u=usernameRef.current;if(!u)return;
+    const oldXP=getTotalXP(u);
+    const newXP=oldXP+amount;
+    setTotalXP(newXP);
+    saveTotalXP(u,newXP);
+    const oldLI=calcLevelInfo(oldXP);
+    const newLI=calcLevelInfo(newXP);
+    setLevelInfo(newLI);
+    const queue=[];
+    for(let lv=oldLI.level+1;lv<=newLI.level;lv++){
+      const rewards=getLevelRewards(lv);
+      queue.push({newLevel:lv,rewards});
+      let g2=0;
+      const np={...getPowers(u)};
+      rewards.forEach(r=>{
+        if(r.type==='gold'){g2+=r.amount;}
+        if(r.type==='power'){np[r.pw]=(np[r.pw]||0)+1;}
+      });
+      if(g2>0){setGold(g=>{const ng=g+g2;saveGoldLS(u,ng);return ng;});}
+      if(Object.values(np).some(v=>v>0)){setPowers(np);savePowersLS(u,np);}
+    }
+    if(queue.length>0)setLevelUpQueue(q=>[...q,...queue]);
+  },[]);
+
+  // -- checkMissions --
+  const checkMissions=useCallback((ns,currentLevel)=>{
+    const u=usernameRef.current;
+    const ms=getMissions(u);
+    let changed=false;
+    MISSIONS_DEF.forEach(md=>{
+      if(ms[md.id]==='done')return;
+      const val=md.stat==='level'?currentLevel:(ns[md.stat]||0);
+      if(val>=md.target){
+        ms[md.id]='done';changed=true;
+        addXP(md.xp);
+        setGold(g=>{const ng=g+md.gold;saveGoldLS(u,ng);return ng;});
+        if(md.title_reward){setUserTitle(md.title_reward);saveTitleLS(u,md.title_reward);}
+      }
+    });
+    if(changed){setMissions({...ms});saveMissionsLS(u,ms);}
+  },[addXP]);
+
+  // -- triggerDaily --
+  const triggerDaily=useCallback((event)=>{
+    const u=usernameRef.current;if(!u)return;
+    const dd=getDailyData(u);
+    const def=DAILY_DEF.find(d=>d.event===event);
+    if(!def||dd.done[def.id])return;
+    const newDone={...dd.done,[def.id]:true};
+    const newPts=(dd.pts||0)+def.pts;
+    const shouldChest=newPts>=20&&!dd.chestClaimed;
+    const newDD={done:newDone,pts:newPts,chestClaimed:dd.chestClaimed||shouldChest};
+    setDailyData(newDD);
+    saveDailyDataLS(u,newDD);
+    if(shouldChest){
+      setChestModal(true);
+      setGold(g=>{const ng=g+100;saveGoldLS(u,ng);return ng;});
+    }
+  },[]);
+
+  // -- AUTH --
+  const handleAuth=useCallback(()=>{
+    const u=fUser.trim(),p=fPass.trim();
+    setFErr("");
+    if(!u){setFErr("Kullanıcı adı boş bırakılamaz.");return;}
+    if(u.length<2){setFErr("En az 2 karakter giriniz.");return;}
+    if(!p){setFErr("Şifre boş bırakılamaz.");return;}
+    const db=USERS.current;
+    if(authTab==="register"){
+      if(db.has(u)||isUsernameTaken(u)){setFErr("Bu kullanıcı adı zaten kullanılıyor.");return;}
+      db.set(u,p);
+      registerUsername(u);
+    } else {
+      if(db.has(u)&&db.get(u)!==p){setFErr("Şifre hatalı.");return;}
+      if(!db.has(u)){db.set(u,p);registerUsername(u);}
+    }
+    setUsername(u);
+    loadUser(u);
+    try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",p);}catch(e){}
+    setTimeout(()=>triggerDaily('login'),300);
+    const pending=sessionStorage.getItem("pendingRoom");
+    if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}
+    else setScreen("home");
+  },[authTab,fUser,fPass,loadUser,triggerDaily]);
+
+  const broadcast=(msg)=>{connsRef.current.forEach(c=>{try{c.send(msg);}catch(e){}});};
+
+  // -- removePlayer --
+  const removePlayer=useCallback((name)=>{
+    if(!playersRef.current[name])return;
+    delete playersRef.current[name];
+    const list=Object.keys(playersRef.current);
+    setRoomPlayers([...list]);setLiveScores({...playersRef.current});
+    broadcast({type:"players",list});broadcast({type:"scores",data:{...playersRef.current}});
+    const qI=qIdxRef.current;
+    if(!answeredRef.current[qI])answeredRef.current[qI]=new Set();
+    answeredRef.current[qI].add(name);
+    const total=Object.keys(playersRef.current).length;
+    if(total===0){broadcast({type:"gameOver"});setScreen("result");return;}
+    if(answeredRef.current[qI].size>=total){clearTimeout(forceRef.current);doAdvance(qI);}
+  },[]);
+
+  // -- hostRecordAnswered --
+  const hostRecordAnswered=useCallback((qI,name,wasAFK)=>{
+    if(!answeredRef.current[qI])answeredRef.current[qI]=new Set();
+    if(answeredRef.current[qI].has(name))return;
+    answeredRef.current[qI].add(name);
+    if(wasAFK){
+      if(!afkCountRef.current[name])afkCountRef.current[name]=0;
+      afkCountRef.current[name]++;
+      if(afkCountRef.current[name]>=3){
+        broadcast({type:"kicked",name});
+        setKickedPlayers(kp=>[...kp,name]);
+        removePlayer(name);return;
+      }
+    } else afkCountRef.current[name]=0;
+    const total=Object.keys(playersRef.current).length;
+    const answered=answeredRef.current[qI].size;
+    broadcast({type:"waitCount",answered,total});
+    setWaitCount({answered,total});
+    if(answered>=total){clearTimeout(forceRef.current);doAdvance(qI);}
+  },[removePlayer]);
+
+  // -- doAdvance --
+  const doAdvance=useCallback((qI)=>{
+    clearTimeout(forceRef.current);
+    broadcast({type:"reveal"});
+    setRevealed(true);
+    const nextQIdx=qI+1;
+    setTimeout(()=>{
+      if(nextQIdx>=questionsRef.current.length){
+        broadcast({type:"gameOver"});
+        setTimeout(()=>setScreen("result"),100);
+      } else {
+        broadcast({type:"advanceQ",newQIdx:nextQIdx});
+        advanceToQ(nextQIdx);
+      }
+    },1800);
+  },[]);
+
+  const advanceToQ=useCallback((nqi)=>{
+    setQIdx(nqi);setSel(null);setSel2(null);setTl(15);
+    setFeedback(false);setRevealed(false);setWaiting(false);
+    setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);
+    pendingSfxRef.current=null;
+    setWaitCount({answered:0,total:Object.keys(playersRef.current).length||1});
+  },[]);
+
+  // -- createRoom --
+  const createRoom=useCallback(()=>{
+    if(peerRef.current)peerRef.current.destroy();
+    isHostRef.current=true;playersRef.current={[username]:0};answeredRef.current={};afkCountRef.current={};
+    setRoomPlayers([username]);setLiveScores({[username]:0});setConnStatus("connecting");setKickedPlayers([]);
+    const peer=new Peer();peerRef.current=peer;
+    peer.on("open",id=>{const code=genRoomCode();setRoomCode(code);saveRoomCode(code,id);if(typeof fbSaveRoomCode!=="undefined"){fbSaveRoomCode(code,id).catch(()=>{});}setInviteLink(window.location.href.split("#")[0]+"#room="+id);setConnStatus("connected");setScreen("lobby-host");});
+    peer.on("connection",conn=>{
+      conn.on("open",()=>{connsRef.current.push(conn);conn.send({type:"welcome",host:usernameRef.current});});
+      conn.on("data",msg=>{
+        if(msg.type==="join"){playersRef.current[msg.name]=0;afkCountRef.current[msg.name]=0;const list=Object.keys(playersRef.current);setRoomPlayers([...list]);setLiveScores({...playersRef.current});broadcast({type:"players",list});}
+        if(msg.type==="score"){playersRef.current[msg.name]=msg.score;setLiveScores({...playersRef.current});broadcast({type:"scores",data:{...playersRef.current}});}
+        if(msg.type==="answered")hostRecordAnswered(msg.qIdx,msg.name,msg.wasAFK);
+      });
+      conn.on("close",()=>{connsRef.current=connsRef.current.filter(c=>c!==conn);});
+    });
+    peer.on("error",e=>{setConnStatus("error");});
+    // Stats & daily
+    const ns=getStats(username);ns.rooms=(ns.rooms||0)+1;setStats(ns);saveStatsLS(username,ns);
+    triggerDaily('createRoom');
+  },[username,hostRecordAnswered,triggerDaily]);
+
+  // -- joinAsClient --
+  const joinAsClient=useCallback((uname,hostPeerId)=>{
+    isHostRef.current=false;setConnStatus("connecting");setScreen("lobby-guest");
+    if(peerRef.current)peerRef.current.destroy();
+    const peer=new Peer();peerRef.current=peer;
+    peer.on("open",()=>{
+      const conn=peer.connect(hostPeerId,{reliable:true});hostConnRef.current=conn;
+      conn.on("open",()=>{conn.send({type:"join",name:uname||usernameRef.current});setConnStatus("connected");});
+      conn.on("data",msg=>{
+        if(msg.type==="welcome")setRoomPlayers([msg.host]);
+        if(msg.type==="players")setRoomPlayers(msg.list);
+        if(msg.type==="scores")setLiveScores(msg.data);
+        if(msg.type==="waitCount")setWaitCount({answered:msg.answered,total:msg.total});
+        if(msg.type==="reveal"){setRevealed(true);setFeedback(true);}
+        if(msg.type==="kicked"&&msg.name===usernameRef.current){setScreen("home");alert("3 soruya cevap vermediğiniz için oyundan çıkarıldınız.");}
+        if(msg.type==="start"){
+          const pl=msg.players||[];const initS={};pl.forEach(p=>{initS[p]=0;});
+          if(!initS[usernameRef.current])initS[usernameRef.current]=0;
+          playersRef.current=initS;setWaitCount({answered:0,total:pl.length||1});
+          launchGame(msg.questions,msg.qCount,"multi",pl,msg.category||"karışık");
+        }
+        if(msg.type==="advanceQ")advanceToQ(msg.newQIdx);
+        if(msg.type==="gameOver")setTimeout(()=>setScreen("result"),100);
+        if(msg.type==="rematch"){
+          setQuestions([]);setQIdx(0);setScore(0);scoreRef.current=0;
+          setAnswers([]);setSel(null);setSel2(null);setRevealed(false);setWaiting(false);setFeedback(false);
+          setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);
+          playersRef.current={};setLiveScores({});setGoldEarned(0);setKickedPlayers([]);
+          setScreen("setup");
+        }
+      });
+      conn.on("close",()=>setConnStatus("error"));
+      conn.on("error",()=>setConnStatus("error"));
+    });
+    peer.on("error",()=>setConnStatus("error"));
+  },[advanceToQ]);
+
+  // -- auto-login --
+  useEffect(()=>{
+    const hash=window.location.hash.slice(1);
+    let pending=null;
+    if(hash&&hash.startsWith("room=")){pending=hash.slice(5);history.replaceState(null,"",window.location.pathname+window.location.search);}
+    try{
+      const su=localStorage.getItem("ba_user"),sp=localStorage.getItem("ba_pass");
+      if(su&&sp){USERS.current.set(su,sp);setUsername(su);loadUser(su);setTimeout(()=>triggerDaily('login'),300);
+        if(pending)joinAsClient(su,pending);else setScreen("home");return;}
+    }catch(e){}
+    if(pending)sessionStorage.setItem("pendingRoom",pending);
+  },[]);
+
+  // -- Start game --
+  const startGame=useCallback((isMulti)=>{
+    setScreen("loading");setMusicStarted(false);setGoldEarned(0);setKickedPlayers([]);
+    const qs=getQsByCategory(category,qCount,usernameRef.current);
+    setTimeout(()=>{const pl=Object.keys(playersRef.current);if(isMulti&&isHostRef.current)broadcast({type:"start",questions:qs,qCount,players:pl,category});launchGame(qs,qCount,isMulti?"multi":"solo",pl,category);},700);
+  },[category,qCount]);
+
+  const launchGame=useCallback((qs,cnt,m,players,cat)=>{
+    const pl=players&&players.length>0?players:roomPlayers;
+    const initS={};pl.forEach(p=>{initS[p]=0;});
+    if(!initS[usernameRef.current])initS[usernameRef.current]=0;
+    questionsRef.current=qs;answeredRef.current={};
+    setQuestions(qs);setQIdx(0);setScore(0);scoreRef.current=0;setAnswers([]);setSel(null);setSel2(null);setTl(15);
+    setFeedback(false);setRevealed(false);setWaiting(false);setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);
+    setLiveScores(initS);setWaitCount({answered:0,total:pl.length||1});pendingSfxRef.current=null;
+    if(cat)setCategory(cat);
+    setMode(m);modeRef.current=m;setScreen("game");
+  },[]);
+
+  // -- submitAnswer --
+  const submitAnswer=useCallback((di1,di2,q)=>{
+    clearInterval(timerRef.current);
+    const sh=seededShuffle(q.o,usernameRef.current+String(qIdxRef.current));
+    const orig1=di1===null?null:sh[di1].i;
+    const orig2=di2!==null?sh[di2].i:null;
+    const ok=orig1===q.a||(orig2!==null&&orig2===q.a);
+    let pts=ok?calcScore(tlRef.current):0;
+    if(pwX2Ref.current&&ok)pts=pts*2;
+    const ns=scoreRef.current+pts;scoreRef.current=ns;setScore(ns);
+    setFeedback(true);
+    setAnswers(a=>[...a,{q:q.q,o:q.o,a:q.a,sel:orig1,sel2:orig2,tl:tlRef.current,pts}]);
+    pendingSfxRef.current=ok;
+    if(modeRef.current==="multi"){
+      setWaiting(true);
+      if(isHostRef.current){
+        playersRef.current[usernameRef.current]=ns;setLiveScores({...playersRef.current});
+        broadcast({type:"scores",data:{...playersRef.current}});
+        hostRecordAnswered(qIdxRef.current,usernameRef.current,di1===null);
+        clearTimeout(forceRef.current);forceRef.current=setTimeout(()=>doAdvance(qIdxRef.current),22000);
+      } else if(hostConnRef.current){
+        try{hostConnRef.current.send({type:"score",name:usernameRef.current,score:ns});hostConnRef.current.send({type:"answered",qIdx:qIdxRef.current,name:usernameRef.current,wasAFK:di1===null});}catch(e){}
+      }
+    } else {
+      setRevealed(true);
+      setTimeout(()=>{
+        const ni=qIdxRef.current+1;
+        if(ni<questionsRef.current.length){setQIdx(ni);setSel(null);setSel2(null);setTl(15);setFeedback(false);setRevealed(false);setPwDouble(false);setPwElim(false);setPwX2(false);setEliminated([]);pendingSfxRef.current=null;}
+        else setScreen("result");
+      },1500);
+    }
+  },[hostRecordAnswered,doAdvance]);
+
+  // -- doAnswer --
+  const doAnswer=useCallback((displayIdx)=>{
+    const q=questionsRef.current[qIdxRef.current];if(!q)return;
+    if(selRef.current!==null&&(!pwDoubleRef.current||sel2Ref.current!==null))return;
+    if(pwDoubleRef.current){
+      if(selRef.current===null){setSel(displayIdx);return;}
+      if(displayIdx!==selRef.current){setSel2(displayIdx);submitAnswer(selRef.current,displayIdx,q);return;}
+      return;
+    }
+    setSel(displayIdx);submitAnswer(displayIdx,null,q);
+  },[submitAnswer]);
+
+  // -- timer --
+  useEffect(()=>{
+    if(screen!=="game")return;
+    clearInterval(timerRef.current);setTl(15);
+    timerRef.current=setInterval(()=>{
+      setTl(t=>{
+        if(t<=1){clearInterval(timerRef.current);if(selRef.current===null){const q=questionsRef.current[qIdxRef.current];if(q)setTimeout(()=>submitAnswer(null,null,q),0);}return 0;}
+        return t-1;
+      });
+    },1000);
+    return()=>clearInterval(timerRef.current);
+  },[screen,qIdx,submitAnswer]);
+
+  useEffect(()=>()=>{clearInterval(timerRef.current);clearTimeout(forceRef.current);if(peerRef.current)peerRef.current.destroy();stopMusic();},[]);
+
+  const copyLink=()=>{
+    const txt=inviteLink||window.location.href;
+    const fallback=()=>{try{const ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);}catch(e){}};
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(()=>{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);});}else{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}}catch(e){fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}
+  };
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(fb);}else{fb();setCopied(true);setTimeout(()=>setCopied(false),2500);}}catch(e){fb();setCopied(true);setTimeout(()=>setCopied(false),2500);}
+  const rankBG=i=>RANK_BG[i]||"#1e1e4a";
+  const getLB=()=>{
+    if(mode==="solo")return[{name:username,score,correct:answers.filter(a=>a.sel===a.a).length,isMe:true}];
+    return Object.entries(liveScores).map(([n,sc])=>({name:n,score:sc,correct:n===username?answers.filter(a=>a.sel===a.a).length:0,isMe:n===username})).sort((a,b)=>b.score-a.score);
+  };
+
+  // -- Power activate --
+  const activatePw=useCallback((type)=>{
+    if(selRef.current!==null)return;
+    const cur=getPowers(usernameRef.current);
+    const costs={double:200,elim:200,x2:300};
+    const active={double:pwDoubleRef.current,elim:pwElim,x2:pwX2Ref.current};
+    if(active[type])return;
+    if(cur[type]>0){const np={...cur,[type]:cur[type]-1};setPowers(np);savePowersLS(usernameRef.current,np);}
+    else{if(gold<costs[type])return;playSfx('spend');setGold(g=>{const ng=g-costs[type];saveGoldLS(usernameRef.current,ng);return ng;});}
+    if(type==='double')setPwDouble(true);
+    else if(type==='elim'){
+      setPwElim(true);
+      const q=questionsRef.current[qIdxRef.current];
+      if(q){const sh=seededShuffle(q.o,usernameRef.current+String(qIdxRef.current));setEliminated(sh.map((it,di)=>({di,i:it.i})).filter(x=>x.i!==q.a).slice(0,2).map(x=>x.di));}
+    }
+    else if(type==='x2')setPwX2(true);
+  },[gold,pwElim]);
+
+  // -- Friend search --
+  const searchFriend=useCallback(()=>{
+    const code=friendSearchInput.trim();
+    if(!code){setFriendSearchErr("Kod girin");return;}
+    const db=getUsernames();
+    const found=Object.keys(db).find(u=>getUserCode(u)===code);
+    if(!found){setFriendSearchErr("Bu koda sahip kullanıcı bulunamadı");setFriendSearchResult(null);return;}
+    if(found===username){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
+    setFriendSearchResult(found);setFriendSearchErr("");
+  },[friendSearchInput,username]);
+
+  const addFriend=useCallback((friendName)=>{
+    const cur=getFriends(usernameRef.current);
+    if(cur.includes(friendName))return;
+    const updated=[...cur,friendName];
+    setFriends(updated);saveFriendsLS(usernameRef.current,updated);
+    setFriendSearchResult(null);setFriendSearchInput("");
+  },[]);
+
+  const challengeFriend=useCallback((friendName)=>{
+    setMode("multi");setScreen("setup-challenge");
+  },[]);
+
+
+    // ══ SCREENS ══
+
+  if(screen==="auth") return(
+    <W><div className="sc fi">
+      <div className="logo" style={{textAlign:"center",paddingTop:20}}>
+        <h1>BILGI ARENA</h1><p>Kim Kazanacak?</p>
+      </div>
+      <div className="tabs" style={{marginBottom:16}}>
+        <button className={"tb "+(authTab==="login"?"on":"off")} onClick={()=>{setAuthTab("login");setFErr("");}}>Giris Yap</button>
+        <button className={"tb "+(authTab==="register"?"on":"off")} onClick={()=>{setAuthTab("register");setFErr("");}}>Kayit Ol</button>
+      </div>
+      {authTab==="register"&&<input className="inp" placeholder="Kullanici adi (min 3 karakter)" value={fUser} onChange={e=>{setFUser(e.target.value);setFErr("");}} autoComplete="username"/>}
+      <input className="inp" placeholder="E-posta adresi" value={fEmail} onChange={e=>{setFEmail(e.target.value.trim());setFErr("");}} type="email" autoComplete="email" inputMode="email"/>
+      <input className="inp" type="password" placeholder="Sifre (min 6 karakter)" value={fPass} onChange={e=>{setFPass(e.target.value);setFErr("");}} onKeyDown={e=>e.key==="Enter"&&!authLoading&&handleAuth()} autoComplete={authTab==="login"?"current-password":"new-password"}/>
+      {fErr&&<div className="errmsg">! {fErr}</div>}
+      <button className="pbtn" style={{marginTop:6,opacity:authLoading?.5:1}} disabled={authLoading} onClick={handleAuth}>
+        {authLoading?"Bekleniyor...":(authTab==="login"?"Giris Yap":"Hesap Olustur")}
+      </button>
+      <div style={{textAlign:"center",margin:"12px 0",color:"#4a6080",fontSize:12}}>veya</div>
+      <button className="sbtn" onClick={()=>{
+        const g="Misafir"+(Math.floor(Math.random()*9000)+1000);
+        try{localStorage.setItem("ba_user",g);}catch(e){}
+        setUsername(g);loadUser(g);setTimeout(()=>doTriggerDaily("login"),300);
+        const p2=sessionStorage.getItem("pendingRoom");if(p2){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p2);}else setScreen("home");
+      }}>Misafir Olarak Devam Et</button>
+    </div></W>
+  );
+
+  if(screen==="home"){
+    const fr=getFrame(levelInfo.level);
+    const ms=getMissions(username);
+    return(
+      <W><div className="sc fi">
+        <div className="hdr">
+          <span className="logosm">BİLGİ ARENA</span>
+          <div style={{display:"flex",alignItems:"center",gap:7}}>
+            <div className="gold-bar" onClick={()=>setShowShop(true)}><span>🪙</span><span>{gold}</span></div>
+            <button onClick={()=>setShowSettings(true)} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,padding:0}}>⚙️</button>
+          </div>
+        </div>
+        {/* Nav */}
+        <div style={{display:"flex",background:"#111130",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
+          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
+            <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#6ee7f7,#818cf8)":"transparent",color:homeTab===t.k?"#0a0a1f":"#3d3d6b",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
+          ))}
+        </div>
+
+        {homeTab==="home"&&<>
+          {/* User card */}
+          <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:16,padding:14,marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
+            <div onClick={()=>setHomeTab("profile")} style={{cursor:"pointer"}}>
+              <AvatarSVG {...avatar} level={levelInfo.level} size={62}/>
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:17,fontWeight:800,color:"#e2e4f0"}}>{username}</div>
+              {userTitle&&<div style={{fontSize:11,color:"#fbbf24",fontWeight:700}}>{userTitle}</div>}
+              {fr&&<div style={{fontSize:11,color:fr.c}}>{fr.name} Çerçeve</div>}
+              <div style={{height:4,background:"#1e1e4a",borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${Math.round(levelInfo.currentXP/levelInfo.neededXP*100)}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)",borderRadius:2}}/>
+              </div>
+              <div style={{fontSize:10,color:"#3d3d6b",marginTop:2}}>Sv.{levelInfo.level} · {levelInfo.currentXP}/{levelInfo.neededXP} XP</div>
+            </div>
+          </div>
+          {/* Power inventory */}
+          {Object.values(powers).some(v=>v>0)&&(
+            <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"10px 13px",marginBottom:12}}>
+              <div style={{fontSize:10,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>Envanter</div>
+              <div style={{display:"flex",gap:8}}>
+                {Object.entries(powers).filter(([,v])=>v>0).map(([k,v])=>(
+                  <div key={k} style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.2)",borderRadius:10,padding:"6px 11px",display:"flex",alignItems:"center",gap:6}}>
+                    <span style={{fontSize:16}}>{k==='double'?"🎯":k==='elim'?"❌":"⚡"}</span>
+                    <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:"#fbbf24"}}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="mc" onClick={()=>{setMode("solo");setScreen("setup");}}>
+            <div style={{fontSize:26,marginBottom:6}}>🎯</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Tekli Mod</div>
+            <div style={{fontSize:12,color:"#3d3d6b"}}>Tek başına oyna, kendi rekorunu kır</div>
+            <div style={{marginTop:8}}><span className="badge be">Solo</span></div>
+          </div>
+          <div className="mc" onClick={()=>{setMode("multi");setScreen("setup");}}>
+            <div style={{fontSize:26,marginBottom:6}}>👥</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Çoklu Mod</div>
+            <div style={{fontSize:12,color:"#3d3d6b"}}>Link paylaş, arkadaşlar direkt katılır</div>
+            <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer</span></div>
+          <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#0d1a30,#1a0820)",border:"2px solid #ff4d6d",cursor:"pointer"}}>
+            <div style={{fontSize:26,marginBottom:4}}>🏆</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Modu</div>
+            <div style={{fontSize:11,color:"#a8c4e0"}}>2-8 oyuncu eleme sistemi</div>
+            <div style={{marginTop:5}}><span style={{background:"rgba(255,77,109,.15)",color:"#ff4d6d",border:"1px solid rgba(255,77,109,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>YENI</span></div>
+          </div>
+          </div>
+        </>}
+
+        {homeTab==="league"&&(()=>{
+          const ld=leagueData||{league:"bronze",weeklyPts:0};
+          const allLgs=[{id:"bronze",name:"Bronz",icon:"🥉",color:"#cd7f32",minPts:0},{id:"silver",name:"Gumus",icon:"🥈",color:"#C0C0C0",minPts:500},{id:"gold",name:"Altin",icon:"🥇",color:"#ffd166",minPts:1500},{id:"diamond",name:"Elmas",icon:"💎",color:"#4cc9f0",minPts:3000},{id:"master",name:"Usta",icon:"👑",color:"#9b5de5",minPts:6000}];
+          const lg=allLgs.find(l=>l.id===(ld.league||"bronze"))||allLgs[0];
+          const nextLg=allLgs[allLgs.findIndex(l=>l.id===lg.id)+1];
+          const pts=ld.weeklyPts||0;
+          const fakeBoard=[{name:username,pts,isMe:true},...["Ali","Ayse","Mehmet","Fatma","Ahmet","Zeynep","Mustafa","Elif"].map((n,i)=>({name:n,pts:Math.max(0,pts+(Math.floor(Math.random()*200)*(i%2?1:-1))),isMe:false}))].sort((a,b)=>b.pts-a.pts).slice(0,10);
+          return(
+            <div>
+              <div style={{background:"linear-gradient(135deg,"+lg.color+"22,"+lg.color+"11)",border:"2px solid "+lg.color,borderRadius:14,padding:14,marginBottom:10,textAlign:"center"}}>
+                <div style={{fontSize:36,marginBottom:2}}>{lg.icon}</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:lg.color}}>{lg.name} Ligi</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:28,fontWeight:700,color:"#fff",margin:"3px 0"}}>{pts.toLocaleString()} <span style={{fontSize:11,color:"#a8c4e0"}}>puan</span></div>
+                {nextLg&&<><div style={{fontSize:10,color:"#a8c4e0",marginTop:4}}>{nextLg.icon} {nextLg.name} icin <b style={{color:"#06d6a0"}}>{Math.max(0,nextLg.minPts-pts)} puan</b> daha</div>
+                <div style={{height:4,background:"rgba(255,255,255,.1)",borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:Math.min(100,(pts-lg.minPts)/((nextLg.minPts||9999)-lg.minPts)*100)+"%",background:lg.color,borderRadius:2}}/>
+                </div></>}
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:"#a8c4e0",marginBottom:7}}>Bu Haftaki Siralama</div>
+              {fakeBoard.map((p,i)=>(
+                <div key={i} style={{background:p.isMe?"rgba(76,201,240,.08)":"#0f2040",border:p.isMe?"2px solid #4cc9f0":"1.5px solid #1e3a6e",borderRadius:10,padding:"8px 11px",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{width:24,height:24,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#162848",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:i<3?"#060e1e":"#a8c4e0",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+                  <div style={{flex:1,fontWeight:700,color:p.isMe?"#4cc9f0":"#fff",fontSize:12}}>{p.isMe?"Sen":p.name}</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,fontWeight:700,color:lg.color}}>{p.pts.toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
+        {homeTab==="friends"&&<>
+          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
+          <div style={{display:"flex",gap:8,marginBottom:10}}>
+            <input className="inp" style={{margin:0,flex:1}} placeholder="Kullanıcı kodu (#XXXXXX)" value={friendSearchInput} onChange={e=>{setFriendSearchInput(e.target.value);setFriendSearchErr("");}}/>
+            <button className="pbtn" style={{width:"auto",padding:"0 16px"}} onClick={searchFriend}>Ara</button>
+          </div>
+          {friendSearchErr&&<div style={{fontSize:12,color:"#f87171",marginBottom:8}}>⚠ {friendSearchErr}</div>}
+          {friendSearchResult&&(
+            <div style={{background:"#111130",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{friendSearchResult[0].toUpperCase()}</div>
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult}</div><div style={{fontSize:11,color:isOnline(friendSearchResult)?"#34d399":"#3d3d6b"}}>{isOnline(friendSearchResult)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
+              <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>+ Ekle</button>
+            </div>
+          )}
+          <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
+          {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#3d3d6b",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
+          {friends.map((f,i)=>(
+            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{f[0].toUpperCase()}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{f}</div>
+                <div style={{fontSize:11,color:isOnline(f)?"#34d399":"#3d3d6b"}}>{isOnline(f)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div>
+              </div>
+              <button onClick={()=>{setMode("multi");setCategory("karışık");setScreen("setup");}} style={{background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#6ee7f7",padding:"6px 12px",borderRadius:10,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:12}}>⚔️ Meydan Oku</button>
+            </div>
+          ))}
+        </>}
+
+        {homeTab==="stats"&&(()=>{
+          const st=(typeof getDetailedStats!=="undefined")?getDetailedStats(username):{};
+          const history=(typeof getWeeklyHistory!=="undefined")?getWeeklyHistory(username):[];
+          const last7=[];
+          for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split("T")[0];const dd=history.filter(h=>h.d===k);last7.push({day:["Pz","Pt","Sa","Ca","Pe","Cu","Ct"][d.getDay()],pts:dd.reduce((s,h)=>s+(h.pts||0),0)});}
+          const maxP=Math.max(...last7.map(d=>d.pts),1);
+          const acc=st.games>0?Math.round((st.correct||0)/Math.max((st.games||0)*7,1)*100):0;
+          return(
+            <div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:7,marginBottom:12}}>
+                {[{v:st.games||0,l:"Oyun",i:"🎮",c:"#4cc9f0"},{v:st.correct||0,l:"Dogru",i:"✅",c:"#06d6a0"},{v:"%"+acc,l:"Isabet",i:"🎯",c:"#ffd166"},{v:st.wins||0,l:"Galibiyet",i:"👑",c:"#9b5de5"},{v:(leagueData&&leagueData.weeklyPts)||0,l:"Haftalik",i:"🏆",c:"#ff4d6d"},{v:0,l:"Davet",i:"👥",c:"#06d6a0"}].map((s,i)=>(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+s.c+"44",borderRadius:10,padding:"9px 5px",textAlign:"center"}}>
+                    <div style={{fontSize:14}}>{s.i}</div>
+                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:s.c}}>{s.v}</div>
+                    <div style={{fontSize:9,color:"#a8c4e0"}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:12,padding:12,marginBottom:10}}>
+                <div style={{fontSize:11,fontWeight:700,color:"#a8c4e0",marginBottom:8}}>Son 7 Gun</div>
+                <div style={{display:"flex",gap:3,alignItems:"flex-end",height:55}}>
+                  {last7.map((d,i)=>(
+                    <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                      <div style={{width:"100%",borderRadius:"2px 2px 0 0",background:d.pts>0?"linear-gradient(180deg,#4cc9f0,#9b5de5)":"#162848",height:Math.max(2,d.pts/maxP*48)+"px"}}/>
+                      <div style={{fontSize:8,color:d.pts>0?"#a8c4e0":"#2a4060",fontWeight:700}}>{d.day}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {homeTab==="missions"&&<>
+          <div style={{fontSize:12,color:"#3d3d6b",marginBottom:10}}>{MISSIONS_DEF.filter(m=>ms[m.id]==='done').length}/{MISSIONS_DEF.length} tamamlandı</div>
+          {MISSIONS_DEF.map(m=>{
+            const done=ms[m.id]==='done';
+            const ns=getStats(username);
+            const val=m.stat==='level'?levelInfo.level:(ns[m.stat]||0);
+            const prog=Math.min(val/m.target,1);
+            return(
+              <div key={m.id} style={{background:"#111130",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"12px 13px",marginBottom:8}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:done?0:5}}>
+                  <span style={{fontSize:20}}>{m.icon}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{m.title}</div>
+                    <div style={{fontSize:11,color:"#3d3d6b"}}>{m.desc}</div>
+                    {m.title_reward&&!done&&<div style={{fontSize:10,color:"#fbbf24",marginTop:2}}>🏆 Ünvan: {m.title_reward}</div>}
+                  </div>
+                  {done?<span>✅</span>:<div style={{textAlign:"right",fontSize:10}}><div style={{color:"#6ee7f7"}}>+{m.xp}XP</div><div style={{color:"#fbbf24"}}>+{m.gold}🪙</div></div>}
+                </div>
+                {!done&&<><div style={{height:3,background:"#1e1e4a",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:`${prog*100}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)"}}/></div><div style={{fontSize:10,color:"#3d3d6b",marginTop:2}}>{Math.min(val,m.target)}/{m.target}</div></>}
+              </div>
+            );
+          })}
+        </>}
+
+        {homeTab==="daily"&&<>
+          <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>Günlük Puan</div>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fbbf24"}}>{dailyData.pts||0}/20</div>
+            </div>
+            <div style={{height:5,background:"#1e1e4a",borderRadius:3,overflow:"hidden"}}>
+              <div style={{height:"100%",width:`${Math.min((dailyData.pts||0)/20*100,100)}%`,background:"linear-gradient(90deg,#fbbf24,#f59e0b)"}}/>
+            </div>
+            {(dailyData.pts||0)>=20&&<div style={{fontSize:11,color:"#34d399",marginTop:5,fontWeight:700}}>🎁 Sandık Kazandın! {dailyData.chestClaimed?"(Açıldı)":""}</div>}
+          </div>
+          {DAILY_DEF.map(d=>{
+            const done=dailyData.done&&dailyData.done[d.id];
+            return(
+              <div key={d.id} style={{background:"#111130",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}>
+                <span style={{fontSize:22}}>{done?"✅":d.icon}</span>
+                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{d.title}</div><div style={{fontSize:11,color:"#3d3d6b"}}>{d.desc}</div></div>
+                <div style={{fontSize:11,fontWeight:700,color:"#6ee7f7"}}>+{d.pts}pt</div>
+              </div>
+            );
+          })}
+        </>}
+
+        {homeTab==="profile"&&(()=>{
+          const fr=getFrame(levelInfo.level);
+          return(
+            <div>
+              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
+                <div style={{display:"flex",justifyContent:"center",marginBottom:10}}><AvatarSVG {...avatar} level={levelInfo.level} size={90}/></div>
+                <div style={{fontSize:18,fontWeight:800,color:"#e2e4f0"}}>{username}</div>
+                {userTitle&&<div style={{fontSize:12,color:"#fbbf24",fontWeight:700,marginTop:2}}>🏆 {userTitle}</div>}
+                {fr&&<div style={{fontSize:11,color:fr.c,marginTop:2}}>{fr.name} Çerçeve</div>}
+                <button className="sbtn" style={{marginTop:10,padding:"8px 20px",fontSize:12,width:"auto",display:"inline-block"}} onClick={()=>setShowAvEd(true)}>🎨 Karakteri Düzenle</button>
+              </div>
+              {/* User code */}
+              <div style={{background:"linear-gradient(135deg,rgba(110,231,247,.06),rgba(129,140,248,.06))",border:"1.5px solid rgba(110,231,247,.25)",borderRadius:14,padding:14,marginBottom:12,textAlign:"center"}}>
+                <div style={{fontSize:10,color:"#3d3d6b",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>Kullanıcı Kodu</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#6ee7f7",letterSpacing:4}}>{userCode}</div>
+                <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){};}} style={{marginTop:8,background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#6ee7f7",padding:"5px 14px",borderRadius:20,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:11}}>📋 Kopyala</button>
+              </div>
+              {/* Gmail */}
+              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+                <div style={{fontSize:12,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>📧 Gmail Bağla</div>
+                <div style={{fontSize:11,color:"#3d3d6b",marginBottom:8}}>Gmail bağla, <span style={{color:"#fbbf24",fontWeight:700}}>+100 🪙</span> kazan!</div>
+                <input className="inp" style={{marginBottom:7}} placeholder="ornek@gmail.com" value={gmailInput} onChange={e=>setGmailInput(e.target.value)} type="email"/>
+                <button className="pbtn" disabled={!gmailInput.includes("@")} onClick={()=>{
+                  const em=gmailInput.trim();
+                  if(!em||!em.includes("@"))return;
+                  saveGmailLS(username,em);
+                  if(!getGmailRewarded(username)&&em.includes("@gmail.com")){
+                    setGmailRewarded(username);
+                    setGold(g=>{const ng=g+100;saveGoldLS(username,ng);return ng;});
+                    if(sfxOn)playSfx('earn');
+                  }
+                }}>{getGmailRewarded(username)?"✅ Bağlandı":"Gmail Bağla +100🪙"}</button>
+              </div>
+              {/* Level rewards preview */}
+              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+                <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Seviye Ödülleri</div>
+                {FRAMES_DEF.map((fd,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<FRAMES_DEF.length-1?"1px solid #1a1a3a":"none",opacity:levelInfo.level>=fd.min?1:.55}}>
+                    <div style={{width:28,height:28,borderRadius:"50%",background:fd.c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,boxShadow:fd.s}}>⭐</div>
+                    <div style={{flex:1}}>
+                      <span style={{fontSize:13,fontWeight:700,color:fd.c}}>Seviye {fd.min}</span>
+                      <span style={{fontSize:11,color:"#3d3d6b",marginLeft:8}}>{fd.name} Çerçeve</span>
+                    </div>
+                    {levelInfo.level>=fd.min&&<span style={{fontSize:14}}>✅</span>}
+                  </div>
+                ))}
+              </div>
+              {/* Stats */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {[{v:stats.games||0,l:"Oyun"},{v:stats.correct||0,l:"Doğru"},{v:stats.wins||0,l:"Galibiyet"},{v:stats.rooms||0,l:"Oda"}].map((s,i)=>(
+                  <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"11px 8px",textAlign:"center"}}>
+                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#6ee7f7"}}>{s.v}</div>
+                    <div style={{fontSize:11,color:"#3d3d6b"}}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {showSettings&&<SettingsModal sfxOn={sfxOn} setSfxOn={setSfxOn} musicOn={musicOn} setMusicOn={setMusicOn} onClose={()=>setShowSettings(false)} onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
+        
+        {showTournament&&<div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.96)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
+          <div style={{background:"#060e1e",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"20px 18px 34px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#ff4d6d"}}>Turnuva Modu</div>
+              <button onClick={()=>setShowTournament(false)} style={{background:"none",border:"none",color:"#a8c4e0",fontSize:22,cursor:"pointer"}}>X</button>
+            </div>
+            {!tournamentData.started?(
+              <div>
+                <div style={{fontSize:12,color:"#a8c4e0",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
+                {(tournamentData.players.length===0?[username]:tournamentData.players).map((p,i)=>(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}}>
+                    <span>👤</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}</span>
+                    {i>0&&<button onClick={()=>setTournamentData(d=>({...d,players:d.players.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff4d6d",cursor:"pointer",fontSize:18}}>X</button>}
+                  </div>
+                ))}
+                {(tournamentData.players.length||1)<8&&<button onClick={()=>{const n=prompt("Oyuncu adi:");if(!n||!n.trim())return;setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));}} style={{width:"100%",background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"9px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:13,marginBottom:10}}>+ Oyuncu Ekle</button>}
+                <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)"}} onClick={()=>{
+                  const pl=tournamentData.players.length?tournamentData.players:[username];
+                  if(pl.length<2){alert("En az 2 oyuncu!");return;}
+                  const sh=[...pl].sort(()=>Math.random()-.5);
+                  const br=[];
+                  for(let i=0;i<sh.length;i+=2){if(i+1<sh.length)br.push({p1:sh[i],p2:sh[i+1],winner:null});else br.push({p1:sh[i],p2:"BYE",winner:sh[i]});}
+                  setTournamentData({players:pl,started:true,bracket:br,round:1});
+                }}>Turnuvayi Basla</button>
+              </div>
+            ):(
+              <div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#a8c4e0",marginBottom:10}}>Tur {tournamentData.round}</div>
+                {tournamentData.bracket.map((m,i)=>(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+(m.winner?"#06d6a0":"#1e3a6e"),borderRadius:11,padding:"11px",marginBottom:7}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:m.winner?0:8}}>
+                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p1?"#06d6a0":"#fff"}}>{m.p1}</div>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,color:"#a8c4e0",fontWeight:700}}>VS</div>
+                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p2?"#06d6a0":m.p2==="BYE"?"#4a6080":"#fff"}}>{m.p2}</div>
+                    </div>
+                    {!m.winner&&m.p2!=="BYE"&&<div style={{display:"flex",gap:5}}>
+                      {[m.p1,m.p2].map(w=><button key={w} onClick={()=>{
+                        const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);
+                        if(nb.every(bm=>bm.winner)){
+                          const ws=nb.map(bm=>bm.winner);
+                          if(ws.length===1){alert("Sampiyon: "+ws[0]+"!");setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}
+                          else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}
+                        } else setTournamentData(d=>({...d,bracket:nb}));
+                      }} style={{flex:1,background:"rgba(6,214,160,.08)",border:"1.5px solid #06d6a0",borderRadius:8,padding:"6px",color:"#06d6a0",fontWeight:800,cursor:"pointer",fontSize:11}}>{w} Kazandi</button>)}
+                    </div>}
+                    {m.winner&&<div style={{textAlign:"center",color:"#06d6a0",fontWeight:700,fontSize:11}}>Kazanan: {m.winner}</div>}
+                  </div>
+                ))}
+                <button onClick={()=>setTournamentData({players:[],started:false,bracket:[],round:1})} style={{width:"100%",background:"rgba(255,77,109,.08)",border:"1.5px solid #ff4d6d",borderRadius:9,padding:"8px",color:"#ff4d6d",fontWeight:700,cursor:"pointer",marginTop:4}}>Sifirla</button>
+              </div>
+            )}
+          </div>
+        </div>}
+        {showAvEd&&<AvatarEditor avatar={avatar} levelInfo={levelInfo} onSave={(av)=>{setAvatar(av);saveAvatar(usernameRef.current,av);setShowAvEd(false);}} onClose={()=>setShowAvEd(false)}/>}
+        {showShop&&(
+          <div className="shop-overlay" onClick={()=>setShowShop(false)}>
+            <div className="shop-panel" onClick={e=>e.stopPropagation()}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0"}}>🏪 Mağaza</div>
+                <button onClick={()=>setShowShop(false)} style={{background:"none",border:"none",color:"#3d3d6b",fontSize:22,cursor:"pointer"}}>✕</button>
+              </div>
+              <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"12px",textAlign:"center",marginBottom:14}}>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#fbbf24"}}>🪙 {gold}</div>
+              </div>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Altin Paketleri</div>
+              {[{g:1000,b:0,p:"29.99",i:"🪙"},{g:4000,b:500,p:"89.99",popular:true,i:"💛"},{g:8000,b:1000,p:"159.99",i:"🏆"},{g:20000,b:5000,p:"349.99",i:"👑"}].map((pkg,pi)=>(
+                <div key={pi} style={{background:pkg.popular?"rgba(76,201,240,.07)":"#0f2040",border:pkg.popular?"2px solid #4cc9f0":"1.5px solid #2a5a8e",borderRadius:12,padding:"9px 11px",marginBottom:7,position:"relative"}}>
+                  {pkg.popular&&<div style={{position:"absolute",top:-7,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",color:"#060e1e",fontSize:9,fontWeight:800,padding:"1px 8px",borderRadius:20,whiteSpace:"nowrap"}}>EN POPULER</div>}
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:20}}>{pkg.i}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:15,fontWeight:700,color:"#ffd166"}}>{pkg.g.toLocaleString()} {pkg.b>0?<span style={{color:"#06d6a0",fontSize:11}}>+{pkg.b.toLocaleString()}</span>:null}</div>
+                      <div style={{fontSize:9,color:"#a8c4e0"}}>Toplam: {(pkg.g+pkg.b).toLocaleString()}</div>
+                    </div>
+                    <button onClick={()=>alert("Yakindan aktif!")} style={{background:pkg.popular?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:8,padding:"6px 10px",color:"#060e1e",fontWeight:800,fontSize:11,cursor:"pointer"}}>TL{pkg.p}</button>
+                  </div>
+                </div>
+              ))}
+              {!localStorage.getItem("ba_premium")&&<div style={{background:"rgba(255,209,102,.07)",border:"2px solid #ffd166",borderRadius:11,padding:"9px 11px",marginBottom:9,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:20}}>👑</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:12,fontWeight:800,color:"#ffd166"}}>Reklamlari Kaldir - TL49.99</div>
+                </div>
+                <button onClick={()=>{localStorage.setItem("ba_premium","1");setShowShop(false);}} style={{background:"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:8,padding:"6px 10px",color:"#060e1e",fontWeight:800,fontSize:11,cursor:"pointer"}}>Al</button>
+              </div>}
+              <div style={{borderTop:"1px solid #1e3a6e",marginBottom:8}}/>
+              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Guclendiriciler</div>
+                            {[{k:'double',i:"🎯",n:"Çift Seçim",d:"2 şık seç (biriktirilebilir)",c:200},{k:'elim',i:"❌",n:"2 Yanlışı Ele",d:"2 yanlış elenir",c:200},{k:'x2',i:"⚡",n:"x2 Puan",d:"Puan iki katı",c:300}].map(pw=>(
+                <div key={pw.k} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
+                  <span style={{fontSize:22}}>{pw.i}</span>
+                  <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{pw.n} <span style={{color:"#fbbf24",fontFamily:"'Rajdhani',sans-serif"}}>({powers[pw.k]||0})</span></div><div style={{fontSize:11,color:"#3d3d6b"}}>{pw.d}</div></div>
+                  <button onClick={()=>{if(gold<pw.c)return;playSfx('spend');setGold(g=>{const ng=g-pw.c;saveGoldLS(username,ng);return ng;});const np={...powers,[pw.k]:(powers[pw.k]||0)+1};setPowers(np);savePowersLS(username,np);}} disabled={gold<pw.c} style={{background:gold>=pw.c?"linear-gradient(135deg,#fbbf24,#f59e0b)":"#1e1e4a",border:"none",borderRadius:10,padding:"7px 11px",color:"#0a0a1f",fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:13,cursor:gold>=pw.c?"pointer":"default",opacity:gold<pw.c?.5:1}}>🪙{pw.c}</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div></W>
+    );
+  }
+
+  if(screen==="setup"||screen==="setup-challenge") return(
+    <W><div className="sc fi">
+      <div className="shdr">
+        <button className="bk" onClick={()=>setScreen("home")}>←</button>
+        <div><div className="stitle">Oyun Ayarları</div><div style={{fontSize:11,color:"#3d3d6b"}}>{mode==="solo"?"Tekli Mod":"Çoklu Mod"}</div></div>
+      </div>
+      <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Kategori</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:16}}>
+        {CATEGORIES.map(cat=>(
+          <button key={cat.id} onClick={()=>setCategory(cat.id)} style={{flex:"1 1 calc(50% - 4px)",padding:"10px 8px",borderRadius:12,border:category===cat.id?"2px solid #6ee7f7":"2px solid #1e1e4a",background:category===cat.id?"rgba(110,231,247,.08)":"#111130",color:"#e2e4f0",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13,textAlign:"left",display:"flex",alignItems:"center",gap:8}}>
+            <span style={{fontSize:20}}>{cat.icon}</span>
+            <div><div style={{fontSize:12,fontWeight:700}}>{cat.label}</div><div style={{fontSize:10,color:"#3d3d6b"}}>{cat.desc}</div></div>
+            {category===cat.id&&<span style={{marginLeft:"auto",color:"#6ee7f7"}}>✓</span>}
+          </button>
+        ))}
+      </div>
+      <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Soru Sayısı</div>
+      {[{n:7,l:"Hızlı",e:"⚡"},{n:14,l:"Normal",e:"🎯"},{n:21,l:"Uzun",e:"🏆"}].map(o=>(
+        <div key={o.n} className={"cc"+(qCount===o.n?" sel":"")} onClick={()=>setQCount(o.n)}>
+          <span style={{fontSize:22}}>{o.e}</span>
+          <div style={{flex:1}}><span className="cn">{o.n}</span><span style={{fontSize:12,color:"#3d3d6b",marginLeft:5}}>soru</span><div style={{fontSize:12,fontWeight:700,color:"#e2e4f0"}}>{o.l}</div></div>
+          {qCount===o.n&&<span style={{color:"#6ee7f7",fontSize:18}}>✓</span>}
+        </div>
+      ))}
+      <div style={{flex:1}}/>
+      <div style={{fontSize:11,color:"#3d3d6b",textAlign:"center",marginBottom:8}}>⏱ 15 sn/soru · Maks {15*2}=30 puan</div>
+      {mode==="solo"?(
+        <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
+      ):(
+        <><button className="pbtn" style={{marginTop:4}} onClick={createRoom}>Oda Olustur</button>
+        <div style={{textAlign:"center",fontSize:12,color:"#a8c4e0",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
+        <div style={{display:"flex",gap:8}}>
+          <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
+            placeholder="000000" value={joinCodeInput}
+            onChange={e=>setJoinCodeInput(e.target.value.replace(/[^0-9]/g,"").slice(0,6))}
+            onKeyDown={e=>{if(e.key==="Enter"&&joinCodeInput.length===6){
+              const pid=getRoomPeerId(joinCodeInput);
+              if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
+              else setJoinCodeErr("Kod bulunamadi!");
+            }}}
+            maxLength={6} inputMode="numeric"/>
+          <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={async()=>{
+            if(joinCodeInput.length!==6){setJoinCodeErr("6 haneli kod girin");return;}
+            setJoinCodeErr("Baglaniliyor...");
+            let pid=getRoomPeerId(joinCodeInput);
+            if(!pid&&typeof fbGetRoomPeerId!=="undefined"){
+              try{pid=await fbGetRoomPeerId(joinCodeInput);}catch(e){}
+            }
+            if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
+            else setJoinCodeErr("Kod gecersiz veya suresi dolmus.");
+          }}>Katil</button>
+        </div>
+        {joinCodeErr&&<div style={{fontSize:11,color:"#ff4d6d",marginTop:4,textAlign:"center"}}>{joinCodeErr}</div>}</>
+      )}
+    </div></W>
+  );
+
+  if(screen==="lobby-host") return(
+    <W><div className="sc fi">
+      <div className="shdr">
+        <button className="bk" onClick={()=>{if(peerRef.current)peerRef.current.destroy();setScreen("setup");}}>←</button>
+        <div><div className="stitle">Oda Hazır</div></div>
+        <span style={{fontSize:10,background:"rgba(110,231,247,.15)",color:"#6ee7f7",padding:"3px 9px",borderRadius:20,fontWeight:700}}>HOST</span>
+      </div>
+      <div style={{background:"rgba(52,211,153,.08)",border:"1px solid rgba(52,211,153,.2)",borderRadius:10,padding:"9px 12px",display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+        <span>🟢</span><span style={{fontSize:12,color:"#34d399",fontWeight:700}}>Bağlantı hazır!</span>
+      </div>
+      <div style={{background:"rgba(76,201,240,.1)",border:"2px solid #4cc9f0",borderRadius:14,padding:"12px",marginBottom:12,textAlign:"center"}}>
+        <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Oda Kodu</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:42,fontWeight:700,color:"#4cc9f0",letterSpacing:8}}>{roomCode||"------"}</div>
+        <div style={{fontSize:10,color:"#a8c4e0",marginTop:2}}>Arkadasina bu kodu soyle</div>
+      </div>
+      <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
+      <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
+      <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
+        {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#3d3d6b",fontSize:12}}>⏳ Bekleniyor...</div>}
+      </div>
+      <div style={{flex:1}}/>
+      <button className="pbtn" style={{marginTop:12}} onClick={()=>startGame(true)}>🚀 Oyunu Başlat ({roomPlayers.length} kişi)</button>
+    </div></W>
+  );
+
+  if(screen==="lobby-guest") return(
+    <W><div className="sc fi" style={{alignItems:"center",justifyContent:"center",textAlign:"center"}}>
+      {connStatus==="connecting"&&<><div className="spin" style={{marginBottom:14}}/><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0"}}>Bağlanıyor...</div></>}
+      {connStatus==="connected"&&<>
+        <div style={{fontSize:52,marginBottom:14}}>✅</div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0",marginBottom:5}}>Bağlandın!</div>
+        <div style={{fontSize:12,color:"#3d3d6b",marginBottom:18}}>Host başlatana kadar bekle</div>
+        <div className="playerlist" style={{width:"100%",textAlign:"left"}}>{roomPlayers.map(p=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}</div>
+      </>}
+      {connStatus==="error"&&<><div style={{fontSize:52,marginBottom:14}}>❌</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f87171",marginBottom:5}}>Bağlantı Hatası</div><button className="pbtn" style={{marginTop:12}} onClick={()=>setScreen("home")}>Ana Sayfaya Dön</button></>}
+    </div></W>
+  );
+
+  if(screen==="loading") return(
+    <W><div className="sc"><div className="lo"><div className="spin"/><div style={{textAlign:"center"}}><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0"}}>Hazırlanıyor</div><div style={{fontSize:12,color:"#3d3d6b",marginTop:3}}>{category} soruları yükleniyor...</div></div></div></div></W>
+  );
+
+  if(screen==="game"){
+    const q=questions[qIdx];if(!q)return null;
+    const prog=(qIdx/questions.length)*100;
+    const displayOpts=shuffled.length?shuffled:q.o.map((v,i)=>({v,i}));
+    const fullyAnswered=sel!==null&&(!pwDouble||sel2!==null);
+    const costs={double:200,elim:200,x2:300};
+    return(
+      <W><div className="sc fi">
+        <div className="gh">
+          <div className="qcnt">Soru <span>{qIdx+1}</span>/{questions.length}</div>
+          <div style={{display:"flex",alignItems:"center",gap:7}}>
+            <div className="gold-bar" style={{fontSize:11,padding:"3px 8px"}}><span>🪙</span><span>{gold}</span></div>
+            <div className="scdisp">⭐{score}</div>
+          </div>
+        </div>
+        <div className="pb"><div className="pbi" style={{width:prog+"%"}}/></div>
+        <div className="pw-row">
+          {['double','elim','x2'].map(k=>{
+            const has=(powers[k]||0)>0,ac={double:pwDouble,elim:pwElim,x2:pwX2}[k];
+            return(<button key={k} className={"pw-btn"+(ac?" active":"")} disabled={fullyAnswered||ac||(!has&&gold<costs[k])} onClick={()=>activatePw(k)}>
+              <span style={{fontSize:16}}>{k==='double'?"🎯":k==='elim'?"❌":"⚡"}</span>
+              <span className="pw-cost">{has?powers[k]+"adet":costs[k]+"🪙"}</span>
+              <span className="pw-label">{k==='double'?"Çift":k==='elim'?"2 Ele":"x2"}</span>
+            </button>);
+          })}
+        </div>
+        <div className="qcard" style={{position:"relative"}}>
+        <button onClick={()=>{
+          const q=questions[qIdx];if(!q)return;
+          const r2=prompt("Bildirme nedeni:\n1. Yanlis cevap\n2. Yazim hatasi\n3. Anlasılmaz soru:");
+          if(!r2)return;
+          try{const rs=JSON.parse(localStorage.getItem("ba_reports")||"[]");rs.push({q:q.q,r:r2,ts:Date.now()});localStorage.setItem("ba_reports",JSON.stringify(rs.slice(-50)));}catch(e){}
+          alert("Bildiriminiz alindi!");
+        }} style={{position:"absolute",top:8,right:8,background:"rgba(255,77,109,.1)",border:"1px solid rgba(255,77,109,.3)",borderRadius:8,color:"#ff4d6d",fontSize:10,fontWeight:700,cursor:"pointer",padding:"3px 8px",zIndex:1}}>Bildir</button><div className="qt">{q.q}</div></div>
+        <div className="tc"><TimerRing tl={tl}/></div>
+        <div>
+          {displayOpts.map((item,di)=>{
+            const isC=item.i===q.a,isSel=di===sel||di===sel2,isElim=eliminated.includes(di);
+            let cls="ob";
+            if(isElim)cls+=" elim";
+            else if(revealed){if(isC)cls+=" ok";else if(isSel)cls+=" ng";else cls+=" dm";}
+            else if(isSel)cls+=" selected";
+            else if(fullyAnswered)cls+=" dm";
+            return(<button key={di} className={cls} disabled={isElim||revealed||fullyAnswered} onClick={()=>doAnswer(di)}>
+              <span className="ol">{LETTERS[di]}</span><span style={{flex:1}}>{item.v}</span>
+              {revealed&&isC&&<span>✓</span>}{revealed&&isSel&&!isC&&<span>✗</span>}
+            </button>);
+          })}
+        </div>
+        {pwDouble&&sel!==null&&sel2===null&&<div style={{textAlign:"center",fontSize:12,color:"#818cf8",marginTop:5,fontWeight:700}}>🎯 İkinci şıkkını seç!</div>}
+        {revealed&&feedback&&answers.length>0&&(()=>{
+          const last=answers[answers.length-1];const ok=last.sel===q.a||(last.sel2!==null&&last.sel2===q.a);
+          return(<div className="fdb" style={{background:ok?"rgba(52,211,153,.1)":"rgba(248,113,113,.1)",color:ok?"#34d399":"#f87171"}}>{ok?"🎉 Doğru! +"+last.pts+(pwX2?" ⚡x2":"")+" puan":last.sel===null?"⏱️ Süre doldu!":"❌ Yanlış cevap"}</div>);
+        })()}
+        {waiting&&mode==="multi"&&!revealed&&(
+          <div style={{background:"rgba(110,231,247,.08)",border:"1.5px solid rgba(110,231,247,.2)",borderRadius:11,padding:"9px 13px",marginTop:7,textAlign:"center"}}>
+            <div style={{fontSize:11,color:"#6ee7f7",fontWeight:700,marginBottom:5}}>⏳ Diğerleri bekleniyor...</div>
+            <div style={{display:"flex",justifyContent:"center",gap:4}}>{Array.from({length:waitCount.total},(_,wi)=>(<div key={wi} style={{width:9,height:9,borderRadius:"50%",background:wi<waitCount.answered?"#34d399":"#1e1e4a"}}/>))}</div>
+            <div style={{fontSize:10,color:"#3d3d6b",marginTop:3}}>{waitCount.answered}/{waitCount.total}</div>
+          </div>
+        )}
+        {mode==="multi"&&sortedLive.length>0&&(
+          <div className="lbpanel">
+            <div className="lbptitle">📊 Canlı</div>
+            <div className="lbprow">
+              {sortedLive.map(([name,sc],i)=>(
+                <div key={name} className={"plchip "+(name===username?"me":"other")}>
+                  <div className="plavc" style={{background:rankBG(i)}}>{name[0].toUpperCase()}{i===0&&<span style={{position:"absolute",top:-6,right:-6,fontSize:9}}>👑</span>}</div>
+                  <div style={{fontSize:9,fontWeight:700,color:name===username?"#6ee7f7":"#e2e4f0",maxWidth:46,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textAlign:"center"}}>{name===username?"Sen":name}</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,color:"#fbbf24"}}>{sc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div></W>
+    );
+  }
+
+  if(screen==="result"){
+    const correct=answers.filter(a=>a.sel===a.a||(a.sel2!=null&&a.sel2===a.a)).length;
+    const wrong=answers.filter(a=>a.sel!==null&&a.sel!==a.a&&(a.sel2==null||a.sel2!==a.a)).length;
+    const unanswered=answers.filter(a=>a.sel===null).length;
+    const pct=answers.length?Math.round(correct/answers.length*100):0;
+    const lb=getLB();const isFirst=lb.length>0&&lb[0].isMe;
+    return(
+      <W><div className="sc fi" style={{position:"relative"}}>
+        {isFirst&&<Confetti/>}
+        {levelUpQueue.length>0&&<LevelUpModal newLevel={levelUpQueue[0].newLevel} rewards={levelUpQueue[0].rewards} onClose={()=>setLevelUpQueue(q=>q.slice(1))}/>}
+        {chestModal&&<ChestModal onClose={()=>setChestModal(false)}/>}
+        <div className="rh">
+          <div className="re">{pct>=70?"🏆":pct>=40?"👏":"💪"}</div>
+          <div className="rs">{score}</div>
+          <div className="rsl">toplam puan · %{pct} başarı</div>
+        </div>
+        {goldEarned>0&&(
+          <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"11px",textAlign:"center",marginBottom:12}}>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#fbbf24"}}>+{goldEarned} 🪙 · +{correct*5} XP</div>
+          </div>
+        )}
+        <div className="rstats">
+          <div className="scard"><div className="sv" style={{color:"#34d399"}}>{correct}</div><div className="sl">Doğru</div></div>
+          <div className="scard"><div className="sv" style={{color:"#f87171"}}>{wrong}</div><div className="sl">Yanlış</div></div>
+          <div className="scard"><div className="sv" style={{color:"#3d3d6b"}}>{unanswered}</div><div className="sl">Boş</div></div>
+        </div>
+        {lb.length>0&&(
+          <div className="lblist">
+            <div className="lbtit">{lb.length>1?"🏆 Final Sıralaması":"📊 Sonuç"}</div>
+            {lb.map((p,i)=>(
+              <div key={i} className="lbrow" style={p.isMe?{border:"1px solid rgba(110,231,247,.2)"}:{}}>
+                <span className="lbrank" style={{color:["#fbbf24","#cbd5e1","#cd7f32"][i]||"#3d3d6b"}}>{RANK_EMOJI[i]||i+1}</span>
+                <span className="lbname" style={p.isMe?{color:"#6ee7f7"}:{}}>{p.name}{p.isMe?" (Sen)":""}</span>
+                <span className="lbscore">{p.score}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {kickedPlayers.length>0&&<div style={{background:"rgba(248,113,113,.08)",border:"1px solid rgba(248,113,113,.2)",borderRadius:9,padding:"9px 12px",marginBottom:9,fontSize:11,color:"#f87171"}}>⚠️ AFK çıkarılanlar: {kickedPlayers.join(", ")}</div>}
+        <div className="rbtns">
+          <button className="pbtn" onClick={()=>{setGoldEarned(0);if(mode==="multi"&&isHostRef.current){broadcast({type:"rematch"});setMode("multi");}setScreen("setup");}}>🔁 Tekrar Oyna</button>
+          <button className="sbtn" onClick={()=>setScreen("review")}>📖 Cevapları Gör</button>
+          <button className="sbtn" onClick={()=>setScreen("home")}>🏠 Ana Sayfa</button>
+        </div>
+      </div></W>
+    );
+  }
+
+  if(screen==="review") return(
+    <W><div className="sc fi">
+      <div className="shdr"><button className="bk" onClick={()=>setScreen(answers.length?"result":"home")}>←</button><div className="stitle">Cevap Analizi</div></div>
+      {answers.map((a,i)=>(
+        <div key={i} className="ri">
+          <div className="rqn">Soru {i+1}</div><div className="rqt">{a.q}</div>
+          {a.o.map((o,j)=>{const isC=j===a.a,isS=j===a.sel||j===a.sel2;return(<div key={j} className={"ro"+(isC?" ca":isS?" wa":" na")}><span style={{fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:11}}>{LETTERS[j]}.</span><span style={{flex:1}}>{o}</span>{isC&&<span>✓</span>}{isS&&!isC&&<span>✗</span>}</div>);})}
+          <div style={{marginTop:6,fontSize:10,color:"#3d3d6b"}}>{(a.sel===a.a||(a.sel2!=null&&a.sel2===a.a))?"✅ +"+a.pts+" puan":a.sel===null?"⏱️ Süre doldu":"❌ 0 puan"}</div>
+        </div>
+      ))}
+      <button className="pbtn" style={{marginTop:6,marginBottom:14}} onClick={()=>setScreen("home")}>Ana Sayfa</button>
+    </div></W>
+  );
+
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}</script>
+</body>
+</html>
