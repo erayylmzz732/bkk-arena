@@ -350,82 +350,96 @@ async function fbGetRoomPeerId(code){
 async function fbAddFriend(uid, friendUid, friendUsername){
   if(!db()) return false;
   try{
-    await db().collection("users").doc(uid).update({
-      friends: firebase.firestore.FieldValue.arrayUnion({uid:friendUid,username:friendUsername})
-    });
+    const ids=[String(uid),String(friendUid)].sort();
+    const fid=ids[0]+'__'+ids[1];
+    await db().collection('friendships').doc(fid).set({
+      members:ids,
+      usernames:{[uid]:'', [friendUid]:friendUsername||''},
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    }, {merge:true});
     return true;
   }catch(e){return false;}
 }
 
 async function fbGetFriends(uid){
-  if(!db()) return [];
+  if(!db()||!uid) return [];
   try{
-    const doc=await db().collection("users").doc(uid).get();
-    return doc.exists?(doc.data().friends||[]):[];
+    const snap=await db().collection('friendships').where('members','array-contains',uid).get();
+    return snap.docs.map(d=>{
+      const data=d.data()||{};
+      const members=data.members||[];
+      const otherUid=members.find(m=>m!==uid) || '';
+      const usernames=data.usernames||{};
+      return {uid:otherUid, username:usernames[otherUid]||'Arkadaş'};
+    });
   }catch(e){return [];}
 }
+
+function _friendReqId(a,b){ return [String(a),String(b)].sort().join('__'); }
 
 async function fbSendFriendRequest(senderUid, senderUsername, senderCode, targetUid, targetUsername){
   if(!db()) return {ok:false,err:'Firebase bağlantısı yok'};
   if(!senderUid||!targetUid||senderUid===targetUid) return {ok:false,err:'Geçersiz kullanıcı'};
   try{
-    const senderRef=db().collection('users').doc(senderUid);
-    const targetRef=db().collection('users').doc(targetUid);
-    const [senderDoc,targetDoc]=await Promise.all([senderRef.get(), targetRef.get()]);
-    if(!senderDoc.exists||!targetDoc.exists) return {ok:false,err:'Kullanıcı bulunamadı'};
-    const senderData=senderDoc.data()||{};
-    const targetData=targetDoc.data()||{};
-    const senderFriends=senderData.friends||[];
-    const targetIncoming=targetData.incomingRequests||[];
-    const senderOutgoing=senderData.outgoingRequests||[];
-    if(senderFriends.some(f=>f&&f.uid===targetUid)) return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
-    if(targetIncoming.some(r=>r&&r.uid===senderUid)) return {ok:false,err:'İstek zaten gönderilmiş'};
-    if(senderOutgoing.some(r=>r&&r.uid===targetUid)) return {ok:false,err:'İstek zaten bekliyor'};
-    const incomingReq={uid:senderUid,username:senderUsername,code:senderCode||''};
-    const outgoingReq={uid:targetUid,username:targetUsername,code:(targetData.code||'')};
-    await Promise.all([
-      targetRef.update({incomingRequests:firebase.firestore.FieldValue.arrayUnion(incomingReq)}),
-      senderRef.update({outgoingRequests:firebase.firestore.FieldValue.arrayUnion(outgoingReq)})
-    ]);
+    const fid=_friendReqId(senderUid,targetUid);
+    const friendshipDoc=await db().collection('friendships').doc(fid).get();
+    if(friendshipDoc.exists) return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
+    const reqRef=db().collection('friendRequests').doc(fid);
+    const reqDoc=await reqRef.get();
+    if(reqDoc.exists){
+      const existing=reqDoc.data()||{};
+      if(existing.status==='pending') return {ok:false,err:'İstek zaten bekliyor'};
+      if(existing.status==='accepted') return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
+    }
+    await reqRef.set({
+      id:fid,
+      senderUid, senderUsername, senderCode:senderCode||'',
+      targetUid, targetUsername:targetUsername||'',
+      status:'pending',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    }, {merge:true});
     return {ok:true};
   }catch(e){return {ok:false,err:e.message||'İstek gönderilemedi'};}
 }
 
 async function fbGetIncomingRequests(uid){
-  if(!db()) return [];
+  if(!db()||!uid) return [];
   try{
-    const doc=await db().collection('users').doc(uid).get();
-    return doc.exists?(doc.data().incomingRequests||[]):[];
+    const snap=await db().collection('friendRequests').where('targetUid','==',uid).where('status','==','pending').get();
+    return snap.docs.map(d=>{ const x=d.data()||{}; return {requestId:d.id, uid:x.senderUid, username:x.senderUsername, code:x.senderCode||''}; });
   }catch(e){return [];}
 }
 
 async function fbGetOutgoingRequests(uid){
-  if(!db()) return [];
+  if(!db()||!uid) return [];
   try{
-    const doc=await db().collection('users').doc(uid).get();
-    return doc.exists?(doc.data().outgoingRequests||[]):[];
+    const snap=await db().collection('friendRequests').where('senderUid','==',uid).where('status','==','pending').get();
+    return snap.docs.map(d=>{ const x=d.data()||{}; return {requestId:d.id, uid:x.targetUid, username:x.targetUsername, code:''}; });
   }catch(e){return [];}
 }
 
 async function fbRespondFriendRequest(uid, requestObj, accept){
   if(!db()||!uid||!requestObj||!requestObj.uid) return {ok:false,err:'Geçersiz istek'};
   try{
-    const myRef=db().collection('users').doc(uid);
-    const otherRef=db().collection('users').doc(requestObj.uid);
-    const [myDoc,otherDoc]=await Promise.all([myRef.get(), otherRef.get()]);
-    if(!myDoc.exists||!otherDoc.exists) return {ok:false,err:'Kullanıcı bulunamadı'};
-    const myData=myDoc.data()||{};
-    const otherData=otherDoc.data()||{};
-    const meEntry={uid,username:myData.username||''};
-    const otherOut=(otherData.outgoingRequests||[]).find(r=>r&&r.uid===uid) || meEntry;
-    const batch=db().batch();
-    batch.update(myRef,{incomingRequests:firebase.firestore.FieldValue.arrayRemove(requestObj)});
-    batch.update(otherRef,{outgoingRequests:firebase.firestore.FieldValue.arrayRemove(otherOut)});
+    const rid=requestObj.requestId || _friendReqId(uid, requestObj.uid);
+    const reqRef=db().collection('friendRequests').doc(rid);
+    const reqDoc=await reqRef.get();
+    if(!reqDoc.exists) return {ok:false,err:'İstek bulunamadı'};
+    const req=reqDoc.data()||{};
+    const myDoc=await db().collection('users').doc(uid).get();
+    const myName=(myDoc.exists && myDoc.data() && myDoc.data().username) ? myDoc.data().username : '';
     if(accept){
-      batch.update(myRef,{friends:firebase.firestore.FieldValue.arrayUnion({uid:requestObj.uid,username:requestObj.username})});
-      batch.update(otherRef,{friends:firebase.firestore.FieldValue.arrayUnion(meEntry)});
+      const fid=_friendReqId(uid, requestObj.uid);
+      await db().collection('friendships').doc(fid).set({
+        members:[uid, requestObj.uid].sort(),
+        usernames:{[uid]:myName, [requestObj.uid]:requestObj.username||req.senderUsername||''},
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true});
+      await reqRef.set({status:'accepted', updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+    }else{
+      await reqRef.set({status:'rejected', updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
     }
-    await batch.commit();
     return {ok:true};
   }catch(e){return {ok:false,err:e.message||'İşlem yapılamadı'};}
 }
@@ -2212,7 +2226,7 @@ function App(){
               <>
                 <div style={{fontSize:12,color:'#e2e4f0',fontWeight:700,marginBottom:6}}>1v1 Turnuva Kuyruğu</div>
                 <div style={{fontSize:12,color:'#a8c4e0',marginBottom:12}}>Sıraya gir, sistem sana uygun rakip bulsun.</div>
-                <button className="pbtn" onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(!uid)return;setTournamentQueueing(true);const res=typeof fbJoinTournamentQueue!=="undefined"?await fbJoinTournamentQueue(uid,usernameRef.current):{ok:false};if(res&&res.matched){setTournamentData({mode:'matchmaking',status:'matched',matchId:res.matchId,opponent:res.opponent});setTournamentQueueing(false);}else if(res&&res.ok){setTournamentData({mode:'matchmaking',status:'queue'});}else{setTournamentQueueing(false);}}} disabled={tournamentQueueing}>{tournamentQueueing?'Rakip aranıyor...':'⚔️ Hızlı Eşleşmeye Gir'}</button>
+                <button className="pbtn" onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(!uid)return;setTournamentQueueing(true);const res=typeof fbJoinTournamentQueue!=="undefined"?await fbJoinTournamentQueue(uid,usernameRef.current):{ok:false};if(res&&res.matched){setTournamentData({mode:'matchmaking',status:'matched',matchId:res.matchId,opponent:res.opponent});setTournamentQueueing(false);}else if(res&&res.ok){setTournamentData({mode:'matchmaking',status:'queue'});setTimeout(()=>{setTournamentData(cur=>{if(cur&&cur.status==='queue'){return {mode:'matchmaking',status:'matched',matchId:'bot_'+Date.now(),opponent:{uid:'bot_'+Date.now(),username:'ArenaBot',isBot:true}};}return cur;});setTournamentQueueing(false);},1800);}else{setTournamentQueueing(false);setTournamentData({mode:'matchmaking',status:'matched',matchId:'bot_'+Date.now(),opponent:{uid:'bot_'+Date.now(),username:'ArenaBot',isBot:true}});}}} disabled={tournamentQueueing}>{tournamentQueueing?'Rakip aranıyor...':'⚔️ Hızlı Eşleşmeye Gir'}</button>
                 {tournamentData&&tournamentData.status==='queue'&&<>
                   <div style={{marginTop:12,fontSize:12,color:'#a8c4e0'}}>Kuyruktasın. Rakip bulununca bu panel otomatik güncellenir.</div>
                   <button className="sbtn" style={{marginTop:10}} onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(uid&&typeof fbLeaveTournamentQueue!=="undefined") await fbLeaveTournamentQueue(uid);setTournamentQueueing(false);setTournamentData(null);}}>Kuyruktan Çık</button>
@@ -2223,9 +2237,9 @@ function App(){
                 <div style={{fontSize:12,color:'#a8c4e0',marginBottom:8}}>Rakibin bulundu</div>
                 <div style={{background:'#111130',border:'1.5px solid #2a5a8e',borderRadius:12,padding:12,marginBottom:12,display:'flex',alignItems:'center',gap:10}}>
                   <div className='plavatarsm'>{String((tournamentData.opponent&&tournamentData.opponent.username)||'?')[0].toUpperCase()}</div>
-                  <div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:'#fff'}}>{tournamentData.opponent?tournamentData.opponent.username:'Rakip'}</div><div style={{fontSize:12,color:'#a8c4e0'}}>Turnuva eşleşmesi hazır</div></div>
+                  <div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:'#fff'}}>{tournamentData.opponent?tournamentData.opponent.username:'Rakip'}</div><div style={{fontSize:12,color:'#a8c4e0'}}>{tournamentData.opponent&&tournamentData.opponent.isBot?'Bot rakip hazır':'Turnuva eşleşmesi hazır'}</div></div>
                 </div>
-                <button className="pbtn" onClick={()=>{setMode('multi');setCategory('karışık');setScreen('setup');}}>Oyuna Geç</button>
+                <button className="pbtn" onClick={()=>{setMode((tournamentData.opponent&&tournamentData.opponent.isBot)?'solo':'multi');setCategory('karışık');setScreen('setup');}}>Oyuna Geç</button>
                 <button className="sbtn" style={{marginTop:10}} onClick={()=>setTournamentData(null)}>Tamam</button>
               </>
             )}
@@ -2562,14 +2576,13 @@ function App(){
       <div style={{background:"rgba(52,211,153,.08)",border:"1px solid rgba(52,211,153,.2)",borderRadius:10,padding:"9px 12px",display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
         <span>🟢</span><span style={{fontSize:12,color:"#34d399",fontWeight:700}}>Bağlantı hazır!</span>
       </div>
-      <div style={{background:"rgba(76,201,240,.1)",border:"2px solid #4cc9f0",borderRadius:14,padding:"12px",marginBottom:12,textAlign:"center"}}>
-        <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Oda Kodu</div>
-        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:42,fontWeight:700,color:"#4cc9f0",letterSpacing:8}}>{roomCode||"------"}</div>
-        <div style={{fontSize:10,color:"#a8c4e0",marginTop:2}}>Arkadasina bu kodu soyle</div>
-      </div>
-      <div style={{display:'grid',gap:10,width:'100%'}}>
-        <div className="linkbox"><div style={{fontSize:11,color:'#a8c4e0',marginBottom:6}}>Oda Kodu</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:34,fontWeight:800,letterSpacing:6,color:'#6ee7f7',textAlign:'center'}}>{roomCode||'......'}</div><button className="copybtn" onClick={copyCode}>{copied?"✓ Kopyalandı!":"📋 Kodu Kopyala"}</button></div>
-        <div className="linkbox"><div style={{fontSize:11,color:'#a8c4e0',marginBottom:6}}>Davet Linki</div><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>🔗 Linki Kopyala</button></div>
+      <div className="linkbox" style={{width:'100%',marginBottom:12}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+          <div style={{fontSize:11,color:'#a8c4e0',fontWeight:700,textTransform:'uppercase',letterSpacing:1.5}}>Oda Kodu</div>
+          <button onClick={copyLink} title="Oda linkini kopyala" style={{width:36,height:36,borderRadius:'50%',border:'1.5px solid rgba(76,201,240,.28)',background:'rgba(76,201,240,.1)',color:'#6ee7f7',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center'}}>↗</button>
+        </div>
+        <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:38,fontWeight:800,letterSpacing:8,color:'#6ee7f7',textAlign:'center',marginBottom:10}}>{roomCode||'......'}</div>
+        <button className="copybtn" onClick={copyCode}>{copied?"✓ Kopyalandı!":"📋 Kodu Kopyala"}</button>
       </div>
       <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
