@@ -1383,22 +1383,22 @@ function App(){
   const loadUser=useCallback((u)=>{
     const xp=getTotalXP(u);
     const li=calcLevelInfo(xp);
+    const cached=getCachedUser();
     setTotalXP(xp); setLevelInfo(li);
-    setGold(getGold(u));
+    setGold((cached&&cached.username===u&&typeof cached.gold==='number')?cached.gold:getGold(u));
     setPowers(getPowers(u));
     setStats(getStats(u));
     setMissions(getMissions(u));
     const dd=getDailyData(u);
     setDailyData(dd);
-    setAvatar(getAvatar(u));
-    setUserCode(getUserCode(u));
-    setGmailInput(getGmail(u));
+    setAvatar((cached&&cached.username===u&&cached.avatar)?cached.avatar:getAvatar(u));
+    setUserCode((cached&&cached.username===u&&cached.code)?cached.code:getUserCode(u));
+    setGmailInput((cached&&cached.username===u&&cached.email)?cached.email:getGmail(u));
     setUserTitle(getTitleLS(u));
     setFriends(getFriends(u));
-    const cached=getCachedUser();
     const uid=(cached&&cached.uid)||localStorage.getItem("ba_fb_uid");
     if(uid&&typeof fbGetFriends!=="undefined"){
-      fbGetFriends(uid).then(list=>{if(Array.isArray(list))setFriends(list);}).catch(()=>{});
+      fbGetFriends(uid).then(list=>{if(Array.isArray(list)){setFriends(list); try{saveFriendsLS(u,list);}catch(e){}}}).catch(()=>{});
     }
     getUserCode(u); // ensure code generated
   },[]);
@@ -1530,29 +1530,49 @@ function App(){
   },[]);
 
   // -- AUTH --
-  const handleAuth=useCallback(()=>{
-    const u=fUser.trim(),p=fPass.trim();
+  const handleAuth=useCallback(async()=>{
+    const u=fUser.trim(),p=fPass.trim(),e=fEmail.trim();
     setFErr("");
     if(!u){setFErr("Kullanıcı adı boş bırakılamaz.");return;}
     if(u.length<2){setFErr("En az 2 karakter giriniz.");return;}
     if(!p){setFErr("Şifre boş bırakılamaz.");return;}
-    const db=USERS.current;
-    if(authTab==="register"){
-      if(db.has(u)||isUsernameTaken(u)){setFErr("Bu kullanıcı adı zaten kullanılıyor.");return;}
-      db.set(u,p);
-      registerUsername(u);
-    } else {
-      if(db.has(u)&&db.get(u)!==p){setFErr("Şifre hatalı.");return;}
-      if(!db.has(u)){db.set(u,p);registerUsername(u);}
-    }
-    setUsername(u);
-    loadUser(u);
-    try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",p);}catch(e){}
-    setTimeout(()=>triggerDaily('login'),300);
-    const pending=sessionStorage.getItem("pendingRoom");
-    if(pending){
-      sessionStorage.removeItem("pendingRoom");
-      (async()=>{
+    if(authTab==="register"&&!e){setFErr("E-posta boş bırakılamaz.");return;}
+    setAuthLoading(true);
+    try{
+      let authOk=true;
+      if(typeof initFirebase!=="undefined"&&initFirebase()){
+        if(authTab==="register"){
+          const res=await fbRegister(e,p,u);
+          if(!res.ok){setFErr(res.err||"Kayıt başarısız");authOk=false;}
+        }else{
+          const loginEmail=e||getGmail(u);
+          if(!loginEmail){setFErr("Giriş için e-posta gerekli.");authOk=false;}
+          else{
+            const res=await fbLogin(loginEmail,p);
+            if(!res.ok){setFErr(res.err||"Giriş başarısız");authOk=false;}
+          }
+        }
+      }
+      if(!authOk) return;
+
+      const db=USERS.current;
+      if(authTab==="register"){
+        if(db.has(u)||isUsernameTaken(u)){setFErr("Bu kullanıcı adı zaten kullanılıyor.");return;}
+        db.set(u,p);
+        registerUsername(u);
+        if(e) saveGmailLS(u,e);
+      } else {
+        if(db.has(u)&&db.get(u)!==p){setFErr("Şifre hatalı.");return;}
+        if(!db.has(u)){db.set(u,p);registerUsername(u);}
+        if(e) saveGmailLS(u,e);
+      }
+      setUsername(u);
+      loadUser(u);
+      try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",p);}catch(e){}
+      setTimeout(()=>triggerDaily('login'),300);
+      const pending=sessionStorage.getItem("pendingRoom");
+      if(pending){
+        sessionStorage.removeItem("pendingRoom");
         let pid=null;
         try{
           if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(pending);
@@ -1560,12 +1580,32 @@ function App(){
         }catch(e){}
         if(pid) joinAsClient(u,pid);
         else setScreen("home");
-      })();
+      }
+      else setScreen("home");
+    }finally{
+      setAuthLoading(false);
     }
-    else setScreen("home");
-  },[authTab,fUser,fPass,loadUser,triggerDaily]);
+  },[authTab,fUser,fPass,fEmail,loadUser,triggerDaily]);
 
   const broadcast=(msg)=>{connsRef.current.forEach(c=>{try{c.send(msg);}catch(e){}});};
+
+  const leaveRoomToHome=useCallback(()=>{
+    try{connsRef.current.forEach(c=>{try{c.close();}catch(e){}});}catch(e){}
+    connsRef.current=[];
+    try{if(hostConnRef.current) hostConnRef.current.close();}catch(e){}
+    hostConnRef.current=null;
+    try{if(peerRef.current) peerRef.current.destroy();}catch(e){}
+    peerRef.current=null;
+    isHostRef.current=false;
+    setConnStatus("idle");
+    setRoomCode("");
+    setInviteLink("");
+    setRoomPlayers([]);
+    setLiveScores({});
+    setJoinCodeErr("");
+    setScreen("home");
+    setMode("solo");
+  },[]);
 
   // -- removePlayer --
   const removePlayer=useCallback((name)=>{
@@ -1632,7 +1672,7 @@ function App(){
   const createRoom=useCallback(()=>{
     if(peerRef.current)peerRef.current.destroy();
     isHostRef.current=true;playersRef.current={[username]:0};answeredRef.current={};afkCountRef.current={};
-    setRoomPlayers([username]);setLiveScores({[username]:0});setConnStatus("connecting");setKickedPlayers([]);
+    setRoomPlayers([username]);setLiveScores({[username]:0});setConnStatus("connecting");setKickedPlayers([]);setScreen("lobby-host");
     const peer=new Peer();peerRef.current=peer;
     peer.on("open",id=>{const code=genRoomCode();setRoomCode(code);saveRoomCode(code,id);if(typeof fbSaveRoomCode!=="undefined"){fbSaveRoomCode(code,id).catch(()=>{});}setInviteLink(window.location.href.split("#")[0]+"#room="+code);setConnStatus("connected");setScreen("lobby-host");});
     peer.on("connection",conn=>{
@@ -1824,13 +1864,15 @@ function App(){
 
   // -- Friend search --
   const searchFriend=useCallback(async()=>{
-    const code=friendSearchInput.trim().toUpperCase();
+    let code=friendSearchInput.trim().toUpperCase();
     if(!code){setFriendSearchErr("Kod girin");return;}
+    if(/^\d{6}$/.test(code)) code='#'+code;
     setFriendSearchErr("");
     setFriendSearchResult(null);
     try{
       let found=null;
       if(typeof fbSearchByCode!=="undefined") found=await fbSearchByCode(code);
+      if(!found&&typeof fbSearchByUsername!=="undefined") found=await fbSearchByUsername(friendSearchInput.trim());
       if(!found){setFriendSearchErr("Bu koda sahip kullanıcı bulunamadı");return;}
       if(found.username===usernameRef.current){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
       setFriendSearchResult(found);
@@ -1842,13 +1884,16 @@ function App(){
   const addFriend=useCallback(async(friendObj)=>{
     if(!friendObj||!friendObj.uid)return;
     const currentUser=getCachedUser();
-    const myUid=currentUser?.uid||localStorage.getItem("ba_fb_uid");
+    const myUid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||currentUser?.uid||localStorage.getItem("ba_fb_uid");
     if(!myUid){setFriendSearchErr("Önce giriş yapmalısın");return;}
     try{
       const ok=typeof fbAddFriend!=="undefined"?await fbAddFriend(myUid,friendObj.uid,friendObj.username):false;
       if(!ok){setFriendSearchErr("Arkadaş eklenemedi");return;}
-      const freshFriends=typeof fbGetFriends!=="undefined"?await fbGetFriends(myUid):[];
-      setFriends(Array.isArray(freshFriends)?freshFriends:[]);
+      let freshFriends=[];
+      if(typeof fbGetFriends!=="undefined") freshFriends=await fbGetFriends(myUid);
+      if(!Array.isArray(freshFriends)) freshFriends=[];
+      setFriends(freshFriends);
+      try{saveFriendsLS(usernameRef.current,freshFriends);}catch(e){}
       setFriendSearchResult(null);setFriendSearchInput("");setFriendSearchErr("");
     }catch(e){
       setFriendSearchErr("Arkadaş eklenirken hata oluştu");
@@ -1913,7 +1958,7 @@ function App(){
         </div>
         {/* Nav */}
         <div style={{display:"flex",background:"#111130",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
-          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
+          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"tournament",l:"🏆"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
             <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#6ee7f7,#818cf8)":"transparent",color:homeTab===t.k?"#0a0a1f":"#3d3d6b",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
           ))}
         </div>
@@ -1957,16 +2002,57 @@ function App(){
           <div className="mc" onClick={()=>{setMode("multi");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>👥</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Çoklu Mod</div>
-            <div style={{fontSize:12,color:"#3d3d6b"}}>Link paylaş, arkadaşlar direkt katılır</div>
+            <div style={{fontSize:12,color:"#3d3d6b"}}>Kod oluştur, arkadaşların katılsın</div>
             <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer</span></div>
-          <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#0d1a30,#1a0820)",border:"2px solid #ff4d6d",cursor:"pointer"}}>
+          </div>
+          <div className="mc" onClick={()=>setHomeTab("tournament")} style={{background:"linear-gradient(135deg,#16213e,#2a1240)",border:"2px solid #ff7ab6",cursor:"pointer"}}>
             <div style={{fontSize:26,marginBottom:4}}>🏆</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Modu</div>
-            <div style={{fontSize:11,color:"#a8c4e0"}}>2-8 oyuncu eleme</div>
-            <div style={{marginTop:5}}><span style={{background:"rgba(255,77,109,.15)",color:"#ff4d6d",border:"1px solid rgba(255,77,109,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>YENI</span></div>
-          </div>
+            <div style={{fontSize:11,color:"#d9d6ff"}}>Grup modundan ayrı panel</div>
+            <div style={{marginTop:5}}><span style={{background:"rgba(255,122,182,.18)",color:"#ff7ab6",border:"1px solid rgba(255,122,182,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>AYRI PANEL</span></div>
           </div>
         </>}
+
+        {homeTab==="tournament"&&<div>
+          <div style={{background:"linear-gradient(135deg,#201133,#2a1240)",border:"2px solid #ff7ab6",borderRadius:18,padding:16,marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:24,fontWeight:700,color:"#fff"}}>Turnuva Modu</div>
+              <span style={{background:"rgba(255,122,182,.18)",color:"#ff7ab6",border:"1px solid rgba(255,122,182,.4)",borderRadius:20,padding:"3px 9px",fontSize:10,fontWeight:700}}>AYRI PANEL</span>
+            </div>
+            <div style={{fontSize:12,color:"#eadfff"}}>2-8 oyunculu eleme turnuvasını buradan yönet.</div>
+          </div>
+          {!tournamentData||!tournamentData.started?(
+            <div style={{background:"#161b35",border:"1.5px solid #3a4d8f",borderRadius:14,padding:14}}>
+              <div style={{fontSize:11,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Oyuncular</div>
+              <div className="playerlist" style={{marginBottom:10}}>
+                {((tournamentData&&tournamentData.players&&tournamentData.players.length)?tournamentData.players:[username]).map((p,i)=>(
+                  <div key={p+i} className="plitem">
+                    <div className="plavatarsm">{String(p||'?')[0].toUpperCase()}</div>
+                    <div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{i===0?" (Sen)":""}</div>
+                    {i>0&&<button onClick={()=>setTournamentData(d=>({...((d||{players:[username],started:false,bracket:[],round:1})),players:(d&&d.players?d.players:[username]).filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff6b8a",cursor:"pointer",fontSize:18}}>×</button>}
+                  </div>
+                ))}
+              </div>
+              {(((tournamentData&&tournamentData.players)?tournamentData.players.length:1))<8&&<button onClick={()=>{const n=prompt("Oyuncu adı:");if(!n||!n.trim())return;setTournamentData(d=>({...((d||{players:[username],started:false,bracket:[],round:1})),players:[...(((d&&d.players&&d.players.length)?d.players:[username])),n.trim()]}));}} style={{width:"100%",background:"rgba(110,231,247,.08)",border:"2px dashed #6ee7f7",borderRadius:10,padding:"10px",color:"#6ee7f7",fontWeight:700,cursor:"pointer",fontSize:13,marginBottom:10}}>+ Oyuncu Ekle</button>}
+              <button className="pbtn" onClick={()=>{const pl=(tournamentData&&tournamentData.players&&tournamentData.players.length)?tournamentData.players:[username];const br=[];for(let j=0;j<pl.length;j+=2){if(j+1<pl.length)br.push({p1:pl[j],p2:pl[j+1],winner:null});else br.push({p1:pl[j],p2:"BYE",winner:pl[j]});}setTournamentData({players:pl,started:true,bracket:br,round:1});}}>Turnuvayı Başlat</button>
+            </div>
+          ):(
+            <div style={{background:"#161b35",border:"1.5px solid #3a4d8f",borderRadius:14,padding:14}}>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0",marginBottom:10}}>Tur {tournamentData.round}</div>
+              {tournamentData.bracket.map((m,i)=>(
+                <div key={i} style={{background:"#111130",border:"1.5px solid #2a5a8e",borderRadius:12,padding:12,marginBottom:10}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
+                    <button className="sbtn" onClick={()=>{const w=m.p1;const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){alert("Şampiyon: "+ws[0]+"!");setTournamentData({players:[username],started:false,bracket:[],round:1});}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));}}>{m.p1}</button>
+                    <span style={{color:"#a8c4e0",fontWeight:700}}>vs</span>
+                    <button className="sbtn" onClick={()=>{const w=m.p2;const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){alert("Şampiyon: "+ws[0]+"!");setTournamentData({players:[username],started:false,bracket:[],round:1});}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));}} disabled={m.p2==='BYE'}>{m.p2}</button>
+                  </div>
+                  {m.winner&&<div style={{marginTop:8,fontSize:12,color:"#34d399",fontWeight:700}}>Kazanan: {m.winner}</div>}
+                </div>
+              ))}
+              <button onClick={()=>setTournamentData({players:[username],started:false,bracket:[],round:1})} style={{width:"100%",background:"rgba(255,77,109,.08)",border:"1.5px solid #ff4d6d",borderRadius:9,padding:"8px",color:"#ff4d6d",fontWeight:700,cursor:"pointer",marginTop:4}}>Sıfırla</button>
+            </div>
+          )}
+        </div>}
 
         {homeTab==="league"&&(()=>{
           const ld=leagueData||{league:"bronze",weeklyPts:0};
@@ -2146,7 +2232,7 @@ function App(){
 
         {showSettings&&<SettingsModal sfxOn={sfxOn} setSfxOn={setSfxOn} musicOn={musicOn} setMusicOn={setMusicOn} onClose={()=>setShowSettings(false)} onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
         
-        {showTournament&&<div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.96)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
+        {false&&<div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.96)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
           <div style={{background:"#060e1e",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"20px 18px 34px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#ff4d6d"}}>Turnuva Modu</div>
@@ -2277,17 +2363,24 @@ function App(){
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
             placeholder="000000" value={joinCodeInput}
             onChange={e=>setJoinCodeInput(e.target.value.replace(/[^0-9]/g,"").slice(0,6))}
-            onKeyDown={e=>{if(e.key==="Enter"&&joinCodeInput.length===6){
-              const pid=getRoomPeerId(joinCodeInput);
-              if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
-              else setJoinCodeErr("Kod bulunamadi!");
+            onKeyDown={async e=>{if(e.key==="Enter"&&joinCodeInput.length===6){
+              let pid=null;
+              try{
+                if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
+                if(!pid) pid=getRoomPeerId(joinCodeInput);
+              }catch(err){}
+              if(pid){setJoinCodeErr("");joinAsClient(usernameRef.current,pid);setJoinCodeInput("");}
+              else setJoinCodeErr("Kod gecersiz veya süresi dolmus.");
             }}}
             maxLength={6} inputMode="numeric"/>
           <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={async()=>{
             if(joinCodeInput.length!==6){setJoinCodeErr("6 haneli kod girin");return;}
-            let pid=getRoomPeerId(joinCodeInput);
-            if(!pid&&typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
-            if(pid){setJoinCodeErr("");joinAsClient(username,pid);setJoinCodeInput("");}
+            let pid=null;
+            try{
+              if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
+              if(!pid) pid=getRoomPeerId(joinCodeInput);
+            }catch(err){}
+            if(pid){setJoinCodeErr("");joinAsClient(usernameRef.current,pid);setJoinCodeInput("");}
             else setJoinCodeErr("Kod gecersiz veya süresi dolmus.");
           }}>Katil</button>
         </div>
@@ -2299,7 +2392,7 @@ function App(){
   if(screen==="lobby-host") return(
     <W><div className="sc fi">
       <div className="shdr">
-        <button className="bk" onClick={()=>{if(peerRef.current)peerRef.current.destroy();setScreen("setup");}}>←</button>
+        <button className="bk" onClick={leaveRoomToHome}>←</button>
         <div><div className="stitle">Oda Hazır</div></div>
         <span style={{fontSize:10,background:"rgba(110,231,247,.15)",color:"#6ee7f7",padding:"3px 9px",borderRadius:20,fontWeight:700}}>HOST</span>
       </div>
@@ -2330,7 +2423,7 @@ function App(){
         <div style={{fontSize:12,color:"#3d3d6b",marginBottom:18}}>Host başlatana kadar bekle</div>
         <div className="playerlist" style={{width:"100%",textAlign:"left"}}>{roomPlayers.map(p=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}</div>
       </>}
-      {connStatus==="error"&&<><div style={{fontSize:52,marginBottom:14}}>❌</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f87171",marginBottom:5}}>Bağlantı Hatası</div><button className="pbtn" style={{marginTop:12}} onClick={()=>setScreen("home")}>Ana Sayfaya Dön</button></>}
+      {connStatus==="error"&&<><div style={{fontSize:52,marginBottom:14}}>❌</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f87171",marginBottom:5}}>Bağlantı Hatası</div><button className="pbtn" style={{marginTop:12}} onClick={leaveRoomToHome}>Ana Sayfaya Dön</button></>}
     </div></W>
   );
 
