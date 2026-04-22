@@ -21,8 +21,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#060e1e}
-.app{min-height:100vh;background:linear-gradient(160deg,#0a1628 0%,#060e1e 60%,#0d0a20 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
-.phone{width:390px;min-height:840px;background:#0a1628;border-radius:38px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(76,201,240,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.app{min-height:100vh;min-height:100dvh;background:linear-gradient(160deg,#0a1628 0%,#060e1e 60%,#0d0a20 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:0}
+.phone{width:min(100vw,430px);min-height:100vh;min-height:100dvh;background:#0a1628;border-radius:24px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(76,201,240,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
+@media (max-width:480px){.app{padding:0}.phone{width:100vw;min-height:100dvh;border-radius:0;border:none;box-shadow:none}.sc{padding:18px 14px 18px}}
 .sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
 .sc::-webkit-scrollbar{width:0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -307,6 +308,10 @@ async function fbGetUser(uid){
   return getCachedUser();
 }
 
+function genRoomCode(){return String(100000+Math.floor(Math.random()*900000));}
+function saveRoomCode(code, peerId){try{localStorage.setItem('ba_room_'+String(code), String(peerId));}catch(e){}}
+function getRoomPeerId(code){try{return localStorage.getItem('ba_room_'+String(code))||null;}catch(e){return null;}}
+
 // ═══════════════════════════════════════════════════════
 // ROOM CODES (Cross-device!)
 // ═══════════════════════════════════════════════════════
@@ -360,6 +365,71 @@ async function fbGetFriends(uid){
   }catch(e){return [];}
 }
 
+async function fbSendFriendRequest(senderUid, senderUsername, senderCode, targetUid, targetUsername){
+  if(!db()) return {ok:false,err:'Firebase bağlantısı yok'};
+  if(!senderUid||!targetUid||senderUid===targetUid) return {ok:false,err:'Geçersiz kullanıcı'};
+  try{
+    const senderRef=db().collection('users').doc(senderUid);
+    const targetRef=db().collection('users').doc(targetUid);
+    const [senderDoc,targetDoc]=await Promise.all([senderRef.get(), targetRef.get()]);
+    if(!senderDoc.exists||!targetDoc.exists) return {ok:false,err:'Kullanıcı bulunamadı'};
+    const senderData=senderDoc.data()||{};
+    const targetData=targetDoc.data()||{};
+    const senderFriends=senderData.friends||[];
+    const targetIncoming=targetData.incomingRequests||[];
+    const senderOutgoing=senderData.outgoingRequests||[];
+    if(senderFriends.some(f=>f&&f.uid===targetUid)) return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
+    if(targetIncoming.some(r=>r&&r.uid===senderUid)) return {ok:false,err:'İstek zaten gönderilmiş'};
+    if(senderOutgoing.some(r=>r&&r.uid===targetUid)) return {ok:false,err:'İstek zaten bekliyor'};
+    const incomingReq={uid:senderUid,username:senderUsername,code:senderCode||''};
+    const outgoingReq={uid:targetUid,username:targetUsername,code:(targetData.code||'')};
+    await Promise.all([
+      targetRef.update({incomingRequests:firebase.firestore.FieldValue.arrayUnion(incomingReq)}),
+      senderRef.update({outgoingRequests:firebase.firestore.FieldValue.arrayUnion(outgoingReq)})
+    ]);
+    return {ok:true};
+  }catch(e){return {ok:false,err:e.message||'İstek gönderilemedi'};}
+}
+
+async function fbGetIncomingRequests(uid){
+  if(!db()) return [];
+  try{
+    const doc=await db().collection('users').doc(uid).get();
+    return doc.exists?(doc.data().incomingRequests||[]):[];
+  }catch(e){return [];}
+}
+
+async function fbGetOutgoingRequests(uid){
+  if(!db()) return [];
+  try{
+    const doc=await db().collection('users').doc(uid).get();
+    return doc.exists?(doc.data().outgoingRequests||[]):[];
+  }catch(e){return [];}
+}
+
+async function fbRespondFriendRequest(uid, requestObj, accept){
+  if(!db()||!uid||!requestObj||!requestObj.uid) return {ok:false,err:'Geçersiz istek'};
+  try{
+    const myRef=db().collection('users').doc(uid);
+    const otherRef=db().collection('users').doc(requestObj.uid);
+    const [myDoc,otherDoc]=await Promise.all([myRef.get(), otherRef.get()]);
+    if(!myDoc.exists||!otherDoc.exists) return {ok:false,err:'Kullanıcı bulunamadı'};
+    const myData=myDoc.data()||{};
+    const otherData=otherDoc.data()||{};
+    const meEntry={uid,username:myData.username||''};
+    const otherOut=(otherData.outgoingRequests||[]).find(r=>r&&r.uid===uid) || meEntry;
+    const batch=db().batch();
+    batch.update(myRef,{incomingRequests:firebase.firestore.FieldValue.arrayRemove(requestObj)});
+    batch.update(otherRef,{outgoingRequests:firebase.firestore.FieldValue.arrayRemove(otherOut)});
+    if(accept){
+      batch.update(myRef,{friends:firebase.firestore.FieldValue.arrayUnion({uid:requestObj.uid,username:requestObj.username})});
+      batch.update(otherRef,{friends:firebase.firestore.FieldValue.arrayUnion(meEntry)});
+    }
+    await batch.commit();
+    return {ok:true};
+  }catch(e){return {ok:false,err:e.message||'İşlem yapılamadı'};}
+}
+
 async function fbSearchByCode(code){
   if(!db()) return null;
   try{
@@ -374,6 +444,49 @@ async function fbSearchByUsername(username){
   try{
     const doc=await db().collection("usernames").doc(username).get();
     if(doc.exists){return {uid:doc.data().uid,username,code:doc.data().code};}
+  }catch(e){}
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════
+// TOURNAMENT MATCHMAKING
+// ═══════════════════════════════════════════════════════
+async function fbJoinTournamentQueue(uid, username){
+  if(!db()) return {ok:false,err:'Firebase bağlantısı yok'};
+  try{
+    const queueRef=db().collection('tournamentQueue');
+    const existing=await queueRef.doc(uid).get();
+    if(!existing.exists){
+      await queueRef.doc(uid).set({uid,username,createdAt:Date.now()});
+    }
+    const snap=await queueRef.orderBy('createdAt','asc').limit(10).get();
+    const other=snap.docs.find(d=>d.id!==uid);
+    if(other){
+      const matchId='tm_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      await db().collection('tournamentMatches').doc(matchId).set({
+        id:matchId,
+        playerIds:[uid,other.id],
+        players:[{uid,username},{uid:other.id,username:other.data().username}],
+        status:'matched',
+        createdAt:Date.now()
+      });
+      await Promise.all([queueRef.doc(uid).delete().catch(()=>{}), queueRef.doc(other.id).delete().catch(()=>{})]);
+      return {ok:true,matched:true,matchId,opponent:{uid:other.id,username:other.data().username}};
+    }
+    return {ok:true,matched:false};
+  }catch(e){return {ok:false,err:e.message||'Eşleşme kuyruğu hatası'};}
+}
+
+async function fbLeaveTournamentQueue(uid){
+  if(!db()||!uid) return;
+  try{await db().collection('tournamentQueue').doc(uid).delete();}catch(e){}
+}
+
+async function fbCheckTournamentMatch(uid){
+  if(!db()||!uid) return null;
+  try{
+    const snap=await db().collection('tournamentMatches').where('playerIds','array-contains',uid).limit(1).get();
+    if(!snap.empty) return snap.docs[0].data();
   }catch(e){}
   return null;
 }
@@ -1333,6 +1446,10 @@ function App(){
   const [friendSearchInput,setFriendSearchInput]=useState("");
   const [friendSearchResult,setFriendSearchResult]=useState(null);
   const [friendSearchErr,setFriendSearchErr]=useState("");
+  const [incomingRequests,setIncomingRequests]=useState([]);
+  const [outgoingRequests,setOutgoingRequests]=useState([]);
+  const [socialNotice,setSocialNotice]=useState("");
+  const [tournamentQueueing,setTournamentQueueing]=useState(false);
 
   // UI
   const [homeTab,setHomeTab]=useState("home");
@@ -1399,6 +1516,8 @@ function App(){
     const uid=(cached&&cached.uid)||localStorage.getItem("ba_fb_uid");
     if(uid&&typeof fbGetFriends!=="undefined"){
       fbGetFriends(uid).then(list=>{if(Array.isArray(list)){setFriends(list); try{saveFriendsLS(u,list);}catch(e){}}}).catch(()=>{});
+      if(typeof fbGetIncomingRequests!=="undefined") fbGetIncomingRequests(uid).then(list=>{if(Array.isArray(list)) setIncomingRequests(list);}).catch(()=>{});
+      if(typeof fbGetOutgoingRequests!=="undefined") fbGetOutgoingRequests(uid).then(list=>{if(Array.isArray(list)) setOutgoingRequests(list);}).catch(()=>{});
     }
     getUserCode(u); // ensure code generated
   },[]);
@@ -1409,6 +1528,37 @@ function App(){
     pingOnline(username);
     pingIntervalRef.current=setInterval(()=>pingOnline(usernameRef.current),30000);
     return()=>clearInterval(pingIntervalRef.current);
+  },[username]);
+
+  // -- Social sync --
+  useEffect(()=>{
+    if(!username) return;
+    let dead=false;
+    const sync=async()=>{
+      const cached=getCachedUser();
+      const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem("ba_fb_uid");
+      if(!uid) return;
+      try{
+        const [frs,ins,outs,match]=await Promise.all([
+          typeof fbGetFriends!=="undefined"?fbGetFriends(uid):Promise.resolve([]),
+          typeof fbGetIncomingRequests!=="undefined"?fbGetIncomingRequests(uid):Promise.resolve([]),
+          typeof fbGetOutgoingRequests!=="undefined"?fbGetOutgoingRequests(uid):Promise.resolve([]),
+          typeof fbCheckTournamentMatch!=="undefined"?fbCheckTournamentMatch(uid):Promise.resolve(null)
+        ]);
+        if(dead) return;
+        if(Array.isArray(frs)) setFriends(frs);
+        if(Array.isArray(ins)) setIncomingRequests(ins);
+        if(Array.isArray(outs)) setOutgoingRequests(outs);
+        if(match){
+          const opp=(match.players||[]).find(p=>p&&p.uid!==uid);
+          setTournamentData({mode:'matchmaking',matchId:match.id,opponent:opp||null,status:'matched'});
+          setTournamentQueueing(false);
+        }
+      }catch(e){}
+    };
+    sync();
+    const t=setInterval(sync,5000);
+    return()=>{dead=true;clearInterval(t);};
   },[username]);
 
   // -- Reveal SFX --
@@ -1832,11 +1982,24 @@ function App(){
 
   useEffect(()=>()=>{clearInterval(timerRef.current);clearTimeout(forceRef.current);if(peerRef.current)peerRef.current.destroy();stopMusic();},[]);
 
-  const copyLink=()=>{
-    const txt=inviteLink||window.location.href;
+  const copyText=(txt)=>{
     const fallback=()=>{try{const ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);}catch(e){}};
     try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(()=>{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);});}else{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}}catch(e){fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}
   };
+  const copyLink=()=>copyText(inviteLink||window.location.href);
+  const copyCode=()=>copyText(roomCode||joinCodeInput||"");
+  const handleJoinByCode=useCallback(async()=>{
+    const code=joinCodeInput.trim();
+    if(code.length!==6){setJoinCodeErr('6 haneli kod gir');return;}
+    let pid=null;
+    try{
+      if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(code);
+      if(!pid) pid=getRoomPeerId(code);
+    }catch(e){}
+    if(pid){setJoinCodeErr('');joinAsClient(usernameRef.current,pid);setJoinCodeInput('');}
+    else setJoinCodeErr('Kod geçersiz veya süresi dolmuş.');
+  },[joinCodeInput,joinAsClient]);
+
   const sortedLive=Object.entries(liveScores).sort((a,b)=>b[1]-a[1]);
   const rankBG=i=>RANK_BG[i]||"#1e1e4a";
   const getLB=()=>{
@@ -1863,6 +2026,24 @@ function App(){
   },[gold,pwElim]);
 
   // -- Friend search --
+  const respondFriendRequest=useCallback(async(req,accept)=>{
+    const currentUser=getCachedUser();
+    const myUid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||currentUser?.uid||localStorage.getItem("ba_fb_uid");
+    if(!myUid||!req)return;
+    try{
+      const res=typeof fbRespondFriendRequest!=="undefined"?await fbRespondFriendRequest(myUid,req,accept):{ok:false};
+      if(!res||!res.ok){setSocialNotice((res&&res.err)||'İşlem başarısız');setTimeout(()=>setSocialNotice(''),2500);return;}
+      const [frs,ins]=await Promise.all([
+        typeof fbGetFriends!=="undefined"?fbGetFriends(myUid):Promise.resolve([]),
+        typeof fbGetIncomingRequests!=="undefined"?fbGetIncomingRequests(myUid):Promise.resolve([])
+      ]);
+      if(Array.isArray(frs)) setFriends(frs);
+      if(Array.isArray(ins)) setIncomingRequests(ins);
+      setSocialNotice(accept?'Arkadaşlık isteği kabul edildi.':'Arkadaşlık isteği reddedildi.');
+      setTimeout(()=>setSocialNotice(''),2500);
+    }catch(e){setSocialNotice('İşlem başarısız');setTimeout(()=>setSocialNotice(''),2500);}
+  },[]);
+
   const searchFriend=useCallback(async()=>{
     let code=friendSearchInput.trim().toUpperCase();
     if(!code){setFriendSearchErr("Kod girin");return;}
@@ -1887,18 +2068,23 @@ function App(){
     const myUid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||currentUser?.uid||localStorage.getItem("ba_fb_uid");
     if(!myUid){setFriendSearchErr("Önce giriş yapmalısın");return;}
     try{
-      const ok=typeof fbAddFriend!=="undefined"?await fbAddFriend(myUid,friendObj.uid,friendObj.username):false;
-      if(!ok){setFriendSearchErr("Arkadaş eklenemedi");return;}
-      let freshFriends=[];
-      if(typeof fbGetFriends!=="undefined") freshFriends=await fbGetFriends(myUid);
-      if(!Array.isArray(freshFriends)) freshFriends=[];
-      setFriends(freshFriends);
-      try{saveFriendsLS(usernameRef.current,freshFriends);}catch(e){}
-      setFriendSearchResult(null);setFriendSearchInput("");setFriendSearchErr("");
+      const res=typeof fbSendFriendRequest!=="undefined"
+        ? await fbSendFriendRequest(myUid, usernameRef.current, userCode||getUserCode(usernameRef.current), friendObj.uid, friendObj.username)
+        : {ok:false,err:'İstek sistemi hazır değil'};
+      if(!res||!res.ok){setFriendSearchErr((res&&res.err)||"İstek gönderilemedi");return;}
+      setSocialNotice('Arkadaşlık isteği gönderildi.');
+      if(typeof fbGetOutgoingRequests!=="undefined"){
+        const list=await fbGetOutgoingRequests(myUid);
+        if(Array.isArray(list)) setOutgoingRequests(list);
+      }
+      setFriendSearchResult(null);
+      setFriendSearchInput("");
+      setFriendSearchErr("");
+      setTimeout(()=>setSocialNotice(""),2500);
     }catch(e){
-      setFriendSearchErr("Arkadaş eklenirken hata oluştu");
+      setFriendSearchErr("Arkadaşlık isteği gönderilemedi");
     }
-  },[]);
+  },[userCode]);
 
   const challengeFriend=useCallback((friendName)=>{
     setMode("multi");setScreen("setup-challenge");
@@ -2017,41 +2203,33 @@ function App(){
           <div style={{background:"linear-gradient(135deg,#201133,#2a1240)",border:"2px solid #ff7ab6",borderRadius:18,padding:16,marginBottom:12}}>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:24,fontWeight:700,color:"#fff"}}>Turnuva Modu</div>
-              <span style={{background:"rgba(255,122,182,.18)",color:"#ff7ab6",border:"1px solid rgba(255,122,182,.4)",borderRadius:20,padding:"3px 9px",fontSize:10,fontWeight:700}}>AYRI PANEL</span>
+              <span style={{background:"rgba(255,122,182,.18)",color:"#ff7ab6",border:"1px solid rgba(255,122,182,.4)",borderRadius:20,padding:"3px 9px",fontSize:10,fontWeight:700}}>OTOMATİK EŞLEŞME</span>
             </div>
-            <div style={{fontSize:12,color:"#eadfff"}}>2-8 oyunculu eleme turnuvasını buradan yönet.</div>
+            <div style={{fontSize:12,color:"#eadfff"}}>Davet değil, hızlı eşleşme ile rakip bulur.</div>
           </div>
-          {!tournamentData||!tournamentData.started?(
-            <div style={{background:"#161b35",border:"1.5px solid #3a4d8f",borderRadius:14,padding:14}}>
-              <div style={{fontSize:11,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Oyuncular</div>
-              <div className="playerlist" style={{marginBottom:10}}>
-                {((tournamentData&&tournamentData.players&&tournamentData.players.length)?tournamentData.players:[username]).map((p,i)=>(
-                  <div key={p+i} className="plitem">
-                    <div className="plavatarsm">{String(p||'?')[0].toUpperCase()}</div>
-                    <div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{i===0?" (Sen)":""}</div>
-                    {i>0&&<button onClick={()=>setTournamentData(d=>({...((d||{players:[username],started:false,bracket:[],round:1})),players:(d&&d.players?d.players:[username]).filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff6b8a",cursor:"pointer",fontSize:18}}>×</button>}
-                  </div>
-                ))}
-              </div>
-              {(((tournamentData&&tournamentData.players)?tournamentData.players.length:1))<8&&<button onClick={()=>{const n=prompt("Oyuncu adı:");if(!n||!n.trim())return;setTournamentData(d=>({...((d||{players:[username],started:false,bracket:[],round:1})),players:[...(((d&&d.players&&d.players.length)?d.players:[username])),n.trim()]}));}} style={{width:"100%",background:"rgba(110,231,247,.08)",border:"2px dashed #6ee7f7",borderRadius:10,padding:"10px",color:"#6ee7f7",fontWeight:700,cursor:"pointer",fontSize:13,marginBottom:10}}>+ Oyuncu Ekle</button>}
-              <button className="pbtn" onClick={()=>{const pl=(tournamentData&&tournamentData.players&&tournamentData.players.length)?tournamentData.players:[username];const br=[];for(let j=0;j<pl.length;j+=2){if(j+1<pl.length)br.push({p1:pl[j],p2:pl[j+1],winner:null});else br.push({p1:pl[j],p2:"BYE",winner:pl[j]});}setTournamentData({players:pl,started:true,bracket:br,round:1});}}>Turnuvayı Başlat</button>
-            </div>
-          ):(
-            <div style={{background:"#161b35",border:"1.5px solid #3a4d8f",borderRadius:14,padding:14}}>
-              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0",marginBottom:10}}>Tur {tournamentData.round}</div>
-              {tournamentData.bracket.map((m,i)=>(
-                <div key={i} style={{background:"#111130",border:"1.5px solid #2a5a8e",borderRadius:12,padding:12,marginBottom:10}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}>
-                    <button className="sbtn" onClick={()=>{const w=m.p1;const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){alert("Şampiyon: "+ws[0]+"!");setTournamentData({players:[username],started:false,bracket:[],round:1});}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));}}>{m.p1}</button>
-                    <span style={{color:"#a8c4e0",fontWeight:700}}>vs</span>
-                    <button className="sbtn" onClick={()=>{const w=m.p2;const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){alert("Şampiyon: "+ws[0]+"!");setTournamentData({players:[username],started:false,bracket:[],round:1});}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));}} disabled={m.p2==='BYE'}>{m.p2}</button>
-                  </div>
-                  {m.winner&&<div style={{marginTop:8,fontSize:12,color:"#34d399",fontWeight:700}}>Kazanan: {m.winner}</div>}
+          <div style={{background:"#161b35",border:"1.5px solid #3a4d8f",borderRadius:14,padding:14}}>
+            {!tournamentData||tournamentData.status!=='matched'?(
+              <>
+                <div style={{fontSize:12,color:'#e2e4f0',fontWeight:700,marginBottom:6}}>1v1 Turnuva Kuyruğu</div>
+                <div style={{fontSize:12,color:'#a8c4e0',marginBottom:12}}>Sıraya gir, sistem sana uygun rakip bulsun.</div>
+                <button className="pbtn" onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(!uid)return;setTournamentQueueing(true);const res=typeof fbJoinTournamentQueue!=="undefined"?await fbJoinTournamentQueue(uid,usernameRef.current):{ok:false};if(res&&res.matched){setTournamentData({mode:'matchmaking',status:'matched',matchId:res.matchId,opponent:res.opponent});setTournamentQueueing(false);}else if(res&&res.ok){setTournamentData({mode:'matchmaking',status:'queue'});}else{setTournamentQueueing(false);}}} disabled={tournamentQueueing}>{tournamentQueueing?'Rakip aranıyor...':'⚔️ Hızlı Eşleşmeye Gir'}</button>
+                {tournamentData&&tournamentData.status==='queue'&&<>
+                  <div style={{marginTop:12,fontSize:12,color:'#a8c4e0'}}>Kuyruktasın. Rakip bulununca bu panel otomatik güncellenir.</div>
+                  <button className="sbtn" style={{marginTop:10}} onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(uid&&typeof fbLeaveTournamentQueue!=="undefined") await fbLeaveTournamentQueue(uid);setTournamentQueueing(false);setTournamentData(null);}}>Kuyruktan Çık</button>
+                </>}
+              </>
+            ):(
+              <>
+                <div style={{fontSize:12,color:'#a8c4e0',marginBottom:8}}>Rakibin bulundu</div>
+                <div style={{background:'#111130',border:'1.5px solid #2a5a8e',borderRadius:12,padding:12,marginBottom:12,display:'flex',alignItems:'center',gap:10}}>
+                  <div className='plavatarsm'>{String((tournamentData.opponent&&tournamentData.opponent.username)||'?')[0].toUpperCase()}</div>
+                  <div style={{flex:1}}><div style={{fontSize:15,fontWeight:800,color:'#fff'}}>{tournamentData.opponent?tournamentData.opponent.username:'Rakip'}</div><div style={{fontSize:12,color:'#a8c4e0'}}>Turnuva eşleşmesi hazır</div></div>
                 </div>
-              ))}
-              <button onClick={()=>setTournamentData({players:[username],started:false,bracket:[],round:1})} style={{width:"100%",background:"rgba(255,77,109,.08)",border:"1.5px solid #ff4d6d",borderRadius:9,padding:"8px",color:"#ff4d6d",fontWeight:700,cursor:"pointer",marginTop:4}}>Sıfırla</button>
-            </div>
-          )}
+                <button className="pbtn" onClick={()=>{setMode('multi');setCategory('karışık');setScreen('setup');}}>Oyuna Geç</button>
+                <button className="sbtn" style={{marginTop:10}} onClick={()=>setTournamentData(null)}>Tamam</button>
+              </>
+            )}
+          </div>
         </div>}
 
         {homeTab==="league"&&(()=>{
@@ -2089,9 +2267,11 @@ function App(){
             <div style={{background:"#111130",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{(friendSearchResult.username||"?")[0].toUpperCase()}</div>
               <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult.username}</div><div style={{fontSize:11,color:isOnline(friendSearchResult.username)?"#34d399":"#3d3d6b"}}>{isOnline(friendSearchResult.username)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
-              <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>+ Ekle</button>
+              <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>İstek Gönder</button>
             </div>
           )}
+          {incomingRequests.length>0&&<div style={{background:'#111130',border:'1.5px solid #1e1e4a',borderRadius:12,padding:12,marginBottom:12}}><div style={{fontSize:11,color:'#a8c4e0',fontWeight:700,textTransform:'uppercase',letterSpacing:1,marginBottom:8}}>Bekleyen Arkadaşlık İstekleri ({incomingRequests.length})</div>{incomingRequests.map((req,i)=>(<div key={(req.uid||i)+i} style={{display:'flex',alignItems:'center',gap:10,background:'#0f2040',border:'1px solid #1e3a6e',borderRadius:10,padding:'10px 11px',marginBottom:8}}><div className='plavatarsm'>{String((req.username||'?'))[0].toUpperCase()}</div><div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:'#e2e4f0'}}>{req.username}</div><div style={{fontSize:11,color:'#a8c4e0'}}>{req.code||''}</div></div><button className='sbtn' style={{width:'auto',padding:'7px 10px'}} onClick={()=>respondFriendRequest(req,true)}>Kabul Et</button><button className='sbtn' style={{width:'auto',padding:'7px 10px',borderColor:'#ff4d6d',color:'#ff7a8a'}} onClick={()=>respondFriendRequest(req,false)}>Reddet</button></div>))}</div>}
+          {outgoingRequests.length>0&&<div style={{background:'#111130',border:'1.5px solid #1e1e4a',borderRadius:12,padding:12,marginBottom:12}}><div style={{fontSize:11,color:'#a8c4e0',fontWeight:700,textTransform:'uppercase',letterSpacing:1,marginBottom:8}}>Gönderilen İstekler ({outgoingRequests.length})</div>{outgoingRequests.map((req,i)=>(<div key={(req.uid||i)+'o'+i} style={{display:'flex',alignItems:'center',gap:10,background:'#0f2040',border:'1px solid #1e3a6e',borderRadius:10,padding:'10px 11px',marginBottom:8}}><div className='plavatarsm'>{String((req.username||'?'))[0].toUpperCase()}</div><div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:'#e2e4f0'}}>{req.username}</div><div style={{fontSize:11,color:'#fbbf24'}}>Yanıt bekleniyor</div></div></div>))}</div>}
           <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
           {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#3d3d6b",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
           {friends.map((f,i)=>{
@@ -2363,26 +2543,9 @@ function App(){
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
             placeholder="000000" value={joinCodeInput}
             onChange={e=>setJoinCodeInput(e.target.value.replace(/[^0-9]/g,"").slice(0,6))}
-            onKeyDown={async e=>{if(e.key==="Enter"&&joinCodeInput.length===6){
-              let pid=null;
-              try{
-                if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
-                if(!pid) pid=getRoomPeerId(joinCodeInput);
-              }catch(err){}
-              if(pid){setJoinCodeErr("");joinAsClient(usernameRef.current,pid);setJoinCodeInput("");}
-              else setJoinCodeErr("Kod gecersiz veya süresi dolmus.");
-            }}}
+            onKeyDown={e=>{if(e.key==="Enter") handleJoinByCode();}}
             maxLength={6} inputMode="numeric"/>
-          <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={async()=>{
-            if(joinCodeInput.length!==6){setJoinCodeErr("6 haneli kod girin");return;}
-            let pid=null;
-            try{
-              if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(joinCodeInput);
-              if(!pid) pid=getRoomPeerId(joinCodeInput);
-            }catch(err){}
-            if(pid){setJoinCodeErr("");joinAsClient(usernameRef.current,pid);setJoinCodeInput("");}
-            else setJoinCodeErr("Kod gecersiz veya süresi dolmus.");
-          }}>Katil</button>
+          <button className="pbtn" style={{width:"auto",padding:"0 16px",marginTop:0}} onClick={handleJoinByCode}>Katıl</button>
         </div>
         {joinCodeErr&&<div style={{fontSize:11,color:"#ff4d6d",marginTop:4,textAlign:"center"}}>{joinCodeErr}</div>}</>
       )}
@@ -2404,7 +2567,10 @@ function App(){
         <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:42,fontWeight:700,color:"#4cc9f0",letterSpacing:8}}>{roomCode||"------"}</div>
         <div style={{fontSize:10,color:"#a8c4e0",marginTop:2}}>Arkadasina bu kodu soyle</div>
       </div>
-      <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
+      <div style={{display:'grid',gap:10,width:'100%'}}>
+        <div className="linkbox"><div style={{fontSize:11,color:'#a8c4e0',marginBottom:6}}>Oda Kodu</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:34,fontWeight:800,letterSpacing:6,color:'#6ee7f7',textAlign:'center'}}>{roomCode||'......'}</div><button className="copybtn" onClick={copyCode}>{copied?"✓ Kopyalandı!":"📋 Kodu Kopyala"}</button></div>
+        <div className="linkbox"><div style={{fontSize:11,color:'#a8c4e0',marginBottom:6}}>Davet Linki</div><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>🔗 Linki Kopyala</button></div>
+      </div>
       <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
         {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#3d3d6b",fontSize:12}}>⏳ Bekleniyor...</div>}
