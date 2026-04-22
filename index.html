@@ -20,7 +20,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#060e1e}
+body{background:#08142a}
 .app{min-height:100vh;min-height:100dvh;background:linear-gradient(160deg,#0a1628 0%,#060e1e 60%,#0d0a20 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:0}
 .phone{width:min(100vw,430px);min-height:100vh;min-height:100dvh;background:#0a1628;border-radius:24px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(76,201,240,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
 @media (max-width:480px){.app{padding:0}.phone{width:100vw;min-height:100dvh;border-radius:0;border:none;box-shadow:none}.sc{padding:18px 14px 18px}}
@@ -52,7 +52,7 @@ body{background:#060e1e}
 .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4cc9f0,#9b5de5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
 .av{width:37px;height:37px;background:linear-gradient(135deg,#4cc9f0,#9b5de5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0a0a1f}
-.mc{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
+.mc{background:#132b56;border:1.5px solid #2e5fb3;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
 .mc:hover{border-color:#4cc9f0;transform:translateY(-2px);box-shadow:0 8px 32px rgba(76,201,240,.1)}
 .stitle{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700;color:#e2e4f0}
 .bk{background:transparent;border:none;color:#a8c4e0;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
@@ -149,19 +149,7 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 .toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}
 .toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .toggle.on .toggle-knob{left:25px}
-.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}.ob.elim{opacity:.15;pointer-events:none}.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0800);border:1.5px solid #ffd166;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}.pw-btn:disabled{opacity:.3;cursor:default}.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15)}.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 18px 34px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}.shop-panel::-webkit-scrollbar{width:0}.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s}.toggle.on .toggle-knob{left:25px}
-:root{--bg1:#081b33;--bg2:#0b1f3d;--panel:#122a52;--panel2:#1a2f5f;--soft:#233e79;--text:#eef4ff;--muted:#b8c8ef;--accent:#57d4ff;--accent2:#8b7cff;--gold:#ffd166;--pink:#ff7ab6;}
-body{background:radial-gradient(circle at top,#163867 0%,#081b33 48%,#07172c 100%)!important}
-.app{background:linear-gradient(160deg,#0f2a52 0%,#091e3a 58%,#12234a 100%)!important;color:var(--text)!important}
-.phone{background:linear-gradient(180deg,#091a36 0%,#0b2243 100%)!important;border:1.5px solid #284b8b!important;box-shadow:0 0 0 1px rgba(84,133,255,.25),0 32px 80px rgba(0,0,0,.45),0 0 70px rgba(87,212,255,.18)!important}
-.tabs,.statusbar,.playerlist,.qcard,.ri,.lbpanel,.shop-panel{background:rgba(18,42,82,.95)!important;border-color:#34589b!important}
-.mc,.cc,.scard,.lbrow,.ob,.inp,.playerlist,.plitem,.linkbox{background:#122a52!important;border-color:#335f9e!important}
-.mc:hover,.cc:hover:not(.sel),.ob:hover:not(:disabled){border-color:#57d4ff!important;box-shadow:0 10px 34px rgba(87,212,255,.12)!important}
-.tb.off{color:#c5d4fb!important}.tb.on{color:#081322!important}
-.logosm,.logo h1{background:linear-gradient(135deg,#57d4ff 0%,#8b7cff 60%,#ff7ab6 100%)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
-.gold-bar{background:linear-gradient(135deg,#3f2a00,#231700)!important}
-
-</style>
+.ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}.ob.elim{opacity:.15;pointer-events:none}.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0800);border:1.5px solid #ffd166;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}.pw-btn:disabled{opacity:.3;cursor:default}.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15)}.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 18px 34px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}.shop-panel::-webkit-scrollbar{width:0}.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s}.toggle.on .toggle-knob{left:25px}</style>
 </head>
 <body>
 <div id="root"></div>
@@ -394,48 +382,40 @@ async function fbSendFriendRequest(senderUid, senderUsername, senderCode, target
   if(!senderUid||!targetUid||senderUid===targetUid) return {ok:false,err:'Geçersiz kullanıcı'};
   try{
     const fid=_friendReqId(senderUid,targetUid);
-    const friendshipRef=db().collection('friendships').doc(fid);
-    const friendshipDoc=await friendshipRef.get();
-    if(friendshipDoc.exists && (friendshipDoc.data()||{}).status==='accepted') return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
-    const payload={
+    const friendshipDoc=await db().collection('friendships').doc(fid).get();
+    if(friendshipDoc.exists) return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
+    const reqRef=db().collection('friendRequests').doc(fid);
+    const reqDoc=await reqRef.get();
+    if(reqDoc.exists){
+      const existing=reqDoc.data()||{};
+      if(existing.status==='pending') return {ok:false,err:'İstek zaten bekliyor'};
+      if(existing.status==='accepted') return {ok:false,err:'Bu kullanıcı zaten arkadaşın'};
+    }
+    await reqRef.set({
       id:fid,
       senderUid, senderUsername, senderCode:senderCode||'',
       targetUid, targetUsername:targetUsername||'',
-      members:[String(senderUid),String(targetUid)].sort(),
-      usernames:{[senderUid]:senderUsername||'', [targetUid]:targetUsername||''},
       status:'pending',
       createdAt:firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-    };
-    await friendshipRef.set(payload, {merge:true});
-    await db().collection('friendRequests').doc(fid).set(payload, {merge:true}).catch(()=>{});
-    return {ok:true,requestId:fid};
+    }, {merge:true});
+    return {ok:true};
   }catch(e){return {ok:false,err:e.message||'İstek gönderilemedi'};}
 }
 
 async function fbGetIncomingRequests(uid){
   if(!db()||!uid) return [];
   try{
-    const out=[]; const seen=new Set();
-    const [reqSnap, fsSnap]=await Promise.all([
-      db().collection('friendRequests').where('targetUid','==',uid).where('status','==','pending').get().catch(()=>({docs:[]})),
-      db().collection('friendships').where('targetUid','==',uid).where('status','==','pending').get().catch(()=>({docs:[]}))
-    ]);
-    [reqSnap,fsSnap].forEach(snap=>{(snap.docs||[]).forEach(d=>{const x=d.data()||{}; if(seen.has(d.id)) return; seen.add(d.id); out.push({requestId:d.id, uid:x.senderUid, username:x.senderUsername||((x.usernames||{})[x.senderUid])||'Oyuncu', code:x.senderCode||''});});});
-    return out;
+    const snap=await db().collection('friendRequests').where('targetUid','==',uid).where('status','==','pending').get();
+    return snap.docs.map(d=>{ const x=d.data()||{}; return {requestId:d.id, uid:x.senderUid, username:x.senderUsername, code:x.senderCode||''}; });
   }catch(e){return [];}
 }
 
 async function fbGetOutgoingRequests(uid){
   if(!db()||!uid) return [];
   try{
-    const out=[]; const seen=new Set();
-    const [reqSnap, fsSnap]=await Promise.all([
-      db().collection('friendRequests').where('senderUid','==',uid).where('status','==','pending').get().catch(()=>({docs:[]})),
-      db().collection('friendships').where('senderUid','==',uid).where('status','==','pending').get().catch(()=>({docs:[]}))
-    ]);
-    [reqSnap,fsSnap].forEach(snap=>{(snap.docs||[]).forEach(d=>{const x=d.data()||{}; if(seen.has(d.id)) return; seen.add(d.id); out.push({requestId:d.id, uid:x.targetUid, username:x.targetUsername||((x.usernames||{})[x.targetUid])||'Oyuncu', code:''});});});
-    return out;
+    const snap=await db().collection('friendRequests').where('senderUid','==',uid).where('status','==','pending').get();
+    return snap.docs.map(d=>{ const x=d.data()||{}; return {requestId:d.id, uid:x.targetUid, username:x.targetUsername, code:''}; });
   }catch(e){return [];}
 }
 
@@ -443,18 +423,22 @@ async function fbRespondFriendRequest(uid, requestObj, accept){
   if(!db()||!uid||!requestObj||!requestObj.uid) return {ok:false,err:'Geçersiz istek'};
   try{
     const rid=requestObj.requestId || _friendReqId(uid, requestObj.uid);
-    const friendshipRef=db().collection('friendships').doc(rid);
     const reqRef=db().collection('friendRequests').doc(rid);
-    const [reqDoc, fsDoc, myDoc]=await Promise.all([reqRef.get().catch(()=>null), friendshipRef.get().catch(()=>null), db().collection('users').doc(uid).get()]);
-    const req=(reqDoc && reqDoc.exists ? reqDoc.data() : (fsDoc && fsDoc.exists ? fsDoc.data() : {})) || {};
+    const reqDoc=await reqRef.get();
+    if(!reqDoc.exists) return {ok:false,err:'İstek bulunamadı'};
+    const req=reqDoc.data()||{};
+    const myDoc=await db().collection('users').doc(uid).get();
     const myName=(myDoc.exists && myDoc.data() && myDoc.data().username) ? myDoc.data().username : '';
     if(accept){
-      const payload={members:[uid, requestObj.uid].sort(), usernames:{[uid]:myName, [requestObj.uid]:requestObj.username||req.senderUsername||''}, senderUid:req.senderUid||requestObj.uid, targetUid:req.targetUid||uid, status:'accepted', updatedAt:firebase.firestore.FieldValue.serverTimestamp(), createdAt:req.createdAt||firebase.firestore.FieldValue.serverTimestamp()};
-      await friendshipRef.set(payload, {merge:true});
-      await reqRef.set({...payload, senderUsername:req.senderUsername||requestObj.username||'', targetUsername:req.targetUsername||myName}, {merge:true}).catch(()=>{});
+      const fid=_friendReqId(uid, requestObj.uid);
+      await db().collection('friendships').doc(fid).set({
+        members:[uid, requestObj.uid].sort(),
+        usernames:{[uid]:myName, [requestObj.uid]:requestObj.username||req.senderUsername||''},
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true});
+      await reqRef.set({status:'accepted', updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
     }else{
-      await friendshipRef.set({status:'rejected', updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
-      await reqRef.set({status:'rejected', updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true}).catch(()=>{});
+      await reqRef.set({status:'rejected', updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
     }
     return {ok:true};
   }catch(e){return {ok:false,err:e.message||'İşlem yapılamadı'};}
@@ -2074,31 +2058,6 @@ function App(){
     }catch(e){setSocialNotice('İşlem başarısız');setTimeout(()=>setSocialNotice(''),2500);}
   },[]);
 
-
-  useEffect(()=>{
-    const cached=getCachedUser();
-    const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');
-    if(!uid) return;
-    const t=setInterval(async()=>{
-      try{
-        const [ins,outs,frs,match]=await Promise.all([
-          typeof fbGetIncomingRequests!=="undefined"?fbGetIncomingRequests(uid):Promise.resolve([]),
-          typeof fbGetOutgoingRequests!=="undefined"?fbGetOutgoingRequests(uid):Promise.resolve([]),
-          typeof fbGetFriends!=="undefined"?fbGetFriends(uid):Promise.resolve([]),
-          typeof fbCheckTournamentMatch!=="undefined"?fbCheckTournamentMatch(uid):Promise.resolve(null)
-        ]);
-        if(Array.isArray(ins)) setIncomingRequests(ins);
-        if(Array.isArray(outs)) setOutgoingRequests(outs);
-        if(Array.isArray(frs)) setFriends(frs);
-        if(match&&match.players){
-          const opp=(match.players||[]).find(p=>p.uid!==uid)||null;
-          if(opp) setTournamentData({mode:'matchmaking',status:'matched',matchId:match.id||('tm_'+Date.now()),opponent:opp});
-        }
-      }catch(e){}
-    }, 3500);
-    return ()=>clearInterval(t);
-  }, [screen, homeTab]);
-
   const searchFriend=useCallback(async()=>{
     let code=friendSearchInput.trim().toUpperCase();
     if(!code){setFriendSearchErr("Kod girin");return;}
@@ -2121,21 +2080,16 @@ function App(){
     if(!friendObj||!friendObj.uid)return;
     const currentUser=getCachedUser();
     const myUid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||currentUser?.uid||localStorage.getItem("ba_fb_uid");
-    if(!myUid){setFriendSearchErr("Önce giriş yapmalısın");alert('Önce giriş yapmalısın');return;}
+    if(!myUid){setFriendSearchErr("Önce giriş yapmalısın");return;}
     try{
       const res=typeof fbSendFriendRequest!=="undefined"
         ? await fbSendFriendRequest(myUid, usernameRef.current, userCode||getUserCode(usernameRef.current), friendObj.uid, friendObj.username)
         : {ok:false,err:'İstek sistemi hazır değil'};
-      if(!res||!res.ok){setFriendSearchErr((res&&res.err)||"İstek gönderilemedi"); alert((res&&res.err)||'İstek gönderilemedi'); return;}
-      setOutgoingRequests(prev=>{
-        const exists=(prev||[]).some(x=>String(x.uid)===String(friendObj.uid));
-        return exists?prev:[{requestId:res.requestId||('tmp_'+Date.now()), uid:friendObj.uid, username:friendObj.username, code:''}, ...(prev||[])];
-      });
+      if(!res||!res.ok){setFriendSearchErr((res&&res.err)||"İstek gönderilemedi");return;}
       setSocialNotice('Arkadaşlık isteği gönderildi.');
-      alert('Arkadaşlık isteği gönderildi: '+(friendObj.username||''));
       if(typeof fbGetOutgoingRequests!=="undefined"){
         const list=await fbGetOutgoingRequests(myUid);
-        if(Array.isArray(list) && list.length) setOutgoingRequests(list);
+        if(Array.isArray(list)) setOutgoingRequests(list);
       }
       setFriendSearchResult(null);
       setFriendSearchInput("");
@@ -2143,7 +2097,6 @@ function App(){
       setTimeout(()=>setSocialNotice(""),2500);
     }catch(e){
       setFriendSearchErr("Arkadaşlık isteği gönderilemedi");
-      alert('Arkadaşlık isteği gönderilemedi');
     }
   },[userCode]);
 
@@ -2205,11 +2158,10 @@ function App(){
         </div>
         {/* Nav */}
         <div style={{display:"flex",background:"#111130",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
-          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
+          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"tournament",l:"🏆"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
             <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#6ee7f7,#818cf8)":"transparent",color:homeTab===t.k?"#0a0a1f":"#3d3d6b",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
           ))}
         </div>
-        {socialNotice&&<div style={{background:"rgba(87,212,255,.12)",border:"1px solid rgba(87,212,255,.35)",color:"#dff8ff",borderRadius:12,padding:"10px 12px",fontSize:12,fontWeight:700,marginBottom:12}}>{socialNotice}</div>}
 
         {homeTab==="home"&&<>
           {/* User card */}
@@ -2255,8 +2207,8 @@ function App(){
           </div>
           <div className="mc" onClick={()=>setHomeTab("tournament")} style={{background:"linear-gradient(135deg,#16213e,#2a1240)",border:"2px solid #ff7ab6",cursor:"pointer"}}>
             <div style={{fontSize:26,marginBottom:4}}>🏆</div>
-            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Arenası</div>
-            <div style={{fontSize:11,color:"#d9d6ff"}}>Otomatik eşleş, rakip bul ve kapış</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Modu</div>
+            <div style={{fontSize:11,color:"#d9d6ff"}}>Grup modundan ayrı panel</div>
             <div style={{marginTop:5}}><span style={{background:"rgba(255,122,182,.18)",color:"#ff7ab6",border:"1px solid rgba(255,122,182,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>TURNUVA</span></div>
           </div>
         </>}
@@ -2274,7 +2226,7 @@ function App(){
               <>
                 <div style={{fontSize:12,color:'#e2e4f0',fontWeight:700,marginBottom:6}}>1v1 Turnuva Kuyruğu</div>
                 <div style={{fontSize:12,color:'#a8c4e0',marginBottom:12}}>Sıraya gir, sistem sana uygun rakip bulsun.</div>
-                <button className="pbtn" onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(!uid)return;setTournamentQueueing(true);const res=typeof fbJoinTournamentQueue!=="undefined"?await fbJoinTournamentQueue(uid,usernameRef.current):{ok:false};if(res&&res.matched){setTournamentData({mode:'matchmaking',status:'matched',matchId:res.matchId,opponent:res.opponent});setTournamentQueueing(false);}else if(res&&res.ok){setTournamentData({mode:'matchmaking',status:'queue'});setTimeout(()=>{const botNames=['ArenaBot','QuizMaster','Nova','Volt','Atlas'];const bot=botNames[Math.floor(Math.random()*botNames.length)];setTournamentData(cur=>{if(cur&&cur.status==='queue'){return {mode:'matchmaking',status:'matched',matchId:'bot_'+Date.now(),opponent:{uid:'bot_'+Date.now(),username:bot,isBot:true}};}return cur;});setTournamentQueueing(false);},1200);}else{const botNames=['ArenaBot','QuizMaster','Nova','Volt','Atlas'];const bot=botNames[Math.floor(Math.random()*botNames.length)];setTournamentQueueing(false);setTournamentData({mode:'matchmaking',status:'matched',matchId:'bot_'+Date.now(),opponent:{uid:'bot_'+Date.now(),username:bot,isBot:true}});}}} disabled={tournamentQueueing}>{tournamentQueueing?'Rakip aranıyor...':'⚔️ Hızlı Eşleşmeye Gir'}</button>
+                <button className="pbtn" onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(!uid)return;setTournamentQueueing(true);const res=typeof fbJoinTournamentQueue!=="undefined"?await fbJoinTournamentQueue(uid,usernameRef.current):{ok:false};if(res&&res.matched){setTournamentData({mode:'matchmaking',status:'matched',matchId:res.matchId,opponent:res.opponent});setTournamentQueueing(false);}else if(res&&res.ok){setTournamentData({mode:'matchmaking',status:'queue'});setTimeout(()=>{setTournamentData(cur=>{if(cur&&cur.status==='queue'){return {mode:'matchmaking',status:'matched',matchId:'bot_'+Date.now(),opponent:{uid:'bot_'+Date.now(),username:'ArenaBot',isBot:true}};}return cur;});setTournamentQueueing(false);},1800);}else{setTournamentQueueing(false);setTournamentData({mode:'matchmaking',status:'matched',matchId:'bot_'+Date.now(),opponent:{uid:'bot_'+Date.now(),username:'ArenaBot',isBot:true}});}}} disabled={tournamentQueueing}>{tournamentQueueing?'Rakip aranıyor...':'⚔️ Hızlı Eşleşmeye Gir'}</button>
                 {tournamentData&&tournamentData.status==='queue'&&<>
                   <div style={{marginTop:12,fontSize:12,color:'#a8c4e0'}}>Kuyruktasın. Rakip bulununca bu panel otomatik güncellenir.</div>
                   <button className="sbtn" style={{marginTop:10}} onClick={async()=>{const cached=getCachedUser();const uid=(typeof fbCurrentUser!=="undefined"&&fbCurrentUser()&&fbCurrentUser().uid)||cached?.uid||localStorage.getItem('ba_fb_uid');if(uid&&typeof fbLeaveTournamentQueue!=="undefined") await fbLeaveTournamentQueue(uid);setTournamentQueueing(false);setTournamentData(null);}}>Kuyruktan Çık</button>
