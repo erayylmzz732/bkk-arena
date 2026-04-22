@@ -915,150 +915,113 @@ const GLASS_COL=["#1a1a3a","#C0C0C0","#ffd700","#00f0ff","#ff4466"];
 
 // ── Audio ──
 let _ac=null,_musicNodes=[],_musicGain=null,_sfxOn=true,_musicOn=true,_songIdx=0,_musicTO=null;
-const _getAC=()=>{if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;};
-
-function _envGain(c,destination,points){
-  const g=c.createGain();
-  g.connect(destination);
-  const now=c.currentTime;
-  g.gain.cancelScheduledValues(now);
-  points.forEach((p,i)=>{
-    const t=now+p.t;
-    if(i===0) g.gain.setValueAtTime(p.v,t);
-    else if(p.curve==='exp') g.gain.exponentialRampToValueAtTime(Math.max(0.0001,p.v),t);
-    else g.gain.linearRampToValueAtTime(p.v,t);
-  });
-  return g;
+const _getAC=()=>{
+  if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();
+  if(_ac.state==='suspended') _ac.resume();
+  return _ac;
+};
+function _mkMaster(c,vol=.9){
+  const master=c.createGain();
+  master.gain.value=vol;
+  const comp=c.createDynamicsCompressor();
+  comp.threshold.value=-24;
+  comp.knee.value=18;
+  comp.ratio.value=3.5;
+  comp.attack.value=.003;
+  comp.release.value=.18;
+  master.connect(comp); comp.connect(c.destination);
+  return master;
 }
-function _oscVoice(c,{type='sine',freq=440,start=0,dur=.2,gain=.12,slideTo=null,destination=null,detune=0}){
-  const o=c.createOscillator();
-  const g=_envGain(c,destination||c.destination,[
-    {t:start,v:0},
-    {t:start+.01,v:gain},
-    {t:start+dur*.55,v:gain*.6},
-    {t:start+dur,v:0.0001,curve:'exp'}
-  ]);
-  o.type=type;
-  o.frequency.setValueAtTime(freq,c.currentTime+start);
-  if(slideTo)o.frequency.exponentialRampToValueAtTime(slideTo,c.currentTime+start+dur);
-  o.detune.value=detune;
-  o.connect(g);
-  o.start(c.currentTime+start);
-  o.stop(c.currentTime+start+dur+.02);
-  return o;
+function _tone(c,{type='sine',freq=440,start=0,dur=.18,gain=.08,slideTo=null,destination}){
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type; o.frequency.setValueAtTime(freq,c.currentTime+start);
+  if(slideTo) o.frequency.exponentialRampToValueAtTime(Math.max(1,slideTo),c.currentTime+start+dur);
+  g.gain.setValueAtTime(0.0001,c.currentTime+start);
+  g.gain.linearRampToValueAtTime(gain,c.currentTime+start+.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+start+dur);
+  o.connect(g); g.connect(destination); o.start(c.currentTime+start); o.stop(c.currentTime+start+dur+.02);
 }
-function _noiseBurst(c,{start=0,dur=.15,gain=.08,highpass=700,destination=null}){
-  const buffer=c.createBuffer(1,Math.max(1,Math.floor(c.sampleRate*dur)),c.sampleRate);
-  const data=buffer.getChannelData(0);
+function _noise(c,{start=0,dur=.06,gain=.02,highpass=1000,destination}){
+  const buf=c.createBuffer(1,Math.max(1,Math.floor(c.sampleRate*dur)),c.sampleRate);
+  const data=buf.getChannelData(0);
   for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*(1-i/data.length);
-  const src=c.createBufferSource();
-  src.buffer=buffer;
+  const src=c.createBufferSource(); src.buffer=buf;
   const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=highpass;
-  const g=_envGain(c,destination||c.destination,[
-    {t:start,v:0.0001},
-    {t:start+.01,v:gain},
-    {t:start+dur,v:0.0001,curve:'exp'}
-  ]);
-  src.connect(hp); hp.connect(g);
-  src.start(c.currentTime+start);
-  src.stop(c.currentTime+start+dur+.02);
-  return src;
+  const g=c.createGain();
+  g.gain.setValueAtTime(0.0001,c.currentTime+start);
+  g.gain.linearRampToValueAtTime(gain,c.currentTime+start+.006);
+  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+start+dur);
+  src.connect(hp); hp.connect(g); g.connect(destination); src.start(c.currentTime+start); src.stop(c.currentTime+start+dur+.02);
 }
 function playSfx(type){
-  if(!_sfxOn)return;
+  if(!_sfxOn) return;
   try{
-    const c=_getAC();
-    const master=c.createGain();
-    master.gain.value=.8;
-    const comp=c.createDynamicsCompressor();
-    comp.threshold.value=-22;
-    comp.knee.value=18;
-    comp.ratio.value=4;
-    comp.attack.value=.003;
-    comp.release.value=.18;
-    master.connect(comp); comp.connect(c.destination);
-
+    const c=_getAC(), master=_mkMaster(c,.95);
     if(type==='click'){
-      _oscVoice(c,{type:'triangle',freq:820,dur:.05,gain:.05,destination:master});
-      _noiseBurst(c,{dur:.03,gain:.02,highpass:1800,destination:master});
+      _tone(c,{type:'triangle',freq:820,dur:.05,gain:.04,destination:master});
+      _noise(c,{dur:.025,gain:.012,highpass:2200,destination:master});
     }else if(type==='tick'){
-      _oscVoice(c,{type:'square',freq:1100,dur:.06,gain:.03,destination:master});
+      _tone(c,{type:'square',freq:1180,dur:.055,gain:.03,destination:master});
     }else if(type==='correct'){
-      [[0,659],[.07,784],[.15,988],[.23,1319]].forEach(([t,f],i)=>{
-        _oscVoice(c,{type:i<2?'triangle':'sine',freq:f,dur:.18,gain:i===3?.11:.08,destination:master});
-      });
-      _noiseBurst(c,{start:.02,dur:.06,gain:.015,highpass:2200,destination:master});
+      _tone(c,{type:'triangle',freq:659,start:0,dur:.16,gain:.05,destination:master});
+      _tone(c,{type:'triangle',freq:784,start:.06,dur:.16,gain:.06,destination:master});
+      _tone(c,{type:'sine',freq:988,start:.13,dur:.2,gain:.07,destination:master});
+      _tone(c,{type:'sine',freq:1319,start:.21,dur:.24,gain:.075,destination:master});
+      _noise(c,{start:.02,dur:.05,gain:.008,highpass:2600,destination:master});
     }else if(type==='wrong'){
-      _oscVoice(c,{type:'sawtooth',freq:320,slideTo:180,dur:.26,gain:.11,destination:master});
-      _oscVoice(c,{type:'triangle',freq:180,slideTo:120,start:.03,dur:.24,gain:.05,destination:master,detune:-8});
+      _tone(c,{type:'sawtooth',freq:360,start:0,dur:.16,gain:.06,slideTo:280,destination:master});
+      _tone(c,{type:'square',freq:250,start:.09,dur:.18,gain:.045,slideTo:180,destination:master});
     }else if(type==='spend'){
-      _oscVoice(c,{type:'triangle',freq:700,slideTo:260,dur:.18,gain:.08,destination:master});
-      _noiseBurst(c,{dur:.05,gain:.012,highpass:1400,destination:master});
+      _tone(c,{type:'triangle',freq:720,dur:.14,gain:.05,slideTo:260,destination:master});
     }else if(type==='earn'){
-      [[0,523],[.05,659],[.11,784],[.18,1047]].forEach(([t,f],i)=>{
-        _oscVoice(c,{type:'triangle',freq:f,dur:.16,gain:i===3?.1:.07,destination:master});
-      });
-      _noiseBurst(c,{start:.02,dur:.08,gain:.02,highpass:2600,destination:master});
+      _tone(c,{type:'triangle',freq:740,start:0,dur:.09,gain:.045,destination:master});
+      _tone(c,{type:'triangle',freq:990,start:.06,dur:.11,gain:.05,destination:master});
+      _tone(c,{type:'sine',freq:1320,start:.13,dur:.16,gain:.05,destination:master});
     }else if(type==='levelup'){
-      [[0,392],[.06,523],[.12,659],[.2,784],[.29,1047],[.41,1319]].forEach(([t,f],i)=>{
-        _oscVoice(c,{type:i%2===0?'triangle':'sine',freq:f,dur:.22,gain:i>3?.12:.08,destination:master});
-      });
-      _noiseBurst(c,{start:.08,dur:.12,gain:.028,highpass:2400,destination:master});
-    }else if(type==='combo'){
-      [[0,784],[.045,988],[.09,1175]].forEach(([t,f],i)=>{
-        _oscVoice(c,{type:'square',freq:f,dur:.12,gain:.05+(i*.015),destination:master});
-      });
+      [523,659,784,1047,1319].forEach((f,i)=>_tone(c,{type:i<3?'triangle':'sine',freq:f,start:i*.07,dur:.22,gain:i===4?.09:.065,destination:master}));
+      _noise(c,{start:.18,dur:.08,gain:.012,highpass:1800,destination:master});
     }
   }catch(e){}
 }
-
 const _n2f=n=>440*Math.pow(2,(n-69)/12);
 const _SONGS=[
-  {bpm:112,seq:[[60,2],[67,2],[69,2],[67,2],[64,2],[65,2],[62,2],[64,2]],bass:[[36,4],[38,4],[41,4],[38,4]],vol:.034},
-  {bpm:124,seq:[[64,2],[67,2],[71,2],[69,2],[67,2],[64,2],[62,2],[60,2]],bass:[[40,4],[43,4],[38,4],[36,4]],vol:.03},
-  {bpm:96,seq:[[69,3],[72,1],[71,2],[67,2],[64,2],[67,2],[71,2],[72,2]],bass:[[45,4],[41,4],[38,4],[43,4]],vol:.032},
+  {bpm:112,lead:[[72,2],[76,2],[79,2],[76,2],[74,2],[72,2],[69,4]],bass:[[48,4],[53,4],[50,4],[55,4]],vol:.028},
+  {bpm:126,lead:[[67,2],[71,2],[74,2],[71,2],[69,2],[67,2],[64,4]],bass:[[43,4],[48,4],[45,4],[50,4]],vol:.026},
+  {bpm:118,lead:[[60,2],[64,2],[67,2],[72,2],[67,2],[64,2],[60,4]],bass:[[36,4],[41,4],[38,4],[43,4]],vol:.027},
 ];
 function playMusic(idx){
-  stopMusic();if(!_musicOn)return;
+  stopMusic(); if(!_musicOn) return;
   try{
-    const c=_getAC(),song=_SONGS[idx%_SONGS.length],beat=60/song.bpm;
-    _musicGain=c.createGain();_musicGain.gain.value=song.vol;_musicGain.connect(c.destination);
-    let t=c.currentTime+.12;
-    for(let rep=0;rep<2;rep++){
-      song.seq.forEach(([note,dur],i)=>{
-        const o=c.createOscillator(),g2=c.createGain(),lp=c.createBiquadFilter();
-        o.connect(lp); lp.connect(g2); g2.connect(_musicGain);
-        o.type=i%3===0?'triangle':'sine';
-        o.frequency.value=_n2f(note);
-        lp.type='lowpass'; lp.frequency.value=1700;
-        g2.gain.setValueAtTime(0,t);
-        g2.gain.linearRampToValueAtTime(1,t+.03);
-        g2.gain.setValueAtTime(1,t+beat*dur*.7);
-        g2.gain.linearRampToValueAtTime(0,t+beat*dur*.95);
-        o.start(t); o.stop(t+beat*dur+.03);
-        _musicNodes.push(o);
-        t+=beat*dur;
-      });
-      song.bass.forEach(([note,dur],i)=>{
-        const bt=c.currentTime+.12 + (i*beat*4) + rep*(song.seq.reduce((a,b)=>a+b[1],0)*beat);
-        const o=c.createOscillator(),g2=c.createGain(),lp=c.createBiquadFilter();
-        o.connect(lp); lp.connect(g2); g2.connect(_musicGain);
-        o.type='triangle'; o.frequency.value=_n2f(note);
-        lp.type='lowpass'; lp.frequency.value=420;
-        g2.gain.setValueAtTime(0,bt);
-        g2.gain.linearRampToValueAtTime(.8,bt+.05);
-        g2.gain.setValueAtTime(.8,bt+beat*dur*.75);
-        g2.gain.linearRampToValueAtTime(0,bt+beat*dur*.98);
-        o.start(bt); o.stop(bt+beat*dur+.05);
-        _musicNodes.push(o);
+    const c=_getAC(), song=_SONGS[idx%_SONGS.length], beat=60/song.bpm;
+    _musicGain=c.createGain(); _musicGain.gain.value=song.vol; _musicGain.connect(c.destination);
+    let t=c.currentTime+.1;
+    for(let bar=0;bar<4;bar++){
+      song.lead.forEach(([note,dur],i)=>{
+        const o=c.createOscillator(), g=c.createGain(), lp=c.createBiquadFilter();
+        o.type=bar%2===0?'triangle':'sine'; o.frequency.value=_n2f(note+(bar===3?12:0));
+        lp.type='lowpass'; lp.frequency.value=1800; o.connect(lp); lp.connect(g); g.connect(_musicGain);
+        g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(1,t+.02); g.gain.setValueAtTime(1,t+beat*dur*.7); g.gain.linearRampToValueAtTime(0.0001,t+beat*dur*.95);
+        o.start(t); o.stop(t+beat*dur); _musicNodes.push(o); t+=beat*dur;
       });
     }
-    _musicTO=setTimeout(()=>{_songIdx=(_songIdx+1)%_SONGS.length;playMusic(_songIdx);},(t-c.currentTime+.1)*1000);
+    let tb=c.currentTime+.1;
+    for(let bar=0;bar<8;bar++){
+      song.bass.forEach(([note,dur])=>{
+        const o=c.createOscillator(), g=c.createGain();
+        o.type='sine'; o.frequency.value=_n2f(note);
+        o.connect(g); g.connect(_musicGain);
+        g.gain.setValueAtTime(0.0001,tb); g.gain.linearRampToValueAtTime(.45,tb+.03); g.gain.linearRampToValueAtTime(.0001,tb+beat*dur*.95);
+        o.start(tb); o.stop(tb+beat*dur); _musicNodes.push(o); tb+=beat*dur;
+      });
+    }
+    const loopDur=Math.max(t,tb)-c.currentTime;
+    _musicTO=setTimeout(()=>{_songIdx=(_songIdx+1)%_SONGS.length; playMusic(_songIdx);},Math.max(500,loopDur*1000));
   }catch(e){}
 }
-function stopMusic(){clearTimeout(_musicTO);_musicNodes.forEach(n=>{try{n.stop();}catch(e){}});_musicNodes=[];if(_musicGain){try{_musicGain.disconnect();}catch(e){}_musicGain=null;}}
-function setMusicEnabledG(v){_musicOn=v;if(!v)stopMusic();else playMusic(_songIdx);}
-function setSfxEnabledG(v){_sfxOn=v;}
+function stopMusic(){ clearTimeout(_musicTO); _musicNodes.forEach(n=>{try{n.stop();}catch(e){}}); _musicNodes=[]; if(_musicGain){try{_musicGain.disconnect();}catch(e){} _musicGain=null;} }
+function setMusicEnabledG(v){ _musicOn=v; if(!v) stopMusic(); else playMusic(_songIdx); }
+function setSfxEnabledG(v){ _sfxOn=v; }
+
 // ── Question seen tracker (anti-repeat) ──
 function getSeenQs(u){
   try{const s=localStorage.getItem("ba_seen_"+u);return s?JSON.parse(s):[];}
