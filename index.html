@@ -1395,6 +1395,11 @@ function App(){
     setGmailInput(getGmail(u));
     setUserTitle(getTitleLS(u));
     setFriends(getFriends(u));
+    const cached=getCachedUser();
+    const uid=(cached&&cached.uid)||localStorage.getItem("ba_fb_uid");
+    if(uid&&typeof fbGetFriends!=="undefined"){
+      fbGetFriends(uid).then(list=>{if(Array.isArray(list))setFriends(list);}).catch(()=>{});
+    }
     getUserCode(u); // ensure code generated
   },[]);
 
@@ -1545,7 +1550,18 @@ function App(){
     try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",p);}catch(e){}
     setTimeout(()=>triggerDaily('login'),300);
     const pending=sessionStorage.getItem("pendingRoom");
-    if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}
+    if(pending){
+      sessionStorage.removeItem("pendingRoom");
+      (async()=>{
+        let pid=null;
+        try{
+          if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(pending);
+          if(!pid) pid=getRoomPeerId(pending);
+        }catch(e){}
+        if(pid) joinAsClient(u,pid);
+        else setScreen("home");
+      })();
+    }
     else setScreen("home");
   },[authTab,fUser,fPass,loadUser,triggerDaily]);
 
@@ -1618,7 +1634,7 @@ function App(){
     isHostRef.current=true;playersRef.current={[username]:0};answeredRef.current={};afkCountRef.current={};
     setRoomPlayers([username]);setLiveScores({[username]:0});setConnStatus("connecting");setKickedPlayers([]);
     const peer=new Peer();peerRef.current=peer;
-    peer.on("open",id=>{const code=genRoomCode();setRoomCode(code);saveRoomCode(code,id);if(typeof fbSaveRoomCode!=="undefined"){fbSaveRoomCode(code,id).catch(()=>{});}setInviteLink(window.location.href.split("#")[0]+"#room="+id);setConnStatus("connected");setScreen("lobby-host");});
+    peer.on("open",id=>{const code=genRoomCode();setRoomCode(code);saveRoomCode(code,id);if(typeof fbSaveRoomCode!=="undefined"){fbSaveRoomCode(code,id).catch(()=>{});}setInviteLink(window.location.href.split("#")[0]+"#room="+code);setConnStatus("connected");setScreen("lobby-host");});
     peer.on("connection",conn=>{
       conn.on("open",()=>{connsRef.current.push(conn);conn.send({type:"welcome",host:usernameRef.current});});
       conn.on("data",msg=>{
@@ -1673,15 +1689,28 @@ function App(){
 
   // -- auto-login --
   useEffect(()=>{
-    const hash=window.location.hash.slice(1);
-    let pending=null;
-    if(hash&&hash.startsWith("room=")){pending=hash.slice(5);history.replaceState(null,"",window.location.pathname+window.location.search);}
-    try{
-      const su=localStorage.getItem("ba_user"),sp=localStorage.getItem("ba_pass");
-      if(su&&sp){USERS.current.set(su,sp);setUsername(su);loadUser(su);setTimeout(()=>triggerDaily('login'),300);
-        if(pending)joinAsClient(su,pending);else setScreen("home");return;}
-    }catch(e){}
-    if(pending)sessionStorage.setItem("pendingRoom",pending);
+    const boot=async()=>{
+      const hash=window.location.hash.slice(1);
+      let pending=null;
+      if(hash&&hash.startsWith("room=")){pending=hash.slice(5);history.replaceState(null,"",window.location.pathname+window.location.search);}
+      try{
+        const su=localStorage.getItem("ba_user"),sp=localStorage.getItem("ba_pass");
+        if(su&&sp){
+          USERS.current.set(su,sp);setUsername(su);loadUser(su);setTimeout(()=>triggerDaily('login'),300);
+          if(pending){
+            let pid=null;
+            try{
+              if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(pending);
+              if(!pid) pid=getRoomPeerId(pending);
+            }catch(e){}
+            if(pid) joinAsClient(su,pid); else setScreen("home");
+          }else setScreen("home");
+          return;
+        }
+      }catch(e){}
+      if(pending)sessionStorage.setItem("pendingRoom",pending);
+    };
+    boot();
   },[]);
 
   // -- Start game --
@@ -1794,22 +1823,36 @@ function App(){
   },[gold,pwElim]);
 
   // -- Friend search --
-  const searchFriend=useCallback(()=>{
-    const code=friendSearchInput.trim();
+  const searchFriend=useCallback(async()=>{
+    const code=friendSearchInput.trim().toUpperCase();
     if(!code){setFriendSearchErr("Kod girin");return;}
-    const db=getUsernames();
-    const found=Object.keys(db).find(u=>getUserCode(u)===code);
-    if(!found){setFriendSearchErr("Bu koda sahip kullanıcı bulunamadı");setFriendSearchResult(null);return;}
-    if(found===username){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
-    setFriendSearchResult(found);setFriendSearchErr("");
-  },[friendSearchInput,username]);
+    setFriendSearchErr("");
+    setFriendSearchResult(null);
+    try{
+      let found=null;
+      if(typeof fbSearchByCode!=="undefined") found=await fbSearchByCode(code);
+      if(!found){setFriendSearchErr("Bu koda sahip kullanıcı bulunamadı");return;}
+      if(found.username===usernameRef.current){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
+      setFriendSearchResult(found);
+    }catch(e){
+      setFriendSearchErr("Arkadaş aranırken hata oluştu");
+    }
+  },[friendSearchInput]);
 
-  const addFriend=useCallback((friendName)=>{
-    const cur=getFriends(usernameRef.current);
-    if(cur.includes(friendName))return;
-    const updated=[...cur,friendName];
-    setFriends(updated);saveFriendsLS(usernameRef.current,updated);
-    setFriendSearchResult(null);setFriendSearchInput("");
+  const addFriend=useCallback(async(friendObj)=>{
+    if(!friendObj||!friendObj.uid)return;
+    const currentUser=getCachedUser();
+    const myUid=currentUser?.uid||localStorage.getItem("ba_fb_uid");
+    if(!myUid){setFriendSearchErr("Önce giriş yapmalısın");return;}
+    try{
+      const ok=typeof fbAddFriend!=="undefined"?await fbAddFriend(myUid,friendObj.uid,friendObj.username):false;
+      if(!ok){setFriendSearchErr("Arkadaş eklenemedi");return;}
+      const freshFriends=typeof fbGetFriends!=="undefined"?await fbGetFriends(myUid):[];
+      setFriends(Array.isArray(freshFriends)?freshFriends:[]);
+      setFriendSearchResult(null);setFriendSearchInput("");setFriendSearchErr("");
+    }catch(e){
+      setFriendSearchErr("Arkadaş eklenirken hata oluştu");
+    }
   },[]);
 
   const challengeFriend=useCallback((friendName)=>{
@@ -1840,7 +1883,18 @@ function App(){
         const g="Misafir"+(Math.floor(Math.random()*9000)+1000);
         try{localStorage.setItem("ba_user",g);}catch(e){}
         setUsername(g);loadUser(g);setTimeout(()=>doTriggerDaily("login"),300);
-        const p2=sessionStorage.getItem("pendingRoom");if(p2){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p2);}else setScreen("home");
+        const p2=sessionStorage.getItem("pendingRoom");
+        if(p2){
+          sessionStorage.removeItem("pendingRoom");
+          (async()=>{
+            let pid=null;
+            try{
+              if(typeof fbGetRoomPeerId!=="undefined") pid=await fbGetRoomPeerId(p2);
+              if(!pid) pid=getRoomPeerId(p2);
+            }catch(e){}
+            if(pid) joinAsClient(g,pid); else setScreen("home");
+          })();
+        }else setScreen("home");
       }}>Misafir Olarak Devam Et</button>
     </div></W>
   );
@@ -1947,23 +2001,25 @@ function App(){
           {friendSearchErr&&<div style={{fontSize:12,color:"#f87171",marginBottom:8}}>⚠ {friendSearchErr}</div>}
           {friendSearchResult&&(
             <div style={{background:"#111130",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{friendSearchResult[0].toUpperCase()}</div>
-              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult}</div><div style={{fontSize:11,color:isOnline(friendSearchResult)?"#34d399":"#3d3d6b"}}>{isOnline(friendSearchResult)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
+              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{(friendSearchResult.username||"?")[0].toUpperCase()}</div>
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult.username}</div><div style={{fontSize:11,color:isOnline(friendSearchResult.username)?"#34d399":"#3d3d6b"}}>{isOnline(friendSearchResult.username)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
               <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>+ Ekle</button>
             </div>
           )}
           <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
           {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#3d3d6b",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
-          {friends.map((f,i)=>(
+          {friends.map((f,i)=>{
+            const friendName=typeof f==="string"?f:(f&&f.username)||"Bilinmeyen";
+            return(
             <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10}}>
-              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{f[0].toUpperCase()}</div>
+              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{friendName[0].toUpperCase()}</div>
               <div style={{flex:1}}>
-                <div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{f}</div>
-                <div style={{fontSize:11,color:isOnline(f)?"#34d399":"#3d3d6b"}}>{isOnline(f)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div>
+                <div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendName}</div>
+                <div style={{fontSize:11,color:isOnline(friendName)?"#34d399":"#3d3d6b"}}>{isOnline(friendName)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div>
               </div>
               <button onClick={()=>{setMode("multi");setCategory("karışık");setScreen("setup");}} style={{background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#6ee7f7",padding:"6px 12px",borderRadius:10,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:12}}>⚔️ Meydan Oku</button>
             </div>
-          ))}
+          )})}
         </>}
 
         {homeTab==="stats"&&(()=>{
