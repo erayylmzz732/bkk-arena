@@ -20,9 +20,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#060e1e}
-.app{min-height:100vh;background:linear-gradient(160deg,#0a1628 0%,#060e1e 60%,#0d0a20 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
-.phone{width:390px;min-height:840px;background:#0a1628;border-radius:38px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(76,201,240,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
+body{background:#091427}
+.app{min-height:100dvh;background:linear-gradient(160deg,#102448 0%,#091427 58%,#1a1033 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#eef4ff;padding:10px}
+.phone{width:min(390px,100vw - 12px);min-height:100dvh;background:#102448;border-radius:28px;border:1.5px solid #234a88;box-shadow:0 0 0 1px #0a0a1f,0 24px 60px rgba(0,0,0,.45),0 0 60px rgba(76,201,240,.12);overflow:hidden;display:flex;flex-direction:column;position:relative}
 .sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
 .sc::-webkit-scrollbar{width:0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -33,7 +33,7 @@ body{background:#060e1e}
 .logo{text-align:center;padding:32px 0 24px}
 .logo h1{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#4cc9f0 0%,#9b5de5 60%,#c084fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo p{font-size:12px;color:#a8c4e0;margin-top:5px;letter-spacing:1px;text-transform:uppercase}
-.tabs{display:flex;background:#0f2040;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
+.tabs{display:flex;background:#15305e;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
 .tb{flex:1;padding:10px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;transition:all .2s}
 .tb.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5);color:#0a0a1f}
 .tb.off{background:transparent;color:#a8c4e0}
@@ -51,8 +51,8 @@ body{background:#060e1e}
 .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#4cc9f0,#9b5de5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
 .av{width:37px;height:37px;background:linear-gradient(135deg,#4cc9f0,#9b5de5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0a0a1f}
-.mc{background:#0f2040;border:1.5px solid #1e3a6e;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
-.mc:hover{border-color:#4cc9f0;transform:translateY(-2px);box-shadow:0 8px 32px rgba(76,201,240,.1)}
+.mc{background:linear-gradient(180deg,#16315f,#11284e);border:1.5px solid #3f77d1;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
+.mc:hover{border-color:#77ddff;transform:translateY(-2px);box-shadow:0 10px 34px rgba(76,201,240,.16)}
 .stitle{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700;color:#e2e4f0}
 .bk{background:transparent;border:none;color:#a8c4e0;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
 .bk:hover{color:#4cc9f0}
@@ -149,24 +149,6 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 .toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .toggle.on .toggle-knob{left:25px}
 .ob.selected{border-color:#9b5de5;background:rgba(155,93,229,.18);color:#c4a0ff}.ob.elim{opacity:.15;pointer-events:none}.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0800);border:1.5px solid #ffd166;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd166;cursor:pointer;user-select:none}.pw-row{display:flex;gap:6px;margin-bottom:10px}.pw-btn{flex:1;background:#0f2040;border:1.5px solid #2a5a8e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}.pw-btn:hover:not(:disabled){border-color:#ffd166;background:rgba(255,209,102,.06)}.pw-btn:disabled{opacity:.3;cursor:default}.pw-btn.active{border-color:#ffd166;background:rgba(255,209,102,.15)}.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd166}.pw-label{font-size:9px;color:#a8c4e0;white-space:nowrap}.shop-overlay{position:fixed;inset:0;background:rgba(6,14,30,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center}.shop-panel{background:#060e1e;border:2px solid #2a5a8e;border-top-left-radius:24px;border-top-right-radius:24px;padding:22px 18px 34px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}.shop-panel::-webkit-scrollbar{width:0}.toggle{width:48px;height:26px;border-radius:13px;background:#162848;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}.toggle.on{background:linear-gradient(135deg,#4cc9f0,#9b5de5)}.toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s}.toggle.on .toggle-knob{left:25px}</style>
-
-<style id="vibrant-safe-overrides">
-body{background:#081428 !important;}
-.app{background:linear-gradient(160deg,#102349 0%,#081428 58%,#1a1238 100%) !important;}
-.phone{background:#102349 !important;border-color:#294a86 !important;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.55),0 0 72px rgba(76,201,240,.16) !important;}
-.tabs,.mc,.cc,.qcard,.scard,.ri,.lbrow,.statusbar,.playerlist,.inp,.ob,.shop-panel{background:#16325f !important;}
-.tb.off,.qcnt,.sl,.rsl,.lbptitle,.lbtit,.rqn,.errmsg,.pw-label{color:#c9ddff !important;}
-.logosm,.logo h1{filter:saturate(1.15) brightness(1.08);}
-.pbtn{background:linear-gradient(135deg,#5ad7ff,#a96bff) !important;color:#08101f !important;}
-.sbtn,.inp,.mc,.cc,.qcard,.ob,.statusbar,.playerlist,.shop-panel,.lbpanel,.scard,.ri{border-color:#3a69b0 !important;}
-.gold-bar{background:linear-gradient(135deg,#3a2800,#151000) !important;box-shadow:0 0 18px rgba(255,209,102,.14) !important;}
-.ob:hover:not(:disabled),.cc:hover:not(.sel),.mc:hover{box-shadow:0 10px 28px rgba(90,215,255,.14) !important;}
-@media (max-width:480px){
-  .app{padding:0 !important;}
-  .phone{width:100vw !important;min-height:100vh !important;border-radius:0 !important;border:none !important;}
-  .sc{padding:20px 16px 20px !important;}
-}
-</style>
 </head>
 <body>
 <div id="root"></div>
@@ -1225,7 +1207,7 @@ function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorI
         {gender==='f'&&<><ellipse cx="28" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/><ellipse cx="62" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/></>}
       </svg>
       {fr&&<div style={{position:"absolute",bottom:-2,right:-2,background:fr.c,borderRadius:"50%",width:Math.max(14,size*.22),height:Math.max(14,size*.22),display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(8,size*.13),border:"1.5px solid rgba(0,0,0,.2)"}}>⭐</div>}
-      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#111130",border:"1.5px solid "+(fr?fr.c:"#1e1e4a"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#6ee7f7",whiteSpace:"nowrap"}}>Sv.{level}</div>}
+      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#122a52",border:"1.5px solid "+(fr?fr.c:"#1e1e4a"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#6ee7f7",whiteSpace:"nowrap"}}>Sv.{level}</div>}
     </div>
   );
 }
@@ -1252,7 +1234,7 @@ function ChestModal({onClose}){
     <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <style>{`@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.1)}}`}</style>
       <div style={{textAlign:"center",padding:32}}>
-        <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
+        <div style={{fontSize:11,color:"#a9c7f0",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
         {st==='shake'&&<>
           <div onClick={()=>{setSt('open');playSfx('earn');}} style={{fontSize:110,cursor:"pointer",display:"inline-block",animation:"shake .15s infinite",filter:"drop-shadow(0 0 20px #fbbf24)"}}>🎁</div>
           <div style={{fontSize:13,color:"#6ee7f7",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
@@ -1260,7 +1242,7 @@ function ChestModal({onClose}){
         {st==='open'&&<>
           <div style={{fontSize:90,animation:"pop .4s ease",display:"inline-block",filter:"drop-shadow(0 0 30px #fbbf24)"}}>🎁</div>
           <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:48,fontWeight:700,color:"#fbbf24",marginTop:8}}>+100 🪙</div>
-          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:20}}>Altın Kazandın!</div>
+          <div style={{fontSize:13,color:"#a9c7f0",marginBottom:20}}>Altın Kazandın!</div>
           <button onClick={onClose} style={{background:"linear-gradient(135deg,#6ee7f7,#818cf8)",border:"none",borderRadius:14,padding:"14px 40px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
         </>}
       </div>
@@ -1275,13 +1257,13 @@ function LevelUpModal({newLevel,rewards,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
       <div style={{background:"#0a0a1f",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
-        <div style={{fontSize:12,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
+        <div style={{fontSize:12,color:"#a9c7f0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
         <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:72,fontWeight:700,color:"#fbbf24",lineHeight:1}}>{newLevel}</div>
         <div style={{fontSize:14,color:"#e2e4f0",marginBottom:16}}>Seviye {newLevel}</div>
         {fr&&newLevel%5===0&&<div style={{background:"rgba(0,0,0,.2)",border:"2px solid "+fr.c,borderRadius:12,padding:"8px",marginBottom:12,fontSize:13,fontWeight:700,color:fr.c}}>🖼️ {fr.name} Çerçeve!</div>}
         <div style={{marginBottom:16}}>
           {rewards.map((r,i)=>(
-            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+            <div key={i} style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
               <span style={{fontSize:20}}>{r.type==='gold'?"🪙":r.type==='frame'?"🖼️":"⚡"}</span>
               <span style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{r.type==='gold'?"+"+r.amount+" Altın":r.type==='frame'?r.name+" Çerçeve":{double:"🎯 Çift Seçim",elim:"❌ 2 Yanlışı Ele",x2:"⚡ x2 Puan"}[r.pw]||r.pw}</span>
             </div>
@@ -1876,7 +1858,7 @@ function App(){
           </div>
         </div>
         {/* Nav */}
-        <div style={{display:"flex",background:"#111130",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
+        <div style={{display:"flex",background:"#122a52",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
           {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
             <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#6ee7f7,#818cf8)":"transparent",color:homeTab===t.k?"#0a0a1f":"#3d3d6b",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
           ))}
@@ -1884,7 +1866,7 @@ function App(){
 
         {homeTab==="home"&&<>
           {/* User card */}
-          <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:16,padding:14,marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
+          <div style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:16,padding:14,marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
             <div onClick={()=>setHomeTab("profile")} style={{cursor:"pointer"}}>
               <AvatarSVG {...avatar} level={levelInfo.level} size={62}/>
             </div>
@@ -1895,13 +1877,13 @@ function App(){
               <div style={{height:4,background:"#1e1e4a",borderRadius:2,marginTop:5,overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${Math.round(levelInfo.currentXP/levelInfo.neededXP*100)}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)",borderRadius:2}}/>
               </div>
-              <div style={{fontSize:10,color:"#3d3d6b",marginTop:2}}>Sv.{levelInfo.level} · {levelInfo.currentXP}/{levelInfo.neededXP} XP</div>
+              <div style={{fontSize:10,color:"#a9c7f0",marginTop:2}}>Sv.{levelInfo.level} · {levelInfo.currentXP}/{levelInfo.neededXP} XP</div>
             </div>
           </div>
           {/* Power inventory */}
           {Object.values(powers).some(v=>v>0)&&(
-            <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"10px 13px",marginBottom:12}}>
-              <div style={{fontSize:10,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>Envanter</div>
+            <div style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:12,padding:"10px 13px",marginBottom:12}}>
+              <div style={{fontSize:10,color:"#a9c7f0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>Envanter</div>
               <div style={{display:"flex",gap:8}}>
                 {Object.entries(powers).filter(([,v])=>v>0).map(([k,v])=>(
                   <div key={k} style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.2)",borderRadius:10,padding:"6px 11px",display:"flex",alignItems:"center",gap:6}}>
@@ -1915,18 +1897,18 @@ function App(){
           <div className="mc" onClick={()=>{setMode("solo");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>🎯</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Tekli Mod</div>
-            <div style={{fontSize:12,color:"#3d3d6b"}}>Tek başına oyna, kendi rekorunu kır</div>
+            <div style={{fontSize:12,color:"#a9c7f0"}}>Tek başına oyna, kendi rekorunu kır</div>
             <div style={{marginTop:8}}><span className="badge be">Solo</span></div>
           </div>
           <div className="mc" onClick={()=>{setMode("multi");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>👥</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Çoklu Mod</div>
-            <div style={{fontSize:12,color:"#3d3d6b"}}>Link paylaş, arkadaşlar direkt katılır</div>
+            <div style={{fontSize:12,color:"#a9c7f0"}}>Link paylaş, arkadaşlar direkt katılır</div>
             <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer</span></div>
           <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#0d1a30,#1a0820)",border:"2px solid #ff4d6d",cursor:"pointer"}}>
             <div style={{fontSize:26,marginBottom:4}}>🏆</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Modu</div>
-            <div style={{fontSize:11,color:"#a8c4e0"}}>2-8 oyuncu eleme</div>
+            <div style={{fontSize:11,color:"#d9e7ff"}}>2-8 oyuncu eleme · bot destekli</div>
             <div style={{marginTop:5}}><span style={{background:"rgba(255,77,109,.15)",color:"#ff4d6d",border:"1px solid rgba(255,77,109,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>YENI</span></div>
           </div>
           </div>
@@ -1957,23 +1939,23 @@ function App(){
         })()}
 
         {homeTab==="friends"&&<>
-          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
+          <div style={{fontSize:13,color:"#a9c7f0",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
           <div style={{display:"flex",gap:8,marginBottom:10}}>
             <input className="inp" style={{margin:0,flex:1}} placeholder="Kullanıcı kodu (#XXXXXX)" value={friendSearchInput} onChange={e=>{setFriendSearchInput(e.target.value);setFriendSearchErr("");}}/>
             <button className="pbtn" style={{width:"auto",padding:"0 16px"}} onClick={searchFriend}>Ara</button>
           </div>
           {friendSearchErr&&<div style={{fontSize:12,color:"#f87171",marginBottom:8}}>⚠ {friendSearchErr}</div>}
           {friendSearchResult&&(
-            <div style={{background:"#111130",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
+            <div style={{background:"#122a52",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{friendSearchResult[0].toUpperCase()}</div>
               <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult}</div><div style={{fontSize:11,color:isOnline(friendSearchResult)?"#34d399":"#3d3d6b"}}>{isOnline(friendSearchResult)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
               <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>+ Ekle</button>
             </div>
           )}
-          <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
-          {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#3d3d6b",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
+          <div style={{fontSize:11,color:"#a9c7f0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
+          {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#a9c7f0",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
           {friends.map((f,i)=>(
-            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10}}>
+            <div key={i} style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10}}>
               <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{f[0].toUpperCase()}</div>
               <div style={{flex:1}}>
                 <div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{f}</div>
@@ -2000,31 +1982,31 @@ function App(){
         })()}
 
         {homeTab==="missions"&&<>
-          <div style={{fontSize:12,color:"#3d3d6b",marginBottom:10}}>{MISSIONS_DEF.filter(m=>ms[m.id]==='done').length}/{MISSIONS_DEF.length} tamamlandı</div>
+          <div style={{fontSize:12,color:"#a9c7f0",marginBottom:10}}>{MISSIONS_DEF.filter(m=>ms[m.id]==='done').length}/{MISSIONS_DEF.length} tamamlandı</div>
           {MISSIONS_DEF.map(m=>{
             const done=ms[m.id]==='done';
             const ns=getStats(username);
             const val=m.stat==='level'?levelInfo.level:(ns[m.stat]||0);
             const prog=Math.min(val/m.target,1);
             return(
-              <div key={m.id} style={{background:"#111130",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"12px 13px",marginBottom:8}}>
+              <div key={m.id} style={{background:"#122a52",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"12px 13px",marginBottom:8}}>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:done?0:5}}>
                   <span style={{fontSize:20}}>{m.icon}</span>
                   <div style={{flex:1}}>
                     <div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{m.title}</div>
-                    <div style={{fontSize:11,color:"#3d3d6b"}}>{m.desc}</div>
+                    <div style={{fontSize:11,color:"#a9c7f0"}}>{m.desc}</div>
                     {m.title_reward&&!done&&<div style={{fontSize:10,color:"#fbbf24",marginTop:2}}>🏆 Ünvan: {m.title_reward}</div>}
                   </div>
                   {done?<span>✅</span>:<div style={{textAlign:"right",fontSize:10}}><div style={{color:"#6ee7f7"}}>+{m.xp}XP</div><div style={{color:"#fbbf24"}}>+{m.gold}🪙</div></div>}
                 </div>
-                {!done&&<><div style={{height:3,background:"#1e1e4a",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:`${prog*100}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)"}}/></div><div style={{fontSize:10,color:"#3d3d6b",marginTop:2}}>{Math.min(val,m.target)}/{m.target}</div></>}
+                {!done&&<><div style={{height:3,background:"#1e1e4a",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:`${prog*100}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)"}}/></div><div style={{fontSize:10,color:"#a9c7f0",marginTop:2}}>{Math.min(val,m.target)}/{m.target}</div></>}
               </div>
             );
           })}
         </>}
 
         {homeTab==="daily"&&<>
-          <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+          <div style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:12,padding:13,marginBottom:12}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
               <div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>Günlük Puan</div>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fbbf24"}}>{dailyData.pts||0}/20</div>
@@ -2037,9 +2019,9 @@ function App(){
           {DAILY_DEF.map(d=>{
             const done=dailyData.done&&dailyData.done[d.id];
             return(
-              <div key={d.id} style={{background:"#111130",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}>
+              <div key={d.id} style={{background:"#122a52",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}>
                 <span style={{fontSize:22}}>{done?"✅":d.icon}</span>
-                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{d.title}</div><div style={{fontSize:11,color:"#3d3d6b"}}>{d.desc}</div></div>
+                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{d.title}</div><div style={{fontSize:11,color:"#a9c7f0"}}>{d.desc}</div></div>
                 <div style={{fontSize:11,fontWeight:700,color:"#6ee7f7"}}>+{d.pts}pt</div>
               </div>
             );
@@ -2050,7 +2032,7 @@ function App(){
           const fr=getFrame(levelInfo.level);
           return(
             <div>
-              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
+              <div style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
                 <div style={{display:"flex",justifyContent:"center",marginBottom:10}}><AvatarSVG {...avatar} level={levelInfo.level} size={90}/></div>
                 <div style={{fontSize:18,fontWeight:800,color:"#e2e4f0"}}>{username}</div>
                 {userTitle&&<div style={{fontSize:12,color:"#fbbf24",fontWeight:700,marginTop:2}}>🏆 {userTitle}</div>}
@@ -2059,14 +2041,14 @@ function App(){
               </div>
               {/* User code */}
               <div style={{background:"linear-gradient(135deg,rgba(110,231,247,.06),rgba(129,140,248,.06))",border:"1.5px solid rgba(110,231,247,.25)",borderRadius:14,padding:14,marginBottom:12,textAlign:"center"}}>
-                <div style={{fontSize:10,color:"#3d3d6b",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>Kullanıcı Kodu</div>
+                <div style={{fontSize:10,color:"#a9c7f0",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>Kullanıcı Kodu</div>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#6ee7f7",letterSpacing:4}}>{userCode}</div>
                 <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){};}} style={{marginTop:8,background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#6ee7f7",padding:"5px 14px",borderRadius:20,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:11}}>📋 Kopyala</button>
               </div>
               {/* Gmail */}
-              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+              <div style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:12,padding:13,marginBottom:12}}>
                 <div style={{fontSize:12,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>📧 Gmail Bağla</div>
-                <div style={{fontSize:11,color:"#3d3d6b",marginBottom:8}}>Gmail bağla, <span style={{color:"#fbbf24",fontWeight:700}}>+100 🪙</span> kazan!</div>
+                <div style={{fontSize:11,color:"#a9c7f0",marginBottom:8}}>Gmail bağla, <span style={{color:"#fbbf24",fontWeight:700}}>+100 🪙</span> kazan!</div>
                 <input className="inp" style={{marginBottom:7}} placeholder="ornek@gmail.com" value={gmailInput} onChange={e=>setGmailInput(e.target.value)} type="email"/>
                 <button className="pbtn" disabled={!gmailInput.includes("@")} onClick={()=>{
                   const em=gmailInput.trim();
@@ -2080,14 +2062,14 @@ function App(){
                 }}>{getGmailRewarded(username)?"✅ Bağlandı":"Gmail Bağla +100🪙"}</button>
               </div>
               {/* Level rewards preview */}
-              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
-                <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Seviye Ödülleri</div>
+              <div style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:12,padding:13,marginBottom:12}}>
+                <div style={{fontSize:11,color:"#a9c7f0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Seviye Ödülleri</div>
                 {FRAMES_DEF.map((fd,i)=>(
                   <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<FRAMES_DEF.length-1?"1px solid #1a1a3a":"none",opacity:levelInfo.level>=fd.min?1:.55}}>
                     <div style={{width:28,height:28,borderRadius:"50%",background:fd.c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,boxShadow:fd.s}}>⭐</div>
                     <div style={{flex:1}}>
                       <span style={{fontSize:13,fontWeight:700,color:fd.c}}>Seviye {fd.min}</span>
-                      <span style={{fontSize:11,color:"#3d3d6b",marginLeft:8}}>{fd.name} Çerçeve</span>
+                      <span style={{fontSize:11,color:"#a9c7f0",marginLeft:8}}>{fd.name} Çerçeve</span>
                     </div>
                     {levelInfo.level>=fd.min&&<span style={{fontSize:14}}>✅</span>}
                   </div>
@@ -2096,9 +2078,9 @@ function App(){
               {/* Stats */}
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {[{v:stats.games||0,l:"Oyun"},{v:stats.correct||0,l:"Doğru"},{v:stats.wins||0,l:"Galibiyet"},{v:stats.rooms||0,l:"Oda"}].map((s,i)=>(
-                  <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"11px 8px",textAlign:"center"}}>
+                  <div key={i} style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:10,padding:"11px 8px",textAlign:"center"}}>
                     <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#6ee7f7"}}>{s.v}</div>
-                    <div style={{fontSize:11,color:"#3d3d6b"}}>{s.l}</div>
+                    <div style={{fontSize:11,color:"#a9c7f0"}}>{s.l}</div>
                   </div>
                 ))}
               </div>
@@ -2116,21 +2098,28 @@ function App(){
             </div>
             {!tournamentData.started?(
               <div>
-                <div style={{fontSize:12,color:"#a8c4e0",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
+                <div style={{fontSize:12,color:"#a8c4e0",marginBottom:10}}>Katılımcıları ekle (2-8 oyuncu) · oyuncu yoksa botlar doldurur</div>
                 {(tournamentData.players.length===0?[username]:tournamentData.players).map((p,i)=>(
                   <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}}>
                     <span>👤</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}</span>
                     {i>0&&<button onClick={()=>setTournamentData(d=>({...d,players:d.players.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff4d6d",cursor:"pointer",fontSize:18}}>X</button>}
                   </div>
                 ))}
-                {(tournamentData.players.length||1)<8&&<button onClick={()=>{const n=prompt("Oyuncu adi:");if(!n||!n.trim())return;setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));}} style={{width:"100%",background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"9px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:13,marginBottom:10}}>+ Oyuncu Ekle</button>}
+                {(tournamentData.players.length||1)<8&&<div style={{display:"flex",gap:8,marginBottom:10}}>
+                  <button onClick={()=>{const n=prompt("Oyuncu adı:");if(!n||!n.trim())return;setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));}} style={{flex:1,background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"9px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:13}}>+ Oyuncu Ekle</button>
+                  <button onClick={()=>{const botPool=["ArenaBot","QuizMaster","Nova","Volt","Atlas","Mira","Blaze","Orion"];setTournamentData(d=>{const cur=(d.players.length?d.players:[username]);const remaining=8-cur.length;const picks=botPool.filter(b=>!cur.includes(b)).slice(0,Math.max(1,remaining));return {...d,players:[...cur,...picks].slice(0,8)};});}} style={{flex:1,background:"rgba(255,209,102,.08)",border:"1.5px solid #ffd166",borderRadius:10,padding:"9px",color:"#ffd166",fontWeight:800,cursor:"pointer",fontSize:13}}>🤖 Bot Ekle</button>
+                </div>}
                 <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)"}} onClick={()=>{
-                  const pl=tournamentData.players.length?tournamentData.players:[username];
-                  if(pl.length<2){alert("En az 2 oyuncu!");return;}
+                  const botPool=["ArenaBot","QuizMaster","Nova","Volt","Atlas","Mira","Blaze","Orion"];
+                  let pl=tournamentData.players.length?tournamentData.players:[username];
+                  if(pl.length<2){
+                    const picks=botPool.filter(b=>!pl.includes(b)).slice(0,1);
+                    pl=[...pl,...picks];
+                  }
                   const sh=[...pl].sort(()=>Math.random()-.5);const br=[];
                   for(let i=0;i<sh.length;i+=2){if(i+1<sh.length)br.push({p1:sh[i],p2:sh[i+1],winner:null});else br.push({p1:sh[i],p2:"BYE",winner:sh[i]});}
                   setTournamentData({players:pl,started:true,bracket:br,round:1});
-                }}>Turnuvayi Basla</button>
+                }}>Turnuvayı Başlat</button>
               </div>
             ):(
               <div>
@@ -2162,7 +2151,7 @@ function App(){
             <div className="shop-panel" onClick={e=>e.stopPropagation()}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0"}}>🏪 Mağaza</div>
-                <button onClick={()=>setShowShop(false)} style={{background:"none",border:"none",color:"#3d3d6b",fontSize:22,cursor:"pointer"}}>✕</button>
+                <button onClick={()=>setShowShop(false)} style={{background:"none",border:"none",color:"#a9c7f0",fontSize:22,cursor:"pointer"}}>✕</button>
               </div>
               <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"12px",textAlign:"center",marginBottom:14}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#fbbf24"}}>🪙 {gold}</div>
@@ -2191,9 +2180,9 @@ function App(){
               <div style={{borderTop:"1px solid #1e3a6e",marginBottom:8}}/>
               <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Guclendiriciler</div>
                             {[{k:'double',i:"🎯",n:"Çift Seçim",d:"2 şık seç (biriktirilebilir)",c:200},{k:'elim',i:"❌",n:"2 Yanlışı Ele",d:"2 yanlış elenir",c:200},{k:'x2',i:"⚡",n:"x2 Puan",d:"Puan iki katı",c:300}].map(pw=>(
-                <div key={pw.k} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
+                <div key={pw.k} style={{background:"#122a52",border:"1.5px solid #315d9e",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
                   <span style={{fontSize:22}}>{pw.i}</span>
-                  <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{pw.n} <span style={{color:"#fbbf24",fontFamily:"'Rajdhani',sans-serif"}}>({powers[pw.k]||0})</span></div><div style={{fontSize:11,color:"#3d3d6b"}}>{pw.d}</div></div>
+                  <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{pw.n} <span style={{color:"#fbbf24",fontFamily:"'Rajdhani',sans-serif"}}>({powers[pw.k]||0})</span></div><div style={{fontSize:11,color:"#a9c7f0"}}>{pw.d}</div></div>
                   <button onClick={()=>{if(gold<pw.c)return;playSfx('spend');setGold(g=>{const ng=g-pw.c;saveGoldLS(username,ng);return ng;});const np={...powers,[pw.k]:(powers[pw.k]||0)+1};setPowers(np);savePowersLS(username,np);}} disabled={gold<pw.c} style={{background:gold>=pw.c?"linear-gradient(135deg,#fbbf24,#f59e0b)":"#1e1e4a",border:"none",borderRadius:10,padding:"7px 11px",color:"#0a0a1f",fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:13,cursor:gold>=pw.c?"pointer":"default",opacity:gold<pw.c?.5:1}}>🪙{pw.c}</button>
                 </div>
               ))}
@@ -2208,28 +2197,28 @@ function App(){
     <W><div className="sc fi">
       <div className="shdr">
         <button className="bk" onClick={()=>setScreen("home")}>←</button>
-        <div><div className="stitle">Oyun Ayarları</div><div style={{fontSize:11,color:"#3d3d6b"}}>{mode==="solo"?"Tekli Mod":"Çoklu Mod"}</div></div>
+        <div><div className="stitle">Oyun Ayarları</div><div style={{fontSize:11,color:"#a9c7f0"}}>{mode==="solo"?"Tekli Mod":"Çoklu Mod"}</div></div>
       </div>
-      <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Kategori</div>
+      <div style={{fontSize:11,color:"#a9c7f0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Kategori</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:16}}>
         {CATEGORIES.map(cat=>(
           <button key={cat.id} onClick={()=>setCategory(cat.id)} style={{flex:"1 1 calc(50% - 4px)",padding:"10px 8px",borderRadius:12,border:category===cat.id?"2px solid #6ee7f7":"2px solid #1e1e4a",background:category===cat.id?"rgba(110,231,247,.08)":"#111130",color:"#e2e4f0",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13,textAlign:"left",display:"flex",alignItems:"center",gap:8}}>
             <span style={{fontSize:20}}>{cat.icon}</span>
-            <div><div style={{fontSize:12,fontWeight:700}}>{cat.label}</div><div style={{fontSize:10,color:"#3d3d6b"}}>{cat.desc}</div></div>
+            <div><div style={{fontSize:12,fontWeight:700}}>{cat.label}</div><div style={{fontSize:10,color:"#a9c7f0"}}>{cat.desc}</div></div>
             {category===cat.id&&<span style={{marginLeft:"auto",color:"#6ee7f7"}}>✓</span>}
           </button>
         ))}
       </div>
-      <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Soru Sayısı</div>
+      <div style={{fontSize:11,color:"#a9c7f0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Soru Sayısı</div>
       {[{n:7,l:"Hızlı",e:"⚡"},{n:14,l:"Normal",e:"🎯"},{n:21,l:"Uzun",e:"🏆"}].map(o=>(
         <div key={o.n} className={"cc"+(qCount===o.n?" sel":"")} onClick={()=>setQCount(o.n)}>
           <span style={{fontSize:22}}>{o.e}</span>
-          <div style={{flex:1}}><span className="cn">{o.n}</span><span style={{fontSize:12,color:"#3d3d6b",marginLeft:5}}>soru</span><div style={{fontSize:12,fontWeight:700,color:"#e2e4f0"}}>{o.l}</div></div>
+          <div style={{flex:1}}><span className="cn">{o.n}</span><span style={{fontSize:12,color:"#a9c7f0",marginLeft:5}}>soru</span><div style={{fontSize:12,fontWeight:700,color:"#e2e4f0"}}>{o.l}</div></div>
           {qCount===o.n&&<span style={{color:"#6ee7f7",fontSize:18}}>✓</span>}
         </div>
       ))}
       <div style={{flex:1}}/>
-      <div style={{fontSize:11,color:"#3d3d6b",textAlign:"center",marginBottom:8}}>⏱ 15 sn/soru · Maks {15*2}=30 puan</div>
+      <div style={{fontSize:11,color:"#a9c7f0",textAlign:"center",marginBottom:8}}>⏱ 15 sn/soru · Maks {15*2}=30 puan</div>
       {mode==="solo"?(
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
@@ -2274,9 +2263,9 @@ function App(){
         <div style={{fontSize:10,color:"#a8c4e0",marginTop:2}}>Arkadasina bu kodu soyle</div>
       </div>
       <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
-      <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
+      <div style={{fontSize:12,color:"#a9c7f0",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
-        {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#3d3d6b",fontSize:12}}>⏳ Bekleniyor...</div>}
+        {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#a9c7f0",fontSize:12}}>⏳ Bekleniyor...</div>}
       </div>
       <div style={{flex:1}}/>
       <button className="pbtn" style={{marginTop:12}} onClick={()=>startGame(true)}>🚀 Oyunu Başlat ({roomPlayers.length} kişi)</button>
@@ -2289,7 +2278,7 @@ function App(){
       {connStatus==="connected"&&<>
         <div style={{fontSize:52,marginBottom:14}}>✅</div>
         <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0",marginBottom:5}}>Bağlandın!</div>
-        <div style={{fontSize:12,color:"#3d3d6b",marginBottom:18}}>Host başlatana kadar bekle</div>
+        <div style={{fontSize:12,color:"#a9c7f0",marginBottom:18}}>Host başlatana kadar bekle</div>
         <div className="playerlist" style={{width:"100%",textAlign:"left"}}>{roomPlayers.map(p=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}</div>
       </>}
       {connStatus==="error"&&<><div style={{fontSize:52,marginBottom:14}}>❌</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f87171",marginBottom:5}}>Bağlantı Hatası</div><button className="pbtn" style={{marginTop:12}} onClick={()=>setScreen("home")}>Ana Sayfaya Dön</button></>}
@@ -2297,7 +2286,7 @@ function App(){
   );
 
   if(screen==="loading") return(
-    <W><div className="sc"><div className="lo"><div className="spin"/><div style={{textAlign:"center"}}><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0"}}>Hazırlanıyor</div><div style={{fontSize:12,color:"#3d3d6b",marginTop:3}}>{category} soruları yükleniyor...</div></div></div></div></W>
+    <W><div className="sc"><div className="lo"><div className="spin"/><div style={{textAlign:"center"}}><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0"}}>Hazırlanıyor</div><div style={{fontSize:12,color:"#a9c7f0",marginTop:3}}>{category} soruları yükleniyor...</div></div></div></div></W>
   );
 
   if(screen==="game"){
@@ -2358,7 +2347,7 @@ function App(){
           <div style={{background:"rgba(110,231,247,.08)",border:"1.5px solid rgba(110,231,247,.2)",borderRadius:11,padding:"9px 13px",marginTop:7,textAlign:"center"}}>
             <div style={{fontSize:11,color:"#6ee7f7",fontWeight:700,marginBottom:5}}>⏳ Diğerleri bekleniyor...</div>
             <div style={{display:"flex",justifyContent:"center",gap:4}}>{Array.from({length:waitCount.total},(_,wi)=>(<div key={wi} style={{width:9,height:9,borderRadius:"50%",background:wi<waitCount.answered?"#34d399":"#1e1e4a"}}/>))}</div>
-            <div style={{fontSize:10,color:"#3d3d6b",marginTop:3}}>{waitCount.answered}/{waitCount.total}</div>
+            <div style={{fontSize:10,color:"#a9c7f0",marginTop:3}}>{waitCount.answered}/{waitCount.total}</div>
           </div>
         )}
         {mode==="multi"&&sortedLive.length>0&&(
@@ -2403,7 +2392,7 @@ function App(){
         <div className="rstats">
           <div className="scard"><div className="sv" style={{color:"#34d399"}}>{correct}</div><div className="sl">Doğru</div></div>
           <div className="scard"><div className="sv" style={{color:"#f87171"}}>{wrong}</div><div className="sl">Yanlış</div></div>
-          <div className="scard"><div className="sv" style={{color:"#3d3d6b"}}>{unanswered}</div><div className="sl">Boş</div></div>
+          <div className="scard"><div className="sv" style={{color:"#a9c7f0"}}>{unanswered}</div><div className="sl">Boş</div></div>
         </div>
         {lb.length>0&&(
           <div className="lblist">
@@ -2434,7 +2423,7 @@ function App(){
         <div key={i} className="ri">
           <div className="rqn">Soru {i+1}</div><div className="rqt">{a.q}</div>
           {a.o.map((o,j)=>{const isC=j===a.a,isS=j===a.sel||j===a.sel2;return(<div key={j} className={"ro"+(isC?" ca":isS?" wa":" na")}><span style={{fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:11}}>{LETTERS[j]}.</span><span style={{flex:1}}>{o}</span>{isC&&<span>✓</span>}{isS&&!isC&&<span>✗</span>}</div>);})}
-          <div style={{marginTop:6,fontSize:10,color:"#3d3d6b"}}>{(a.sel===a.a||(a.sel2!=null&&a.sel2===a.a))?"✅ +"+a.pts+" puan":a.sel===null?"⏱️ Süre doldu":"❌ 0 puan"}</div>
+          <div style={{marginTop:6,fontSize:10,color:"#a9c7f0"}}>{(a.sel===a.a||(a.sel2!=null&&a.sel2===a.a))?"✅ +"+a.pts+" puan":a.sel===null?"⏱️ Süre doldu":"❌ 0 puan"}</div>
         </div>
       ))}
       <button className="pbtn" style={{marginTop:6,marginBottom:14}} onClick={()=>setScreen("home")}>Ana Sayfa</button>
