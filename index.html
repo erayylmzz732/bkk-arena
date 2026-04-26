@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Bilgi Arena: Kim Kazanacak?">
+<meta name="apple-mobile-web-app-title" content="Bilgi Arena">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#05080f">
+<meta name="theme-color" content="#10231f">
 <title>Bilgi Arena: Kim Kazanacak?</title>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-app-compat.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/firebase@10.8.0/firebase-auth-compat.min.js"></script>
@@ -20,9 +20,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#05080f}
-.app{min-height:100vh;background:linear-gradient(135deg,#0d0620 0%,#05080f 50%,#090520 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
-.phone{width:390px;min-height:840px;background:#080d1a;border-radius:38px;border:1.5px solid #16163a;box-shadow:0 0 0 1px #0a0a1f,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(0,229,255,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
+body{background:#10231f}
+.app{min-height:100vh;background:linear-gradient(135deg,#14532d 0%,#10231f 40%,#7c2d12 80%,#10231f 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
+.phone{width:390px;min-height:840px;background:#15352f;border-radius:38px;border:1.5px solid #255045;box-shadow:0 0 0 1px #071714,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(0,255,255,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
 .sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
 .sc::-webkit-scrollbar{width:0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -31,146 +31,184 @@ body{background:#05080f}
 @keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
 .fi{animation:fadeUp .25s ease both}
 .logo{text-align:center;padding:32px 0 24px}
-.logo h1{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#00e5ff 0%,#7c3aff 60%,#c084fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo p{font-size:12px;color:#8090b0;margin-top:5px;letter-spacing:1px;text-transform:uppercase}
-.tabs{display:flex;background:#0e1830;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
+.logo h1{font-family:'Rajdhani',sans-serif;font-size:42px;font-weight:700;letter-spacing:2px;line-height:1;background:linear-gradient(135deg,#2dd4bf 0%,#f59e0b 60%,#fbbf24 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo p{font-size:12px;color:#b7d8c8;margin-top:5px;letter-spacing:1px;text-transform:uppercase}
+.tabs{display:flex;background:#1f463d;border-radius:14px;padding:4px;margin-bottom:18px;gap:4px}
 .tb{flex:1;padding:10px 8px;border:none;border-radius:10px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;transition:all .2s}
-.tb.on{background:linear-gradient(135deg,#00e5ff,#7c3aff);color:#0a0a1f}
-.tb.off{background:transparent;color:#8090b0}
-.inp{width:100%;padding:13px 15px;background:#0e1830;border:1.5px solid #1e3260;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;margin-bottom:10px;outline:none;transition:border-color .2s,box-shadow .2s}
-.inp:focus{border-color:#00e5ff;box-shadow:0 0 0 3px rgba(0,229,255,.1)}
-.inp::placeholder{color:#3a5070}
-.inp.err{border-color:#ff3366}
-.errmsg{font-size:12px;color:#ff3366;margin:-6px 0 8px 4px}
-.pbtn{width:100%;padding:14px;background:linear-gradient(135deg,#00e5ff,#7c3aff);border:none;border-radius:14px;color:#0a0a1f;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .2s}
-.pbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,229,255,.28)}
+.tb.on{background:linear-gradient(135deg,#2dd4bf,#f59e0b);color:#071714}
+.tb.off{background:transparent;color:#b7d8c8}
+.inp{width:100%;padding:13px 15px;background:#1f463d;border:1.5px solid #2f6f5e;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;margin-bottom:10px;outline:none;transition:border-color .2s,box-shadow .2s}
+.inp:focus{border-color:#2dd4bf;box-shadow:0 0 0 3px rgba(0,255,255,.1)}
+.inp::placeholder{color:#7050a0}
+.inp.err{border-color:#ff1493}
+.errmsg{font-size:12px;color:#ff1493;margin:-6px 0 8px 4px}
+.pbtn{width:100%;padding:14px;background:linear-gradient(135deg,#2dd4bf,#f59e0b);border:none;border-radius:14px;color:#071714;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .2s}
+.pbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,255,255,.28)}
 .pbtn:active{transform:translateY(0)}
 .pbtn:disabled{opacity:.5;cursor:default;transform:none}
-.sbtn{width:100%;padding:12px;background:transparent;border:1.5px solid #1e3260;border-radius:14px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
-.sbtn:hover{border-color:#00e5ff;background:rgba(0,229,255,.04)}
+.sbtn{width:100%;padding:12px;background:transparent;border:1.5px solid #2f6f5e;border-radius:14px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.sbtn:hover{border-color:#2dd4bf;background:rgba(0,255,255,.04)}
 .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-.logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#00e5ff,#7c3aff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
-.av{width:37px;height:37px;background:linear-gradient(135deg,#00e5ff,#7c3aff);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0a0a1f}
-.mc{background:#0e1830;border:1.5px solid #1e3260;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
-.mc:hover{border-color:#00e5ff;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,229,255,.1)}
+.logosm{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;background:linear-gradient(135deg,#2dd4bf,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
+.av{width:37px;height:37px;background:linear-gradient(135deg,#2dd4bf,#f59e0b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#071714}
+.mc{background:#1f463d;border:1.5px solid #2f6f5e;border-radius:20px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all .22s}
+.mc:hover{border-color:#2dd4bf;transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,255,255,.1)}
 .stitle{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700;color:#e2e4f0}
-.bk{background:transparent;border:none;color:#8090b0;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
-.bk:hover{color:#00e5ff}
+.bk{background:transparent;border:none;color:#b7d8c8;font-size:20px;cursor:pointer;padding:0;transition:color .2s}
+.bk:hover{color:#2dd4bf}
 .shdr{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.cc{background:#0e1830;border:1.5px solid #1e3260;border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s}
-.cc.sel{border-color:#00e5ff;background:rgba(0,229,255,.05);box-shadow:0 0 20px rgba(0,229,255,.08)}
-.cc:hover:not(.sel){border-color:#00e5ff;opacity:.9}
-.cn{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:#00e5ff;min-width:48px}
+.cc{background:#1f463d;border:1.5px solid #2f6f5e;border-radius:16px;padding:16px 20px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .2s}
+.cc.sel{border-color:#2dd4bf;background:rgba(0,255,255,.05);box-shadow:0 0 20px rgba(0,255,255,.08)}
+.cc:hover:not(.sel){border-color:#2dd4bf;opacity:.9}
+.cn{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:#2dd4bf;min-width:48px}
 .gh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.qcnt{font-size:13px;color:#8090b0}
-.qcnt span{color:#00e5ff;font-weight:700}
-.scdisp{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#ffcc00}
-.pb{height:6px;background:#1e3260;border-radius:3px;border-radius:2px;margin-bottom:18px;overflow:hidden}
-.pbi{height:100%;background:linear-gradient(90deg,#00e5ff,#7c3aff);border-radius:2px;transition:width .4s ease}
-.qcard{background:#0e1830;border:1.5px solid #1e3260;border-radius:18px;padding:18px;margin-bottom:14px}
+.qcnt{font-size:13px;color:#b7d8c8}
+.qcnt span{color:#2dd4bf;font-weight:700}
+.scdisp{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#ffd700}
+.pb{height:6px;background:#1f463d;border-radius:3px;border-radius:2px;margin-bottom:18px;overflow:hidden}
+.pbi{height:100%;background:linear-gradient(90deg,#2dd4bf,#f59e0b);border-radius:2px;transition:width .4s ease}
+.qcard{background:#1f463d;border:1.5px solid #2f6f5e;border-radius:18px;padding:18px;margin-bottom:14px}
 .qt{font-size:16px;font-weight:700;color:#e2e4f0;line-height:1.6}
 .tc{display:flex;justify-content:center;margin-bottom:14px}
-.ob{width:100%;padding:12px 14px;background:#0e1830;border:1.5px solid #1e3260;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s}
-.ob:hover:not(:disabled){border-color:#00e5ff66;background:rgba(0,229,255,.03)}
+.ob{width:100%;padding:12px 14px;background:#1f463d;border:1.5px solid #2f6f5e;border-radius:13px;color:#e2e4f0;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px;transition:all .18s}
+.ob:hover:not(:disabled){border-color:#2dd4bf66;background:rgba(0,255,255,.03)}
 .ob:disabled{cursor:default}
 .ob.ok{border-color:#00ff88;background:rgba(0,255,136,.09);color:#00ff88}
-.ob.ng{border-color:#ff3366;background:rgba(255,51,102,.09);color:#ff3366}
-.ob.dm{opacity:.35;border-color:#1e1e4a}
-.ol{width:26px;height:26px;background:#1e1e4a;border-radius:7px;display:"flex";align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;flex-shrink:0}
+.ob.ng{border-color:#ff1493;background:rgba(255,20,147,.09);color:#ff1493}
+.ob.dm{opacity:.35;border-color:#244d43}
+.ol{width:26px;height:26px;background:#244d43;border-radius:7px;display:"flex";align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;flex-shrink:0}
 .ok .ol{background:rgba(0,255,136,.2);color:#00ff88}
-.ng .ol{background:rgba(255,51,102,.2);color:#ff3366}
+.ng .ol{background:rgba(255,20,147,.2);color:#ff1493}
 .fdb{text-align:center;padding:10px 14px;border-radius:12px;font-weight:700;font-size:14px;margin-top:4px}
-.lbpanel{background:#080d1a;border:1.5px solid #1e3260;border-radius:14px;padding:11px 12px;margin-top:10px}
-.lbptitle{font-size:10px;color:#8090b0;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.lbpanel{background:#15352f;border:1.5px solid #2f6f5e;border-radius:14px;padding:11px 12px;margin-top:10px}
+.lbptitle{font-size:10px;color:#b7d8c8;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
 .lbprow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px}
 .lbprow::-webkit-scrollbar{height:0}
 .plchip{display:flex;flex-direction:column;align-items:center;min-width:52px;padding:7px 6px;border-radius:10px}
-.plchip.me{background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2)}
-.plchip.other{background:#0e1830;border:1px solid transparent}
-.plavc{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0a0a1f;margin-bottom:3px;position:relative}
+.plchip.me{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.2)}
+.plchip.other{background:#1f463d;border:1px solid transparent}
+.plavc{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#071714;margin-bottom:3px;position:relative}
 .rh{text-align:center;padding:24px 0 16px}
 .re{font-size:58px;margin-bottom:8px}
-.rs{font-family:'Rajdhani',sans-serif;font-size:54px;font-weight:700;color:#ffcc00;text-shadow:0 0 28px rgba(255,204,0,.3)}
-.rsl{font-size:12px;color:#8090b0;margin-top:2px}
+.rs{font-family:'Rajdhani',sans-serif;font-size:54px;font-weight:700;color:#ffd700;text-shadow:0 0 28px rgba(255,215,0,.3)}
+.rsl{font-size:12px;color:#b7d8c8;margin-top:2px}
 .rstats{display:flex;gap:9px;margin:14px 0}
-.scard{flex:1;background:#0e1830;border:1.5px solid #1e3260;border-radius:13px;padding:12px 8px;text-align:center}
+.scard{flex:1;background:#1f463d;border:1.5px solid #2f6f5e;border-radius:13px;padding:12px 8px;text-align:center}
 .sv{font-family:'Rajdhani',sans-serif;font-size:27px;font-weight:700}
-.sl{font-size:11px;color:#8090b0;margin-top:1px}
+.sl{font-size:11px;color:#b7d8c8;margin-top:1px}
 .lblist{margin:12px 0 16px}
-.lbtit{font-size:11px;color:#8090b0;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
-.lbrow{display:flex;align-items:center;gap:10px;padding:9px 13px;background:#0e1830;border-radius:10px;margin-bottom:5px}
+.lbtit{font-size:11px;color:#b7d8c8;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:9px}
+.lbrow{display:flex;align-items:center;gap:10px;padding:9px 13px;background:#1f463d;border-radius:10px;margin-bottom:5px}
 .lbrank{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;width:22px;text-align:center}
 .lbname{flex:1;font-size:14px;font-weight:700}
-.lbscore{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#ffcc00}
+.lbscore{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#ffd700}
 .rbtns{display:flex;flex-direction:column;gap:8px}
-.ri{background:#0e1830;border:1.5px solid #1e3260;border-radius:13px;padding:14px;margin-bottom:10px}
-.rqn{font-size:10px;color:#8090b0;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.ri{background:#1f463d;border:1.5px solid #2f6f5e;border-radius:13px;padding:14px;margin-bottom:10px}
+.rqn{font-size:10px;color:#b7d8c8;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
 .rqt{font-size:14px;font-weight:700;color:#e2e4f0;margin-bottom:8px;line-height:1.5}
 .ro{padding:7px 10px;border-radius:8px;font-size:13px;margin-bottom:3px;display:flex;align-items:center;gap:8px}
 .ro.ca{background:rgba(0,255,136,.1);color:#00ff88}
-.ro.wa{background:rgba(255,51,102,.1);color:#ff3366}
-.ro.na{color:#2a2a52}
+.ro.wa{background:rgba(255,20,147,.1);color:#ff1493}
+.ro.na{color:#52645f}
 .badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700}
 .be{background:rgba(0,255,136,.12);color:#00ff88}
-.bm{background:rgba(255,204,0,.12);color:#ffcc00}
-.spin{width:44px;height:44px;border:3px solid #1e1e4a;border-top-color:#00e5ff;border-radius:50%;animation:spin .65s linear infinite}
+.bm{background:rgba(255,215,0,.12);color:#ffd700}
+.spin{width:44px;height:44px;border:3px solid #244d43;border-top-color:#2dd4bf;border-radius:50%;animation:spin .65s linear infinite}
 .lo{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:14px}
-.linkbox{background:linear-gradient(135deg,rgba(0,229,255,.06),rgba(124,58,255,.06));border:1.5px solid rgba(0,229,255,.25);border-radius:18px;padding:18px;margin:14px 0}
-.linktxt{font-size:12px;color:#00e5ff;word-break:break-all;font-family:monospace;line-height:1.5}
-.copybtn{margin-top:10px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2);color:#00e5ff;padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;transition:all .2s;width:100%}
-.copybtn:hover{background:rgba(0,229,255,.2)}
-.playerlist{background:#0e1830;border-radius:14px;padding:12px}
+.linkbox{background:linear-gradient(135deg,rgba(0,255,255,.06),rgba(245,158,11,.06));border:1.5px solid rgba(0,255,255,.25);border-radius:18px;padding:18px;margin:14px 0}
+.linktxt{font-size:12px;color:#2dd4bf;word-break:break-all;font-family:monospace;line-height:1.5}
+.copybtn{margin-top:10px;background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.2);color:#2dd4bf;padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;transition:all .2s;width:100%}
+.copybtn:hover{background:rgba(0,255,255,.2)}
+.playerlist{background:#1f463d;border-radius:14px;padding:12px}
 .plitem{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;animation:slideIn .25s ease both}
 .plitem:not(:last-child){border-bottom:1px solid #1a1a40}
-.plavatarsm{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#00e5ff,#7c3aff);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0a0a1f;flex-shrink:0}
+.plavatarsm{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2dd4bf,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#071714;flex-shrink:0}
 .pingdot{width:8px;height:8px;border-radius:50%;background:#00ff88;position:relative}
 .pingdot::after{content:'';position:absolute;inset:0;border-radius:50%;background:#00ff88;animation:ping 1.2s ease-out infinite}
-.statusbar{background:#0e1830;border:1.5px solid #1e3260;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px}
+.statusbar{background:#1f463d;border:1.5px solid #2f6f5e;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px}
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#030312;overscroll-behavior:none}
 
-.ob.selected{border-color:#7c3aff;background:rgba(124,58,255,.12);color:#c4b5fd}
-.ob.elim{opacity:.15;pointer-events:none;border-color:#1e1e4a;color:#2a2a52}
-.gold-bar{display:flex;align-items:center;gap:5px;background:#1a1a30;border:1.5px solid #ffcc00;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffcc00;cursor:pointer;transition:all .2s;user-select:none}
+.ob.selected{border-color:#f59e0b;background:rgba(245,158,11,.12);color:#c4b5fd}
+.ob.elim{opacity:.15;pointer-events:none;border-color:#244d43;color:#52645f}
+.gold-bar{display:flex;align-items:center;gap:5px;background:#1a1a30;border:1.5px solid #ffd700;border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd700;cursor:pointer;transition:all .2s;user-select:none}
 .pw-row{display:flex;gap:6px;margin-bottom:10px}
-.pw-btn{flex:1;background:#0e1830;border:1.5px solid #1e3260;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
-.pw-btn:hover:not(:disabled){border-color:#ffcc00;background:rgba(255,204,0,.06)}
+.pw-btn{flex:1;background:#1f463d;border:1.5px solid #2f6f5e;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
+.pw-btn:hover:not(:disabled){border-color:#ffd700;background:rgba(255,215,0,.06)}
 .pw-btn:disabled{opacity:.3;cursor:default}
-.pw-btn.active{border-color:#ffcc00;background:rgba(255,204,0,.1)}
-.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffcc00}
-.pw-label{font-size:9px;color:#8090b0;white-space:nowrap}
+.pw-btn.active{border-color:#ffd700;background:rgba(255,215,0,.1)}
+.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd700}
+.pw-label{font-size:9px;color:#b7d8c8;white-space:nowrap}
 .shop-overlay{position:fixed;inset:0;background:rgba(3,3,18,.9);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.shop-panel{background:#080d1a;border:1.5px solid #1e3260;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:88vh;overflow-y:auto}
+.shop-panel{background:#15352f;border:1.5px solid #2f6f5e;border-top-left-radius:24px;border-top-right-radius:24px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:88vh;overflow-y:auto}
 .shop-panel::-webkit-scrollbar{width:0}
-.gold-earned{background:rgba(255,204,0,.08);border:1.5px solid rgba(255,204,0,.25);border-radius:14px;padding:14px;text-align:center;margin-bottom:14px}
-.toggle{width:48px;height:26px;border-radius:13px;background:#1e1e4a;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
-.toggle.on{background:linear-gradient(135deg,#00e5ff,#7c3aff)}
+.gold-earned{background:rgba(255,215,0,.08);border:1.5px solid rgba(255,215,0,.25);border-radius:14px;padding:14px;text-align:center;margin-bottom:14px}
+.toggle{width:48px;height:26px;border-radius:13px;background:#244d43;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
+.toggle.on{background:linear-gradient(135deg,#2dd4bf,#f59e0b)}
 .toggle-knob{width:20px;height:20px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .toggle.on .toggle-knob{left:25px}
 
-.ob.selected{border-color:#7c3aff;background:rgba(124,58,255,.15);color:#b080ff;box-shadow:0 0 15px rgba(124,58,255,.3)}
-.ob.elim{opacity:.12;pointer-events:none}
-.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#1a1000,#0a0600);border:1.5px solid #ffcc00;box-shadow:0 0 15px rgba(255,204,0,.25);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffcc00;cursor:pointer;user-select:none}
+/* Vibrant theme additions */
+.ob.selected{border-color:#f59e0b;background:rgba(245,158,11,.2);color:#ffaaff;box-shadow:0 0 20px rgba(245,158,11,.4)}
+.ob.elim{opacity:.1;pointer-events:none}
+.gold-bar{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#3a2810,#1a1000);border:1.5px solid #ffd700;box-shadow:0 0 18px rgba(255,215,0,.4),inset 0 0 10px rgba(255,215,0,.1);border-radius:20px;padding:5px 12px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#ffd700;cursor:pointer;user-select:none}
 .pw-row{display:flex;gap:6px;margin-bottom:10px}
-.pw-btn{flex:1;background:#0e1830;border:1.5px solid #2a4080;border-radius:11px;padding:7px 3px 6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
-.pw-btn:hover:not(:disabled){border-color:#ffcc00;background:rgba(255,204,0,.06);box-shadow:0 0 10px rgba(255,204,0,.2)}
+.pw-btn{flex:1;background:linear-gradient(135deg,#1f463d,#15352f);border:1.5px solid #2f6f5e;border-radius:12px;padding:7px 3px 6px;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:1px;outline:none}
+.pw-btn:hover:not(:disabled){border-color:#ffd700;background:rgba(255,215,0,.08);box-shadow:0 0 15px rgba(255,215,0,.3);transform:translateY(-2px)}
 .pw-btn:disabled{opacity:.25;cursor:default}
-.pw-btn.active{border-color:#ffcc00;background:rgba(255,204,0,.12);box-shadow:0 0 15px rgba(255,204,0,.3)}
-.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffcc00}
-.pw-label{font-size:9px;color:#8090b0;white-space:nowrap}
-.shop-overlay{position:fixed;inset:0;background:rgba(5,8,15,.95);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.shop-panel{background:linear-gradient(180deg,#0e1830,#080d1a);border:2px solid #1e3260;border-top-left-radius:26px;border-top-right-radius:26px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto}
+.pw-btn.active{border-color:#ffd700;background:rgba(255,215,0,.15);box-shadow:0 0 20px rgba(255,215,0,.5)}
+.pw-cost{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:#ffd700}
+.pw-label{font-size:9px;color:#b7d8c8;white-space:nowrap}
+.shop-overlay{position:fixed;inset:0;background:rgba(16,35,31,.92);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)}
+.shop-panel{background:linear-gradient(180deg,#1f463d,#10231f);border:2px solid #2f6f5e;border-top-left-radius:28px;border-top-right-radius:28px;padding:24px 20px 36px;width:100%;max-width:390px;max-height:85vh;overflow-y:auto;box-shadow:0 -10px 40px rgba(245,158,11,.2)}
 .shop-panel::-webkit-scrollbar{width:0}
-.toggle{width:50px;height:28px;border-radius:14px;background:#1e3260;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
-.toggle.on{background:linear-gradient(135deg,#00e5ff,#7c3aff);box-shadow:0 0 12px rgba(0,229,255,.3)}
-.toggle-knob{width:22px;height:22px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.toggle{width:50px;height:28px;border-radius:14px;background:#1f463d;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;outline:none;border:none;display:inline-block}
+.toggle.on{background:linear-gradient(135deg,#2dd4bf,#f59e0b);box-shadow:0 0 15px rgba(245,158,11,.5)}
+.toggle-knob{width:22px;height:22px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:left .25s;box-shadow:0 2px 8px rgba(0,0,0,.4)}
 .toggle.on .toggle-knob{left:25px}
-@keyframes neonPulse{0%,100%{opacity:1}50%{opacity:.6}}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-@keyframes comboAnim{0%{transform:scale(0.5);opacity:0}50%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
-@keyframes correctFlash{0%{background:rgba(0,255,136,.2)}100%{background:transparent}}
-@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* Modal scale-up animation */
+@keyframes modalScaleIn{
+  0%{transform:scale(.7) translateY(40px);opacity:0}
+  60%{transform:scale(1.02) translateY(-4px);opacity:1}
+  100%{transform:scale(1) translateY(0);opacity:1}
+}
+@keyframes modalScaleOut{
+  0%{transform:scale(1);opacity:1}
+  100%{transform:scale(.85);opacity:0}
+}
+@keyframes shimmer{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 0 15px rgba(245,158,11,.3)}
+  50%{box-shadow:0 0 30px rgba(245,158,11,.6),0 0 50px rgba(0,255,255,.4)}
+}
+@keyframes neonPulse{0%,100%{opacity:1}50%{opacity:.7}}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes comboAnim{0%{transform:scale(.5);opacity:0}50%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+@keyframes correctFlash{0%{background:rgba(0,255,136,.3)}100%{background:transparent}}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+
+.shop-panel,div[style*="modalScaleIn"]{animation:modalScaleIn .35s cubic-bezier(.2,1.2,.4,1)}
+
+/* Override main background */
+.sc{background:transparent !important}
+.fi{background:transparent !important}
+
+/* Eray fix: mor/lacivert kaldırıldı, zümrüt/amber tema */
+body{background:#10231f!important}
+.app{background:linear-gradient(135deg,#10231f 0%,#14532d 45%,#7c2d12 100%)!important}
+.phone{background:#15352f!important;border-color:#2f6f5e!important;box-shadow:0 0 0 1px #071714,0 32px 80px rgba(0,0,0,.5),0 0 55px rgba(45,212,191,.12)!important}
+.mc,.qcard,.ri,.statusbar,.tabs,.playerlist,.lbpanel,.scard{background:#17352f!important;border-color:#2f6f5e!important}
+.mc:hover{border-color:#34d399!important;box-shadow:0 8px 30px rgba(52,211,153,.12)!important}
+.inp,.cc,.ob{background:#1f463d!important;border-color:#2f6f5e!important}
+.pbtn,.tb.on,.av,.plavatarsm{background:linear-gradient(135deg,#34d399,#f59e0b)!important;color:#071714!important}
+.logo h1,.logosm{background:linear-gradient(135deg,#34d399,#f59e0b)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
 </style>
 </head>
 <body>
@@ -702,7 +740,7 @@ const FRAMES_DEF=[
   {min:25,name:"Safir",c:"#1E90FF",s:"0 0 12px #1E90FF,0 0 0 3px #0000CD"},
   {min:30,name:"Yakut",c:"#E0115F",s:"0 0 14px #E0115F,0 0 0 3px #8B0000"},
   {min:40,name:"Elmas",c:"#B9F2FF",s:"0 0 16px #B9F2FF,0 0 0 3px #00BFFF"},
-  {min:50,name:"Kristal",c:"#c084fc",s:"0 0 16px #c084fc,0 0 0 3px #7c3aed"},
+  {min:50,name:"Kristal",c:"#fbbf24",s:"0 0 16px #fbbf24,0 0 0 3px #7c3aed"},
   {min:75,name:"Ejderha",c:"#FF4500",s:"0 0 20px #FF4500,0 0 0 3px #FF0000"},
   {min:100,name:"Efsane",c:"#FFD700",s:"0 0 24px #fbbf24,0 0 48px #f59e0b,0 0 0 3px #FFD700"},
 ];
@@ -1106,7 +1144,7 @@ function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
       <div style={{background:"#060e1e",border:"2px solid #2a5a8e",borderRadius:20,padding:20,width:"100%",maxWidth:340}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
           <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffffff"}}>Ayarlar</span>
-          <button onClick={onClose} style={{background:"none",border:"none",color:"#a8c4e0",fontSize:22,cursor:"pointer"}}>X</button>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#bdd7c7",fontSize:22,cursor:"pointer"}}>X</button>
         </div>
         <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>Ses Efektleri</span>
@@ -1179,11 +1217,11 @@ const W=memo(function W({children}){
 function TimerRing({tl,total}){
   total=total||15;
   const r=36,circ=2*Math.PI*r,off=circ*(1-tl/total);
-  const col=tl>8?"#6ee7f7":tl>4?"#fbbf24":"#f87171";
+  const col=tl>8?"#34d399":tl>4?"#fbbf24":"#f87171";
   return(
     <div style={{position:"relative",width:88,height:88,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <svg width="88" height="88" style={{position:"absolute",transform:"rotate(-90deg)"}}>
-        <circle cx="44" cy="44" r={r} fill="none" stroke="#1e1e4a" strokeWidth="7"/>
+        <circle cx="44" cy="44" r={r} fill="none" stroke="#244d43" strokeWidth="7"/>
         <circle cx="44" cy="44" r={r} fill="none" stroke={col} strokeWidth="7"
           strokeDasharray={circ} strokeDashoffset={off} strokeLinecap="round"
           style={{transition:"stroke-dashoffset 0.95s linear,stroke 0.3s"}}/>
@@ -1220,7 +1258,7 @@ function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorI
   return(
     <div style={{position:"relative",display:"inline-flex",flexShrink:0,marginBottom:level>1?10:0}}>
       <svg width={size} height={size} viewBox="0 0 90 90" style={{borderRadius:"50%",boxShadow:fr?fr.s:"none"}}>
-        <ellipse cx="45" cy="85" rx="30" ry="14" fill={gender==='f'?"#818cf8":"#6ee7f7"}/>
+        <ellipse cx="45" cy="85" rx="30" ry="14" fill={gender==='f'?"#f59e0b":"#34d399"}/>
         <rect x="39" y="58" width="12" height="13" fill={sk} rx="2"/>
         <ellipse cx="45" cy="42" rx="27" ry="29" fill={sk}/>
         {hp}
@@ -1236,7 +1274,7 @@ function AvatarSVG({gender,skinIdx,hairStyle,hairColorIdx,beardStyle,beardColorI
         {gender==='f'&&<><ellipse cx="28" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/><ellipse cx="62" cy="52" rx="6" ry="3.5" fill="#f8a4b0" opacity=".4"/></>}
       </svg>
       {fr&&<div style={{position:"absolute",bottom:-2,right:-2,background:fr.c,borderRadius:"50%",width:Math.max(14,size*.22),height:Math.max(14,size*.22),display:"flex",alignItems:"center",justifyContent:"center",fontSize:Math.max(8,size*.13),border:"1.5px solid rgba(0,0,0,.2)"}}>⭐</div>}
-      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#111130",border:"1.5px solid "+(fr?fr.c:"#1e1e4a"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#6ee7f7",whiteSpace:"nowrap"}}>Sv.{level}</div>}
+      {level>1&&<div style={{position:"absolute",bottom:-10,left:"50%",transform:"translateX(-50%)",background:"#17352f",border:"1.5px solid "+(fr?fr.c:"#244d43"),borderRadius:20,padding:"1px 6px",fontSize:10,fontFamily:"'Rajdhani',sans-serif",fontWeight:700,color:fr?fr.c:"#34d399",whiteSpace:"nowrap"}}>Sv.{level}</div>}
     </div>
   );
 }
@@ -1247,7 +1285,7 @@ function Confetti(){
   useEffect(()=>{
     const cv=ref.current;if(!cv)return;
     const ctx=cv.getContext('2d');cv.width=390;cv.height=500;
-    const P=Array.from({length:80},()=>({x:Math.random()*390,y:-30-Math.random()*80,vx:(Math.random()-.5)*5,vy:1.5+Math.random()*3.5,w:8+Math.random()*8,h:4+Math.random()*4,rot:Math.random()*360,rv:(Math.random()-.5)*8,col:['#6ee7f7','#fbbf24','#34d399','#f87171','#818cf8','#c084fc'][Math.floor(Math.random()*6)]}));
+    const P=Array.from({length:80},()=>({x:Math.random()*390,y:-30-Math.random()*80,vx:(Math.random()-.5)*5,vy:1.5+Math.random()*3.5,w:8+Math.random()*8,h:4+Math.random()*4,rot:Math.random()*360,rv:(Math.random()-.5)*8,col:['#34d399','#fbbf24','#34d399','#f87171','#f59e0b','#fbbf24'][Math.floor(Math.random()*6)]}));
     let raf,done=false;
     const tick=()=>{ctx.clearRect(0,0,390,500);let any=false;P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;p.vy+=.07;if(p.y<520)any=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.col;ctx.globalAlpha=Math.max(0,1-p.y/480);ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();});if(any&&!done)raf=requestAnimationFrame(tick);};
     tick();return()=>{done=true;cancelAnimationFrame(raf);};
@@ -1263,16 +1301,16 @@ function ChestModal({onClose}){
     <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <style>{`@keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.1)}}`}</style>
       <div style={{textAlign:"center",padding:32}}>
-        <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
+        <div style={{fontSize:11,color:"#7a9187",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Günlük Görev Tamamlandı!</div>
         {st==='shake'&&<>
           <div onClick={()=>{setSt('open');playSfx('earn');}} style={{fontSize:110,cursor:"pointer",display:"inline-block",animation:"shake .15s infinite",filter:"drop-shadow(0 0 20px #fbbf24)"}}>🎁</div>
-          <div style={{fontSize:13,color:"#6ee7f7",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
+          <div style={{fontSize:13,color:"#34d399",marginTop:12,fontWeight:700}}>Sandığa dokun!</div>
         </>}
         {st==='open'&&<>
           <div style={{fontSize:90,animation:"pop .4s ease",display:"inline-block",filter:"drop-shadow(0 0 30px #fbbf24)"}}>🎁</div>
           <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:48,fontWeight:700,color:"#fbbf24",marginTop:8}}>+100 🪙</div>
-          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:20}}>Altın Kazandın!</div>
-          <button onClick={onClose} style={{background:"linear-gradient(135deg,#6ee7f7,#818cf8)",border:"none",borderRadius:14,padding:"14px 40px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
+          <div style={{fontSize:13,color:"#7a9187",marginBottom:20}}>Altın Kazandın!</div>
+          <button onClick={onClose} style={{background:"linear-gradient(135deg,#34d399,#f59e0b)",border:"none",borderRadius:14,padding:"14px 40px",color:"#071714",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:16,cursor:"pointer"}}>Harika! →</button>
         </>}
       </div>
     </div>
@@ -1285,20 +1323,20 @@ function LevelUpModal({newLevel,rewards,onClose}){
   const fr=getFrame(newLevel);
   return(
     <div style={{position:"fixed",inset:0,background:"rgba(3,3,18,.96)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-      <div style={{background:"#0a0a1f",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
-        <div style={{fontSize:12,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
+      <div style={{background:"#071714",border:"2px solid #fbbf24",borderRadius:24,padding:28,maxWidth:340,width:"100%",textAlign:"center",boxShadow:"0 0 40px rgba(251,191,36,.3)"}}>
+        <div style={{fontSize:12,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:12}}>Seviye Atladın! 🎉</div>
         <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:72,fontWeight:700,color:"#fbbf24",lineHeight:1}}>{newLevel}</div>
         <div style={{fontSize:14,color:"#e2e4f0",marginBottom:16}}>Seviye {newLevel}</div>
         {fr&&newLevel%5===0&&<div style={{background:"rgba(0,0,0,.2)",border:"2px solid "+fr.c,borderRadius:12,padding:"8px",marginBottom:12,fontSize:13,fontWeight:700,color:fr.c}}>🖼️ {fr.name} Çerçeve!</div>}
         <div style={{marginBottom:16}}>
           {rewards.map((r,i)=>(
-            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
+            <div key={i} style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:10,padding:"9px 13px",marginBottom:6,display:"flex",alignItems:"center",gap:10}}>
               <span style={{fontSize:20}}>{r.type==='gold'?"🪙":r.type==='frame'?"🖼️":"⚡"}</span>
               <span style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{r.type==='gold'?"+"+r.amount+" Altın":r.type==='frame'?r.name+" Çerçeve":{double:"🎯 Çift Seçim",elim:"❌ 2 Yanlışı Ele",x2:"⚡ x2 Puan"}[r.pw]||r.pw}</span>
             </div>
           ))}
         </div>
-        <button onClick={onClose} style={{background:"linear-gradient(135deg,#fbbf24,#f59e0b)",border:"none",borderRadius:14,padding:"13px",color:"#0a0a1f",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:15,cursor:"pointer",width:"100%"}}>Devam Et →</button>
+        <button onClick={onClose} style={{background:"linear-gradient(135deg,#fbbf24,#f59e0b)",border:"none",borderRadius:14,padding:"13px",color:"#071714",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:800,fontSize:15,cursor:"pointer",width:"100%"}}>Devam Et →</button>
       </div>
     </div>
   );
@@ -1383,6 +1421,10 @@ function App(){
   const [joinCodeInput,setJoinCodeInput]=useState("");
   const [joinCodeErr,setJoinCodeErr]=useState("");
   const [showTournament,setShowTournament]=useState(false);
+  const [showArena,setShowArena]=useState(false);
+  const [arenaCode,setArenaCode]=useState("");
+  const [arenaMode,setArenaMode]=useState("1v1");
+  const [arenaErr,setArenaErr]=useState("");
   const [tournamentData,setTournamentData]=useState(null);
   const [userCode,setUserCode]=useState("");
 
@@ -1411,6 +1453,32 @@ function App(){
   const afkCountRef=useRef({});
   const pendingSfxRef=useRef(null);
   const pingIntervalRef=useRef(null);
+
+  const resetMultiplayerState=useCallback(()=>{
+    if(peerRef.current){try{peerRef.current.destroy();}catch(e){}peerRef.current=null;}
+    connsRef.current=[];
+    hostConnRef.current=null;
+    isHostRef.current=false;
+    playersRef.current={};
+    answeredRef.current={};
+    setInviteLink("");
+    setRoomCode("");
+    setRoomPlayers([]);
+    setConnStatus("idle");
+    setCopied(false);
+    setJoinCodeInput("");
+    setJoinCodeErr("");
+    setWaiting(false);
+    setWaitCount({answered:0,total:1});
+    setLiveScores({});
+    setKickedPlayers([]);
+  },[]);
+
+  const goHome=useCallback(()=>{
+    resetMultiplayerState();
+    setMode("solo");
+    setScreen("home");
+  },[resetMultiplayerState]);
 
   // -- Load user --
   const loadUser=useCallback((u)=>{
@@ -1801,7 +1869,7 @@ function App(){
     try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2500);}).catch(()=>{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);});}else{fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}}catch(e){fallback();setCopied(true);setTimeout(()=>setCopied(false),2500);}
   };
   const sortedLive=Object.entries(liveScores).sort((a,b)=>b[1]-a[1]);
-  const rankBG=i=>RANK_BG[i]||"#1e1e4a";
+  const rankBG=i=>RANK_BG[i]||"#244d43";
   const getLB=()=>{
     if(mode==="solo")return[{name:username,score,correct:answers.filter(a=>a.sel===a.a).length,isMe:true}];
     return Object.entries(liveScores).map(([n,sc])=>({name:n,score:sc,correct:n===username?answers.filter(a=>a.sel===a.a).length:0,isMe:n===username})).sort((a,b)=>b.score-a.score);
@@ -1890,15 +1958,15 @@ function App(){
           </div>
         </div>
         {/* Nav */}
-        <div style={{display:"flex",background:"#111130",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
+        <div style={{display:"flex",background:"#17352f",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
           {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
-            <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#6ee7f7,#818cf8)":"transparent",color:homeTab===t.k?"#0a0a1f":"#3d3d6b",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
+            <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#34d399,#f59e0b)":"transparent",color:homeTab===t.k?"#071714":"#7a9187",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
           ))}
         </div>
 
         {homeTab==="home"&&<>
           {/* User card */}
-          <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:16,padding:14,marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
+          <div style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:16,padding:14,marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
             <div onClick={()=>setHomeTab("profile")} style={{cursor:"pointer"}}>
               <AvatarSVG {...avatar} level={levelInfo.level} size={62}/>
             </div>
@@ -1906,16 +1974,16 @@ function App(){
               <div style={{fontSize:17,fontWeight:800,color:"#e2e4f0"}}>{username}</div>
               {userTitle&&<div style={{fontSize:11,color:"#fbbf24",fontWeight:700}}>{userTitle}</div>}
               {fr&&<div style={{fontSize:11,color:fr.c}}>{fr.name} Çerçeve</div>}
-              <div style={{height:4,background:"#1e1e4a",borderRadius:2,marginTop:5,overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${Math.round(levelInfo.currentXP/levelInfo.neededXP*100)}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)",borderRadius:2}}/>
+              <div style={{height:4,background:"#244d43",borderRadius:2,marginTop:5,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${Math.round(levelInfo.currentXP/levelInfo.neededXP*100)}%`,background:"linear-gradient(90deg,#34d399,#f59e0b)",borderRadius:2}}/>
               </div>
-              <div style={{fontSize:10,color:"#3d3d6b",marginTop:2}}>Sv.{levelInfo.level} · {levelInfo.currentXP}/{levelInfo.neededXP} XP</div>
+              <div style={{fontSize:10,color:"#7a9187",marginTop:2}}>Sv.{levelInfo.level} · {levelInfo.currentXP}/{levelInfo.neededXP} XP</div>
             </div>
           </div>
           {/* Power inventory */}
           {Object.values(powers).some(v=>v>0)&&(
-            <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"10px 13px",marginBottom:12}}>
-              <div style={{fontSize:10,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>Envanter</div>
+            <div style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:12,padding:"10px 13px",marginBottom:12}}>
+              <div style={{fontSize:10,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:7}}>Envanter</div>
               <div style={{display:"flex",gap:8}}>
                 {Object.entries(powers).filter(([,v])=>v>0).map(([k,v])=>(
                   <div key={k} style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.2)",borderRadius:10,padding:"6px 11px",display:"flex",alignItems:"center",gap:6}}>
@@ -1926,23 +1994,32 @@ function App(){
               </div>
             </div>
           )}
-          <div className="mc" onClick={()=>{setMode("solo");setScreen("setup");}}>
+          <div className="mc" onClick={()=>{resetMultiplayerState();setMode("solo");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>🎯</div>
-            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Tekli Mod</div>
-            <div style={{fontSize:12,color:"#3d3d6b"}}>Tek başına oyna, kendi rekorunu kır</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e7fff5",marginBottom:3}}>Tekli Mod</div>
+            <div style={{fontSize:12,color:"#7a9187"}}>Tek başına oyna, kendi rekorunu kır</div>
             <div style={{marginTop:8}}><span className="badge be">Solo</span></div>
           </div>
-          <div className="mc" onClick={()=>{setMode("multi");setScreen("setup");}}>
+
+          <div className="mc" onClick={()=>{resetMultiplayerState();setMode("multi");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>👥</div>
-            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>Çoklu Mod</div>
-            <div style={{fontSize:12,color:"#3d3d6b"}}>Link paylaş, arkadaşlar direkt katılır</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e7fff5",marginBottom:3}}>Çoklu Mod</div>
+            <div style={{fontSize:12,color:"#7a9187"}}>Sadece oda kur / koda katıl alanı</div>
             <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer</span></div>
-          <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#0d1a30,#1a0820)",border:"2px solid #ff4d6d",cursor:"pointer"}}>
-            <div style={{fontSize:26,marginBottom:4}}>🏆</div>
-            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fff",marginBottom:2}}>Turnuva Modu</div>
-            <div style={{fontSize:11,color:"#a8c4e0"}}>2-8 oyuncu eleme</div>
-            <div style={{marginTop:5}}><span style={{background:"rgba(255,77,109,.15)",color:"#ff4d6d",border:"1px solid rgba(255,77,109,.4)",borderRadius:20,padding:"2px 8px",fontSize:10,fontWeight:700}}>YENI</span></div>
           </div>
+
+          <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#17352f,#3a1f12)",border:"2px solid #f97316",cursor:"pointer"}}>
+            <div style={{fontSize:28,marginBottom:4}}>🏆</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#fff7ed",marginBottom:2}}>Turnuva</div>
+            <div style={{fontSize:12,color:"#bdd7c7"}}>Ayrı turnuva alanı · 2-8 oyuncu eleme</div>
+            <div style={{marginTop:6}}><span style={{background:"rgba(249,115,22,.15)",color:"#fb923c",border:"1px solid rgba(249,115,22,.4)",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700}}>AYRI ALAN</span></div>
+          </div>
+
+          <div className="mc" onClick={()=>setShowArena(true)} style={{background:"linear-gradient(135deg,#17352f,#0f3f35)",border:"2px solid #22c55e",cursor:"pointer",animation:"slideUp .5s ease"}}>
+            <div style={{fontSize:30,marginBottom:4}}>⚔️</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#86efac",marginBottom:2}}>Arena</div>
+            <div style={{fontSize:12,color:"#bdd7c7"}}>Ayrı arena alanı · 1v1 veya 2v2 davet</div>
+            <div style={{marginTop:6}}><span style={{background:"linear-gradient(135deg,#22c55e,#f59e0b)",color:"#071714",fontSize:9,padding:"2px 10px",borderRadius:20,fontWeight:800}}>AYRI ALAN</span></div>
           </div>
         </>}
 
@@ -1957,12 +2034,12 @@ function App(){
             <div style={{background:"linear-gradient(135deg,"+lg.color+"22,"+lg.color+"11)",border:"2px solid "+lg.color,borderRadius:14,padding:14,marginBottom:10,textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:2}}>{lg.icon}</div>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:lg.color}}>{lg.name} Ligi</div>
-              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:28,fontWeight:700,color:"#fff",margin:"3px 0"}}>{pts.toLocaleString()} <span style={{fontSize:11,color:"#a8c4e0"}}>puan</span></div>
-              {nextLg&&<div style={{fontSize:10,color:"#a8c4e0",marginTop:4}}>{nextLg.icon} {nextLg.name} icin <b style={{color:"#06d6a0"}}>{Math.max(0,nextLg.minPts-pts)}</b> puan daha</div>}
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:28,fontWeight:700,color:"#fff",margin:"3px 0"}}>{pts.toLocaleString()} <span style={{fontSize:11,color:"#bdd7c7"}}>puan</span></div>
+              {nextLg&&<div style={{fontSize:10,color:"#bdd7c7",marginTop:4}}>{nextLg.icon} {nextLg.name} icin <b style={{color:"#06d6a0"}}>{Math.max(0,nextLg.minPts-pts)}</b> puan daha</div>}
             </div>
             {bd.map((p,i)=>(
               <div key={i} style={{background:p.isMe?"rgba(76,201,240,.08)":"#0f2040",border:p.isMe?"2px solid #4cc9f0":"1.5px solid #1e3a6e",borderRadius:10,padding:"8px 11px",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
-                <div style={{width:24,height:24,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#162848",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:i<3?"#060e1e":"#a8c4e0",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+                <div style={{width:24,height:24,borderRadius:"50%",background:i<3?["linear-gradient(135deg,#ffd700,#f0a500)","linear-gradient(135deg,#C0C0C0,#808080)","linear-gradient(135deg,#CD7F32,#8B4513)"][i]:"#162848",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,color:i<3?"#060e1e":"#bdd7c7",flexShrink:0}}>{i<3?["🥇","🥈","🥉"][i]:i+1}</div>
                 <div style={{flex:1,fontWeight:700,color:p.isMe?"#4cc9f0":"#fff",fontSize:12}}>{p.isMe?"Sen":p.name}</div>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,fontWeight:700,color:lg.color}}>{p.pts.toLocaleString()}</div>
               </div>
@@ -1971,29 +2048,29 @@ function App(){
         })()}
 
         {homeTab==="friends"&&<>
-          <div style={{fontSize:13,color:"#3d3d6b",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
+          <div style={{fontSize:13,color:"#7a9187",marginBottom:12}}>Arkadaş eklemek için kodlarını gir</div>
           <div style={{display:"flex",gap:8,marginBottom:10}}>
             <input className="inp" style={{margin:0,flex:1}} placeholder="Kullanıcı kodu (#XXXXXX)" value={friendSearchInput} onChange={e=>{setFriendSearchInput(e.target.value);setFriendSearchErr("");}}/>
             <button className="pbtn" style={{width:"auto",padding:"0 16px"}} onClick={searchFriend}>Ara</button>
           </div>
           {friendSearchErr&&<div style={{fontSize:12,color:"#f87171",marginBottom:8}}>⚠ {friendSearchErr}</div>}
           {friendSearchResult&&(
-            <div style={{background:"#111130",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{friendSearchResult[0].toUpperCase()}</div>
-              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult}</div><div style={{fontSize:11,color:isOnline(friendSearchResult)?"#34d399":"#3d3d6b"}}>{isOnline(friendSearchResult)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
+            <div style={{background:"#17352f",border:"1.5px solid #34d399",borderRadius:12,padding:"12px 14px",marginBottom:12,display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:36,height:36,background:"linear-gradient(135deg,#34d399,#f59e0b)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#071714"}}>{friendSearchResult[0].toUpperCase()}</div>
+              <div style={{flex:1}}><div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{friendSearchResult}</div><div style={{fontSize:11,color:isOnline(friendSearchResult)?"#34d399":"#7a9187"}}>{isOnline(friendSearchResult)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div></div>
               <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>+ Ekle</button>
             </div>
           )}
-          <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
-          {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#3d3d6b",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
+          <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
+          {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#7a9187",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
           {friends.map((f,i)=>(
-            <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10}}>
-              <div style={{width:36,height:36,background:"linear-gradient(135deg,#6ee7f7,#818cf8)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#0a0a1f"}}>{f[0].toUpperCase()}</div>
+            <div key={i} style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,background:"linear-gradient(135deg,#34d399,#f59e0b)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#071714"}}>{f[0].toUpperCase()}</div>
               <div style={{flex:1}}>
                 <div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{f}</div>
-                <div style={{fontSize:11,color:isOnline(f)?"#34d399":"#3d3d6b"}}>{isOnline(f)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div>
+                <div style={{fontSize:11,color:isOnline(f)?"#34d399":"#7a9187"}}>{isOnline(f)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div>
               </div>
-              <button onClick={()=>{setMode("multi");setCategory("karışık");setScreen("setup");}} style={{background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#6ee7f7",padding:"6px 12px",borderRadius:10,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:12}}>⚔️ Meydan Oku</button>
+              <button onClick={()=>{setMode("multi");setCategory("karışık");setScreen("setup");}} style={{background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#34d399",padding:"6px 12px",borderRadius:10,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:12}}>⚔️ Meydan Oku</button>
             </div>
           ))}
         </>}
@@ -2006,7 +2083,7 @@ function App(){
                 <div key={i} style={{background:"#0f2040",border:"1.5px solid "+s.c+"44",borderRadius:10,padding:"9px 5px",textAlign:"center"}}>
                   <div style={{fontSize:14}}>{s.i}</div>
                   <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:17,fontWeight:700,color:s.c}}>{s.v}</div>
-                  <div style={{fontSize:9,color:"#a8c4e0"}}>{s.l}</div>
+                  <div style={{fontSize:9,color:"#bdd7c7"}}>{s.l}</div>
                 </div>
               ))}
             </div>
@@ -2014,36 +2091,36 @@ function App(){
         })()}
 
         {homeTab==="missions"&&<>
-          <div style={{fontSize:12,color:"#3d3d6b",marginBottom:10}}>{MISSIONS_DEF.filter(m=>ms[m.id]==='done').length}/{MISSIONS_DEF.length} tamamlandı</div>
+          <div style={{fontSize:12,color:"#7a9187",marginBottom:10}}>{MISSIONS_DEF.filter(m=>ms[m.id]==='done').length}/{MISSIONS_DEF.length} tamamlandı</div>
           {MISSIONS_DEF.map(m=>{
             const done=ms[m.id]==='done';
             const ns=getStats(username);
             const val=m.stat==='level'?levelInfo.level:(ns[m.stat]||0);
             const prog=Math.min(val/m.target,1);
             return(
-              <div key={m.id} style={{background:"#111130",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"12px 13px",marginBottom:8}}>
+              <div key={m.id} style={{background:"#17352f",border:"1.5px solid "+(done?"#34d399":"#244d43"),borderRadius:12,padding:"12px 13px",marginBottom:8}}>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:done?0:5}}>
                   <span style={{fontSize:20}}>{m.icon}</span>
                   <div style={{flex:1}}>
                     <div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{m.title}</div>
-                    <div style={{fontSize:11,color:"#3d3d6b"}}>{m.desc}</div>
+                    <div style={{fontSize:11,color:"#7a9187"}}>{m.desc}</div>
                     {m.title_reward&&!done&&<div style={{fontSize:10,color:"#fbbf24",marginTop:2}}>🏆 Ünvan: {m.title_reward}</div>}
                   </div>
-                  {done?<span>✅</span>:<div style={{textAlign:"right",fontSize:10}}><div style={{color:"#6ee7f7"}}>+{m.xp}XP</div><div style={{color:"#fbbf24"}}>+{m.gold}🪙</div></div>}
+                  {done?<span>✅</span>:<div style={{textAlign:"right",fontSize:10}}><div style={{color:"#34d399"}}>+{m.xp}XP</div><div style={{color:"#fbbf24"}}>+{m.gold}🪙</div></div>}
                 </div>
-                {!done&&<><div style={{height:3,background:"#1e1e4a",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:`${prog*100}%`,background:"linear-gradient(90deg,#6ee7f7,#818cf8)"}}/></div><div style={{fontSize:10,color:"#3d3d6b",marginTop:2}}>{Math.min(val,m.target)}/{m.target}</div></>}
+                {!done&&<><div style={{height:3,background:"#244d43",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:`${prog*100}%`,background:"linear-gradient(90deg,#34d399,#f59e0b)"}}/></div><div style={{fontSize:10,color:"#7a9187",marginTop:2}}>{Math.min(val,m.target)}/{m.target}</div></>}
               </div>
             );
           })}
         </>}
 
         {homeTab==="daily"&&<>
-          <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+          <div style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:12,padding:13,marginBottom:12}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
               <div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>Günlük Puan</div>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#fbbf24"}}>{dailyData.pts||0}/20</div>
             </div>
-            <div style={{height:5,background:"#1e1e4a",borderRadius:3,overflow:"hidden"}}>
+            <div style={{height:5,background:"#244d43",borderRadius:3,overflow:"hidden"}}>
               <div style={{height:"100%",width:`${Math.min((dailyData.pts||0)/20*100,100)}%`,background:"linear-gradient(90deg,#fbbf24,#f59e0b)"}}/>
             </div>
             {(dailyData.pts||0)>=20&&<div style={{fontSize:11,color:"#34d399",marginTop:5,fontWeight:700}}>🎁 Sandık Kazandın! {dailyData.chestClaimed?"(Açıldı)":""}</div>}
@@ -2051,10 +2128,10 @@ function App(){
           {DAILY_DEF.map(d=>{
             const done=dailyData.done&&dailyData.done[d.id];
             return(
-              <div key={d.id} style={{background:"#111130",border:"1.5px solid "+(done?"#34d399":"#1e1e4a"),borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}>
+              <div key={d.id} style={{background:"#17352f",border:"1.5px solid "+(done?"#34d399":"#244d43"),borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:11}}>
                 <span style={{fontSize:22}}>{done?"✅":d.icon}</span>
-                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{d.title}</div><div style={{fontSize:11,color:"#3d3d6b"}}>{d.desc}</div></div>
-                <div style={{fontSize:11,fontWeight:700,color:"#6ee7f7"}}>+{d.pts}pt</div>
+                <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:done?"#34d399":"#e2e4f0"}}>{d.title}</div><div style={{fontSize:11,color:"#7a9187"}}>{d.desc}</div></div>
+                <div style={{fontSize:11,fontWeight:700,color:"#34d399"}}>+{d.pts}pt</div>
               </div>
             );
           })}
@@ -2064,7 +2141,7 @@ function App(){
           const fr=getFrame(levelInfo.level);
           return(
             <div>
-              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
+              <div style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:16,padding:16,marginBottom:12,textAlign:"center"}}>
                 <div style={{display:"flex",justifyContent:"center",marginBottom:10}}><AvatarSVG {...avatar} level={levelInfo.level} size={90}/></div>
                 <div style={{fontSize:18,fontWeight:800,color:"#e2e4f0"}}>{username}</div>
                 {userTitle&&<div style={{fontSize:12,color:"#fbbf24",fontWeight:700,marginTop:2}}>🏆 {userTitle}</div>}
@@ -2073,14 +2150,14 @@ function App(){
               </div>
               {/* User code */}
               <div style={{background:"linear-gradient(135deg,rgba(110,231,247,.06),rgba(129,140,248,.06))",border:"1.5px solid rgba(110,231,247,.25)",borderRadius:14,padding:14,marginBottom:12,textAlign:"center"}}>
-                <div style={{fontSize:10,color:"#3d3d6b",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>Kullanıcı Kodu</div>
-                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#6ee7f7",letterSpacing:4}}>{userCode}</div>
-                <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){};}} style={{marginTop:8,background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#6ee7f7",padding:"5px 14px",borderRadius:20,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:11}}>📋 Kopyala</button>
+                <div style={{fontSize:10,color:"#7a9187",letterSpacing:2,textTransform:"uppercase",marginBottom:5}}>Kullanıcı Kodu</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#34d399",letterSpacing:4}}>{userCode}</div>
+                <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){};}} style={{marginTop:8,background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#34d399",padding:"5px 14px",borderRadius:20,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:11}}>📋 Kopyala</button>
               </div>
               {/* Gmail */}
-              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
+              <div style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:12,padding:13,marginBottom:12}}>
                 <div style={{fontSize:12,fontWeight:700,color:"#e2e4f0",marginBottom:3}}>📧 Gmail Bağla</div>
-                <div style={{fontSize:11,color:"#3d3d6b",marginBottom:8}}>Gmail bağla, <span style={{color:"#fbbf24",fontWeight:700}}>+100 🪙</span> kazan!</div>
+                <div style={{fontSize:11,color:"#7a9187",marginBottom:8}}>Gmail bağla, <span style={{color:"#fbbf24",fontWeight:700}}>+100 🪙</span> kazan!</div>
                 <input className="inp" style={{marginBottom:7}} placeholder="ornek@gmail.com" value={gmailInput} onChange={e=>setGmailInput(e.target.value)} type="email"/>
                 <button className="pbtn" disabled={!gmailInput.includes("@")} onClick={()=>{
                   const em=gmailInput.trim();
@@ -2094,14 +2171,14 @@ function App(){
                 }}>{getGmailRewarded(username)?"✅ Bağlandı":"Gmail Bağla +100🪙"}</button>
               </div>
               {/* Level rewards preview */}
-              <div style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:13,marginBottom:12}}>
-                <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Seviye Ödülleri</div>
+              <div style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:12,padding:13,marginBottom:12}}>
+                <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Seviye Ödülleri</div>
                 {FRAMES_DEF.map((fd,i)=>(
                   <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<FRAMES_DEF.length-1?"1px solid #1a1a3a":"none",opacity:levelInfo.level>=fd.min?1:.55}}>
                     <div style={{width:28,height:28,borderRadius:"50%",background:fd.c,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,boxShadow:fd.s}}>⭐</div>
                     <div style={{flex:1}}>
                       <span style={{fontSize:13,fontWeight:700,color:fd.c}}>Seviye {fd.min}</span>
-                      <span style={{fontSize:11,color:"#3d3d6b",marginLeft:8}}>{fd.name} Çerçeve</span>
+                      <span style={{fontSize:11,color:"#7a9187",marginLeft:8}}>{fd.name} Çerçeve</span>
                     </div>
                     {levelInfo.level>=fd.min&&<span style={{fontSize:14}}>✅</span>}
                   </div>
@@ -2110,9 +2187,9 @@ function App(){
               {/* Stats */}
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {[{v:stats.games||0,l:"Oyun"},{v:stats.correct||0,l:"Doğru"},{v:stats.wins||0,l:"Galibiyet"},{v:stats.rooms||0,l:"Oda"}].map((s,i)=>(
-                  <div key={i} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:10,padding:"11px 8px",textAlign:"center"}}>
-                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#6ee7f7"}}>{s.v}</div>
-                    <div style={{fontSize:11,color:"#3d3d6b"}}>{s.l}</div>
+                  <div key={i} style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:10,padding:"11px 8px",textAlign:"center"}}>
+                    <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#34d399"}}>{s.v}</div>
+                    <div style={{fontSize:11,color:"#7a9187"}}>{s.l}</div>
                   </div>
                 ))}
               </div>
@@ -2126,11 +2203,11 @@ function App(){
           <div style={{background:"#060e1e",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"20px 18px 34px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#ff4d6d"}}>Turnuva Modu</div>
-              <button onClick={()=>setShowTournament(false)} style={{background:"none",border:"none",color:"#a8c4e0",fontSize:22,cursor:"pointer"}}>X</button>
+              <button onClick={()=>setShowTournament(false)} style={{background:"none",border:"none",color:"#bdd7c7",fontSize:22,cursor:"pointer"}}>X</button>
             </div>
             {!tournamentData.started?(
               <div>
-                <div style={{fontSize:12,color:"#a8c4e0",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
+                <div style={{fontSize:12,color:"#bdd7c7",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
                 {(tournamentData.players.length===0?[username]:tournamentData.players).map((p,i)=>(
                   <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}}>
                     <span>👤</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}</span>
@@ -2148,12 +2225,12 @@ function App(){
               </div>
             ):(
               <div>
-                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#a8c4e0",marginBottom:10}}>Tur {tournamentData.round}</div>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#bdd7c7",marginBottom:10}}>Tur {tournamentData.round}</div>
                 {tournamentData.bracket.map((m,i)=>(
                   <div key={i} style={{background:"#0f2040",border:"1.5px solid "+(m.winner?"#06d6a0":"#1e3a6e"),borderRadius:11,padding:"11px",marginBottom:7}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:m.winner?0:8}}>
                       <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p1?"#06d6a0":"#fff"}}>{m.p1}</div>
-                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,color:"#a8c4e0",fontWeight:700}}>VS</div>
+                      <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,color:"#bdd7c7",fontWeight:700}}>VS</div>
                       <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p2?"#06d6a0":m.p2==="BYE"?"#4a6080":"#fff"}}>{m.p2}</div>
                     </div>
                     {!m.winner&&m.p2!=="BYE"&&<div style={{display:"flex",gap:5}}>
@@ -2170,6 +2247,46 @@ function App(){
             )}
           </div>
         </div>}
+        
+        {showArena&&<div style={{position:"fixed",inset:0,background:"rgba(16,35,31,.95)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(6px)"}} onClick={()=>setShowArena(false)}>
+          <div style={{background:"linear-gradient(180deg,#10231f,#0f0420)",border:"2px solid #fb923c",borderTopLeftRadius:26,borderTopRightRadius:26,padding:"22px 20px 36px",width:"100%",maxWidth:420,maxHeight:"90vh",overflowY:"auto",animation:"slideUp .35s cubic-bezier(.2,1,.4,1)"}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:26}}>⚔️</span>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:24,fontWeight:700,background:"linear-gradient(135deg,#fb923c,#00e5ff)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>ARENA</div>
+              </div>
+              <button onClick={()=>setShowArena(false)} style={{background:"none",border:"none",color:"#bdd7c7",fontSize:22,cursor:"pointer"}}>X</button>
+            </div>
+            <div style={{fontSize:12,color:"#bdd7c7",marginBottom:14,lineHeight:1.4}}>Arkadasini davet et, kapis! Profil kodunu paylas, o kodu girip arenana katilsin.</div>
+            <div style={{background:"rgba(255,0,170,.08)",border:"1.5px solid rgba(255,0,170,.4)",borderRadius:14,padding:"14px",marginBottom:14,textAlign:"center"}}>
+              <div style={{fontSize:10,color:"#bdd7c7",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Senin Kodun</div>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:32,fontWeight:700,color:"#fb923c",letterSpacing:6}}>{userCode||"#----"}</div>
+              <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){}playSound("click");alert("Kod kopyalandi!");}} style={{marginTop:8,background:"rgba(255,0,170,.15)",border:"1px solid #fb923c",borderRadius:9,padding:"5px 14px",color:"#fb923c",fontWeight:700,fontSize:11,cursor:"pointer"}}>Kopyala</button>
+            </div>
+            <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>Mod Sec</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+              {[{k:"1v1",l:"1 vs 1",d:"Klasik kapisma",i:"⚔️"},{k:"2v2",l:"2 vs 2",d:"Takim modu",i:"🛡️"}].map(m=>(
+                <button key={m.k} onClick={()=>{setArenaMode(m.k);playSound("click");}} style={{background:arenaMode===m.k?"linear-gradient(135deg,rgba(255,0,170,.2),rgba(34,197,94,.2))":"#10231f",border:arenaMode===m.k?"2px solid #fb923c":"1.5px solid #3a1a5a",borderRadius:12,padding:"12px",cursor:"pointer",textAlign:"center",transition:"all .2s"}}>
+                  <div style={{fontSize:24,marginBottom:3}}>{m.i}</div>
+                  <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:arenaMode===m.k?"#fb923c":"#fff"}}>{m.l}</div>
+                  <div style={{fontSize:10,color:"#bdd7c7"}}>{m.d}</div>
+                </button>
+              ))}
+            </div>
+            <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>Rakibinin Kodu</div>
+            <input className="inp" placeholder="#ABC123" value={arenaCode} onChange={e=>{setArenaCode(e.target.value.toUpperCase().slice(0,7));setArenaErr("");}} style={{textAlign:"center",letterSpacing:4,fontSize:18,fontWeight:700,marginBottom:6}}/>
+            {arenaErr&&<div style={{fontSize:11,color:"#ff3366",marginBottom:8,textAlign:"center"}}>{arenaErr}</div>}
+            <button className="pbtn" style={{background:"linear-gradient(135deg,#fb923c,#22c55e)",boxShadow:"0 4px 20px rgba(255,0,170,.4)"}} onClick={()=>{
+              const c=arenaCode.trim();
+              if(!c){setArenaErr("Kod gir!");return;}
+              if(c===userCode){setArenaErr("Kendi kodunu giremezsin!");return;}
+              playSound("levelup");
+              alert("Arena daveti gonderildi! Bu ozellik yakindan aktif olacak. Simdilik 'Cok Oyunculu' moddan kod ile oynayabilirsin.");
+              setShowArena(false);
+            }}>{arenaMode==="1v1"?"1v1 KAPIŞ":"2v2 TAKIM SAVAŞI"}</button>
+            <div style={{marginTop:12,padding:"10px",background:"rgba(0,229,255,.05)",border:"1px solid rgba(0,229,255,.2)",borderRadius:10,fontSize:10,color:"#80c0e0",lineHeight:1.4}}>💡 Arkadasin senin profilindeki kodu kullanarak veya senin onun kodunu kullanarak arenaya katilabilir. Mac sonunda altin ve XP kazanirsin!</div>
+          </div>
+        </div>}
         {showAvEd&&<AvatarEditor avatar={avatar} levelInfo={levelInfo} onSave={(av)=>{setAvatar(av);saveAvatar(usernameRef.current,av);setShowAvEd(false);}} onClose={()=>setShowAvEd(false)}/>}
         {comboCount>=2&&<div style={{position:"fixed",top:70,right:16,background:"linear-gradient(135deg,#ff4d6d,#9b5de5)",borderRadius:20,padding:"4px 12px",fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:800,color:"#fff",zIndex:100}}>x{comboCount} COMBO!</div>}
         {showShop&&(
@@ -2177,12 +2294,12 @@ function App(){
             <div className="shop-panel" onClick={e=>e.stopPropagation()}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0"}}>🏪 Mağaza</div>
-                <button onClick={()=>setShowShop(false)} style={{background:"none",border:"none",color:"#3d3d6b",fontSize:22,cursor:"pointer"}}>✕</button>
+                <button onClick={()=>setShowShop(false)} style={{background:"none",border:"none",color:"#7a9187",fontSize:22,cursor:"pointer"}}>✕</button>
               </div>
               <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"12px",textAlign:"center",marginBottom:14}}>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:36,fontWeight:700,color:"#fbbf24"}}>🪙 {gold}</div>
               </div>
-              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Altin Paketleri</div>
+              <div style={{fontSize:10,color:"#bdd7c7",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Altin Paketleri</div>
               {[{g:1000,b:0,p:"29.99",i:"🪙"},{g:4000,b:500,p:"89.99",popular:true,i:"💛"},{g:8000,b:1000,p:"159.99",i:"🏆"},{g:20000,b:5000,p:"349.99",i:"👑"}].map((pkg,pi)=>(
                 <div key={pi} style={{background:pkg.popular?"rgba(76,201,240,.07)":"#0f2040",border:pkg.popular?"2px solid #4cc9f0":"1.5px solid #2a5a8e",borderRadius:12,padding:"9px 11px",marginBottom:7,position:"relative"}}>
                   {pkg.popular&&<div style={{position:"absolute",top:-7,left:"50%",transform:"translateX(-50%)",background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",color:"#060e1e",fontSize:9,fontWeight:800,padding:"1px 8px",borderRadius:20,whiteSpace:"nowrap"}}>EN POPULER</div>}
@@ -2190,7 +2307,7 @@ function App(){
                     <span style={{fontSize:20}}>{pkg.i}</span>
                     <div style={{flex:1}}>
                       <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:15,fontWeight:700,color:"#ffd166"}}>{pkg.g.toLocaleString()} {pkg.b>0?<span style={{color:"#06d6a0",fontSize:11}}>+{pkg.b.toLocaleString()}</span>:null}</div>
-                      <div style={{fontSize:9,color:"#a8c4e0"}}>Toplam: {(pkg.g+pkg.b).toLocaleString()}</div>
+                      <div style={{fontSize:9,color:"#bdd7c7"}}>Toplam: {(pkg.g+pkg.b).toLocaleString()}</div>
                     </div>
                     <button onClick={()=>alert("Yakindan aktif!")} style={{background:pkg.popular?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:8,padding:"6px 10px",color:"#060e1e",fontWeight:800,fontSize:11,cursor:"pointer"}}>TL{pkg.p}</button>
                   </div>
@@ -2204,12 +2321,12 @@ function App(){
                 <button onClick={()=>{localStorage.setItem("ba_premium","1");setShowShop(false);}} style={{background:"linear-gradient(135deg,#ffd166,#f0a500)",border:"none",borderRadius:8,padding:"6px 10px",color:"#060e1e",fontWeight:800,fontSize:11,cursor:"pointer"}}>Al</button>
               </div>}
               <div style={{borderTop:"1px solid #1e3a6e",marginBottom:8}}/>
-              <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Guclendiriciler</div>
+              <div style={{fontSize:10,color:"#bdd7c7",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Guclendiriciler</div>
                             {[{k:'double',i:"🎯",n:"Çift Seçim",d:"2 şık seç (biriktirilebilir)",c:200},{k:'elim',i:"❌",n:"2 Yanlışı Ele",d:"2 yanlış elenir",c:200},{k:'x2',i:"⚡",n:"x2 Puan",d:"Puan iki katı",c:300}].map(pw=>(
-                <div key={pw.k} style={{background:"#111130",border:"1.5px solid #1e1e4a",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
+                <div key={pw.k} style={{background:"#17352f",border:"1.5px solid #244d43",borderRadius:12,padding:"11px 13px",marginBottom:8,display:"flex",alignItems:"center",gap:11}}>
                   <span style={{fontSize:22}}>{pw.i}</span>
-                  <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{pw.n} <span style={{color:"#fbbf24",fontFamily:"'Rajdhani',sans-serif"}}>({powers[pw.k]||0})</span></div><div style={{fontSize:11,color:"#3d3d6b"}}>{pw.d}</div></div>
-                  <button onClick={()=>{if(gold<pw.c)return;playSfx('spend');setGold(g=>{const ng=g-pw.c;saveGoldLS(username,ng);return ng;});const np={...powers,[pw.k]:(powers[pw.k]||0)+1};setPowers(np);savePowersLS(username,np);}} disabled={gold<pw.c} style={{background:gold>=pw.c?"linear-gradient(135deg,#fbbf24,#f59e0b)":"#1e1e4a",border:"none",borderRadius:10,padding:"7px 11px",color:"#0a0a1f",fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:13,cursor:gold>=pw.c?"pointer":"default",opacity:gold<pw.c?.5:1}}>🪙{pw.c}</button>
+                  <div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{pw.n} <span style={{color:"#fbbf24",fontFamily:"'Rajdhani',sans-serif"}}>({powers[pw.k]||0})</span></div><div style={{fontSize:11,color:"#7a9187"}}>{pw.d}</div></div>
+                  <button onClick={()=>{if(gold<pw.c)return;playSfx('spend');setGold(g=>{const ng=g-pw.c;saveGoldLS(username,ng);return ng;});const np={...powers,[pw.k]:(powers[pw.k]||0)+1};setPowers(np);savePowersLS(username,np);}} disabled={gold<pw.c} style={{background:gold>=pw.c?"linear-gradient(135deg,#fbbf24,#f59e0b)":"#244d43",border:"none",borderRadius:10,padding:"7px 11px",color:"#071714",fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:13,cursor:gold>=pw.c?"pointer":"default",opacity:gold<pw.c?.5:1}}>🪙{pw.c}</button>
                 </div>
               ))}
             </div>
@@ -2222,34 +2339,34 @@ function App(){
   if(screen==="setup"||screen==="setup-challenge") return(
     <W><div className="sc fi">
       <div className="shdr">
-        <button className="bk" onClick={()=>setScreen("home")}>←</button>
-        <div><div className="stitle">Oyun Ayarları</div><div style={{fontSize:11,color:"#3d3d6b"}}>{mode==="solo"?"Tekli Mod":"Çoklu Mod"}</div></div>
+        <button className="bk" onClick={goHome}>←</button>
+        <div><div className="stitle">Oyun Ayarları</div><div style={{fontSize:11,color:"#7a9187"}}>{mode==="solo"?"Tekli Mod":"Çoklu Mod"}</div></div>
       </div>
-      <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Kategori</div>
+      <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Kategori</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:16}}>
         {CATEGORIES.map(cat=>(
-          <button key={cat.id} onClick={()=>setCategory(cat.id)} style={{flex:"1 1 calc(50% - 4px)",padding:"10px 8px",borderRadius:12,border:category===cat.id?"2px solid #6ee7f7":"2px solid #1e1e4a",background:category===cat.id?"rgba(110,231,247,.08)":"#111130",color:"#e2e4f0",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13,textAlign:"left",display:"flex",alignItems:"center",gap:8}}>
+          <button key={cat.id} onClick={()=>setCategory(cat.id)} style={{flex:"1 1 calc(50% - 4px)",padding:"10px 8px",borderRadius:12,border:category===cat.id?"2px solid #34d399":"2px solid #244d43",background:category===cat.id?"rgba(110,231,247,.08)":"#17352f",color:"#e2e4f0",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,cursor:"pointer",fontSize:13,textAlign:"left",display:"flex",alignItems:"center",gap:8}}>
             <span style={{fontSize:20}}>{cat.icon}</span>
-            <div><div style={{fontSize:12,fontWeight:700}}>{cat.label}</div><div style={{fontSize:10,color:"#3d3d6b"}}>{cat.desc}</div></div>
-            {category===cat.id&&<span style={{marginLeft:"auto",color:"#6ee7f7"}}>✓</span>}
+            <div><div style={{fontSize:12,fontWeight:700}}>{cat.label}</div><div style={{fontSize:10,color:"#7a9187"}}>{cat.desc}</div></div>
+            {category===cat.id&&<span style={{marginLeft:"auto",color:"#34d399"}}>✓</span>}
           </button>
         ))}
       </div>
-      <div style={{fontSize:11,color:"#3d3d6b",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Soru Sayısı</div>
+      <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Soru Sayısı</div>
       {[{n:7,l:"Hızlı",e:"⚡"},{n:14,l:"Normal",e:"🎯"},{n:21,l:"Uzun",e:"🏆"}].map(o=>(
         <div key={o.n} className={"cc"+(qCount===o.n?" sel":"")} onClick={()=>setQCount(o.n)}>
           <span style={{fontSize:22}}>{o.e}</span>
-          <div style={{flex:1}}><span className="cn">{o.n}</span><span style={{fontSize:12,color:"#3d3d6b",marginLeft:5}}>soru</span><div style={{fontSize:12,fontWeight:700,color:"#e2e4f0"}}>{o.l}</div></div>
-          {qCount===o.n&&<span style={{color:"#6ee7f7",fontSize:18}}>✓</span>}
+          <div style={{flex:1}}><span className="cn">{o.n}</span><span style={{fontSize:12,color:"#7a9187",marginLeft:5}}>soru</span><div style={{fontSize:12,fontWeight:700,color:"#e2e4f0"}}>{o.l}</div></div>
+          {qCount===o.n&&<span style={{color:"#34d399",fontSize:18}}>✓</span>}
         </div>
       ))}
       <div style={{flex:1}}/>
-      <div style={{fontSize:11,color:"#3d3d6b",textAlign:"center",marginBottom:8}}>⏱ 15 sn/soru · Maks {15*2}=30 puan</div>
+      <div style={{fontSize:11,color:"#7a9187",textAlign:"center",marginBottom:8}}>⏱ 15 sn/soru · Maks {15*2}=30 puan</div>
       {mode==="solo"?(
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
-        <><button className="pbtn" style={{marginTop:4}} onClick={()=>{createRoom();if(typeof fbSaveRoomCode!=="undefined"){}}} >Oda Olustur</button>
-        <div style={{textAlign:"center",fontSize:12,color:"#a8c4e0",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
+        <><button className="pbtn" style={{marginTop:4}} onClick={createRoom} >Oda Olustur</button>
+        <div style={{textAlign:"center",fontSize:12,color:"#bdd7c7",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
         <div style={{display:"flex",gap:8}}>
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
             placeholder="000000" value={joinCodeInput}
@@ -2276,22 +2393,22 @@ function App(){
   if(screen==="lobby-host") return(
     <W><div className="sc fi">
       <div className="shdr">
-        <button className="bk" onClick={()=>{if(peerRef.current)peerRef.current.destroy();setScreen("setup");}}>←</button>
+        <button className="bk" onClick={goHome}>←</button>
         <div><div className="stitle">Oda Hazır</div></div>
-        <span style={{fontSize:10,background:"rgba(110,231,247,.15)",color:"#6ee7f7",padding:"3px 9px",borderRadius:20,fontWeight:700}}>HOST</span>
+        <span style={{fontSize:10,background:"rgba(110,231,247,.15)",color:"#34d399",padding:"3px 9px",borderRadius:20,fontWeight:700}}>HOST</span>
       </div>
       <div style={{background:"rgba(52,211,153,.08)",border:"1px solid rgba(52,211,153,.2)",borderRadius:10,padding:"9px 12px",display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
         <span>🟢</span><span style={{fontSize:12,color:"#34d399",fontWeight:700}}>Bağlantı hazır!</span>
       </div>
       <div style={{background:"rgba(76,201,240,.1)",border:"2px solid #4cc9f0",borderRadius:14,padding:"12px",marginBottom:12,textAlign:"center"}}>
-        <div style={{fontSize:10,color:"#a8c4e0",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Oda Kodu</div>
+        <div style={{fontSize:10,color:"#bdd7c7",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Oda Kodu</div>
         <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:42,fontWeight:700,color:"#4cc9f0",letterSpacing:8}}>{roomCode||"------"}</div>
-        <div style={{fontSize:10,color:"#a8c4e0",marginTop:2}}>Arkadasina bu kodu soyle</div>
+        <div style={{fontSize:10,color:"#bdd7c7",marginTop:2}}>Arkadasina bu kodu soyle</div>
       </div>
       <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
-      <div style={{fontSize:12,color:"#3d3d6b",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
+      <div style={{fontSize:12,color:"#7a9187",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
-        {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#3d3d6b",fontSize:12}}>⏳ Bekleniyor...</div>}
+        {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#7a9187",fontSize:12}}>⏳ Bekleniyor...</div>}
       </div>
       <div style={{flex:1}}/>
       <button className="pbtn" style={{marginTop:12}} onClick={()=>startGame(true)}>🚀 Oyunu Başlat ({roomPlayers.length} kişi)</button>
@@ -2304,15 +2421,15 @@ function App(){
       {connStatus==="connected"&&<>
         <div style={{fontSize:52,marginBottom:14}}>✅</div>
         <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#e2e4f0",marginBottom:5}}>Bağlandın!</div>
-        <div style={{fontSize:12,color:"#3d3d6b",marginBottom:18}}>Host başlatana kadar bekle</div>
+        <div style={{fontSize:12,color:"#7a9187",marginBottom:18}}>Host başlatana kadar bekle</div>
         <div className="playerlist" style={{width:"100%",textAlign:"left"}}>{roomPlayers.map(p=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}</div>
       </>}
-      {connStatus==="error"&&<><div style={{fontSize:52,marginBottom:14}}>❌</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f87171",marginBottom:5}}>Bağlantı Hatası</div><button className="pbtn" style={{marginTop:12}} onClick={()=>setScreen("home")}>Ana Sayfaya Dön</button></>}
+      {connStatus==="error"&&<><div style={{fontSize:52,marginBottom:14}}>❌</div><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#f87171",marginBottom:5}}>Bağlantı Hatası</div><button className="pbtn" style={{marginTop:12}} onClick={goHome}>Ana Sayfaya Dön</button></>}
     </div></W>
   );
 
   if(screen==="loading") return(
-    <W><div className="sc"><div className="lo"><div className="spin"/><div style={{textAlign:"center"}}><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0"}}>Hazırlanıyor</div><div style={{fontSize:12,color:"#3d3d6b",marginTop:3}}>{category} soruları yükleniyor...</div></div></div></div></W>
+    <W><div className="sc"><div className="lo"><div className="spin"/><div style={{textAlign:"center"}}><div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:700,color:"#e2e4f0"}}>Hazırlanıyor</div><div style={{fontSize:12,color:"#7a9187",marginTop:3}}>{category} soruları yükleniyor...</div></div></div></div></W>
   );
 
   if(screen==="game"){
@@ -2364,16 +2481,16 @@ function App(){
             </button>);
           })}
         </div>
-        {pwDouble&&sel!==null&&sel2===null&&<div style={{textAlign:"center",fontSize:12,color:"#818cf8",marginTop:5,fontWeight:700}}>🎯 İkinci şıkkını seç!</div>}
+        {pwDouble&&sel!==null&&sel2===null&&<div style={{textAlign:"center",fontSize:12,color:"#f59e0b",marginTop:5,fontWeight:700}}>🎯 İkinci şıkkını seç!</div>}
         {revealed&&feedback&&answers.length>0&&(()=>{
           const last=answers[answers.length-1];const ok=last.sel===q.a||(last.sel2!==null&&last.sel2===q.a);
           return(<div className="fdb" style={{background:ok?"rgba(52,211,153,.1)":"rgba(248,113,113,.1)",color:ok?"#34d399":"#f87171"}}>{ok?"🎉 Doğru! +"+last.pts+(pwX2?" ⚡x2":"")+" puan":last.sel===null?"⏱️ Süre doldu!":"❌ Yanlış cevap"}</div>);
         })()}
         {waiting&&mode==="multi"&&!revealed&&(
           <div style={{background:"rgba(110,231,247,.08)",border:"1.5px solid rgba(110,231,247,.2)",borderRadius:11,padding:"9px 13px",marginTop:7,textAlign:"center"}}>
-            <div style={{fontSize:11,color:"#6ee7f7",fontWeight:700,marginBottom:5}}>⏳ Diğerleri bekleniyor...</div>
-            <div style={{display:"flex",justifyContent:"center",gap:4}}>{Array.from({length:waitCount.total},(_,wi)=>(<div key={wi} style={{width:9,height:9,borderRadius:"50%",background:wi<waitCount.answered?"#34d399":"#1e1e4a"}}/>))}</div>
-            <div style={{fontSize:10,color:"#3d3d6b",marginTop:3}}>{waitCount.answered}/{waitCount.total}</div>
+            <div style={{fontSize:11,color:"#34d399",fontWeight:700,marginBottom:5}}>⏳ Diğerleri bekleniyor...</div>
+            <div style={{display:"flex",justifyContent:"center",gap:4}}>{Array.from({length:waitCount.total},(_,wi)=>(<div key={wi} style={{width:9,height:9,borderRadius:"50%",background:wi<waitCount.answered?"#34d399":"#244d43"}}/>))}</div>
+            <div style={{fontSize:10,color:"#7a9187",marginTop:3}}>{waitCount.answered}/{waitCount.total}</div>
           </div>
         )}
         {mode==="multi"&&sortedLive.length>0&&(
@@ -2383,7 +2500,7 @@ function App(){
               {sortedLive.map(([name,sc],i)=>(
                 <div key={name} className={"plchip "+(name===username?"me":"other")}>
                   <div className="plavc" style={{background:rankBG(i)}}>{name[0].toUpperCase()}{i===0&&<span style={{position:"absolute",top:-6,right:-6,fontSize:9}}>👑</span>}</div>
-                  <div style={{fontSize:9,fontWeight:700,color:name===username?"#6ee7f7":"#e2e4f0",maxWidth:46,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textAlign:"center"}}>{name===username?"Sen":name}</div>
+                  <div style={{fontSize:9,fontWeight:700,color:name===username?"#34d399":"#e2e4f0",maxWidth:46,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",textAlign:"center"}}>{name===username?"Sen":name}</div>
                   <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,color:"#fbbf24"}}>{sc}</div>
                 </div>
               ))}
@@ -2418,15 +2535,15 @@ function App(){
         <div className="rstats">
           <div className="scard"><div className="sv" style={{color:"#34d399"}}>{correct}</div><div className="sl">Doğru</div></div>
           <div className="scard"><div className="sv" style={{color:"#f87171"}}>{wrong}</div><div className="sl">Yanlış</div></div>
-          <div className="scard"><div className="sv" style={{color:"#3d3d6b"}}>{unanswered}</div><div className="sl">Boş</div></div>
+          <div className="scard"><div className="sv" style={{color:"#7a9187"}}>{unanswered}</div><div className="sl">Boş</div></div>
         </div>
         {lb.length>0&&(
           <div className="lblist">
             <div className="lbtit">{lb.length>1?"🏆 Final Sıralaması":"📊 Sonuç"}</div>
             {lb.map((p,i)=>(
               <div key={i} className="lbrow" style={p.isMe?{border:"1px solid rgba(110,231,247,.2)"}:{}}>
-                <span className="lbrank" style={{color:["#fbbf24","#cbd5e1","#cd7f32"][i]||"#3d3d6b"}}>{RANK_EMOJI[i]||i+1}</span>
-                <span className="lbname" style={p.isMe?{color:"#6ee7f7"}:{}}>{p.name}{p.isMe?" (Sen)":""}</span>
+                <span className="lbrank" style={{color:["#fbbf24","#cbd5e1","#cd7f32"][i]||"#7a9187"}}>{RANK_EMOJI[i]||i+1}</span>
+                <span className="lbname" style={p.isMe?{color:"#34d399"}:{}}>{p.name}{p.isMe?" (Sen)":""}</span>
                 <span className="lbscore">{p.score}</span>
               </div>
             ))}
@@ -2436,7 +2553,7 @@ function App(){
         <div className="rbtns">
           <button className="pbtn" onClick={()=>{setGoldEarned(0);if(mode==="multi"&&isHostRef.current){broadcast({type:"rematch"});setMode("multi");}setScreen("setup");}}>🔁 Tekrar Oyna</button>
           <button className="sbtn" onClick={()=>setScreen("review")}>📖 Cevapları Gör</button>
-          <button className="sbtn" onClick={()=>setScreen("home")}>🏠 Ana Sayfa</button>
+          <button className="sbtn" onClick={goHome}>🏠 Ana Sayfa</button>
         </div>
       </div></W>
     );
@@ -2449,11 +2566,11 @@ function App(){
         <div key={i} className="ri">
           <div className="rqn">Soru {i+1}</div><div className="rqt">{a.q}</div>
           {a.o.map((o,j)=>{const isC=j===a.a,isS=j===a.sel||j===a.sel2;return(<div key={j} className={"ro"+(isC?" ca":isS?" wa":" na")}><span style={{fontFamily:"'Rajdhani',sans-serif",fontWeight:700,fontSize:11}}>{LETTERS[j]}.</span><span style={{flex:1}}>{o}</span>{isC&&<span>✓</span>}{isS&&!isC&&<span>✗</span>}</div>);})}
-          <div style={{marginTop:6,fontSize:10,color:"#3d3d6b"}}>{(a.sel===a.a||(a.sel2!=null&&a.sel2===a.a))?"✅ +"+a.pts+" puan":a.sel===null?"⏱️ Süre doldu":"❌ 0 puan"}</div>
+          <div style={{marginTop:6,fontSize:10,color:"#7a9187"}}>{(a.sel===a.a||(a.sel2!=null&&a.sel2===a.a))?"✅ +"+a.pts+" puan":a.sel===null?"⏱️ Süre doldu":"❌ 0 puan"}</div>
         </div>
       ))}
       <button onClick={()=>{const txt="Bilgi Arenada "+score+" puan aldim! Sen de dene: https://erayylmzz732.github.io/bkk-arena";if(navigator.share){navigator.share({title:"Bilgi Arena",text:txt}).catch(()=>{});}else{try{navigator.clipboard.writeText(txt);}catch(e){}alert("Panoya kopyalandi!");}}} style={{width:"100%",background:"rgba(76,201,240,.1)",border:"1.5px solid #4cc9f0",borderRadius:12,padding:"11px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",marginBottom:8,fontSize:14}}>Skoru Paylas</button>
-        <button className="pbtn" style={{marginTop:0,marginBottom:14}} onClick={()=>setScreen("home")}>Ana Sayfa</button>
+        <button className="pbtn" style={{marginTop:0,marginBottom:14}} onClick={goHome}>Ana Sayfa</button>
     </div></W>
   );
 
