@@ -209,6 +209,19 @@ body{background:#10231f!important}
 .inp,.cc,.ob{background:#1f463d!important;border-color:#2f6f5e!important}
 .pbtn,.tb.on,.av,.plavatarsm{background:linear-gradient(135deg,#34d399,#f59e0b)!important;color:#071714!important}
 .logo h1,.logosm{background:linear-gradient(135deg,#34d399,#f59e0b)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important}
+
+/* Mode-specific theme overlays */
+body.mode-solo{background:linear-gradient(135deg,#0a2540 0%,#1a0930 50%,#0f3a4a 100%)}
+body.mode-multi{background:linear-gradient(135deg,#3a0a4a 0%,#1a0930 50%,#4a0a2a 100%)}
+body.mode-tournament{background:linear-gradient(135deg,#4a1a0a 0%,#3a0a4a 50%,#1a0930 100%)}
+body.mode-arena{background:linear-gradient(135deg,#0f3a3a 0%,#3a0a4a 50%,#3a0a3a 100%)}
+
+body.mode-solo .qcard{border-color:#00ffff !important;box-shadow:0 4px 30px rgba(0,255,255,.3) !important}
+body.mode-multi .qcard{border-color:#ff00ff !important;box-shadow:0 4px 30px rgba(255,0,255,.3) !important}
+body.mode-tournament .qcard{border-color:#ffd700 !important;box-shadow:0 4px 30px rgba(255,215,0,.3) !important}
+body.mode-arena .qcard{border-color:#00ff88 !important;box-shadow:0 4px 30px rgba(0,255,136,.3) !important}
+
+
 </style>
 </head>
 <body>
@@ -1055,6 +1068,30 @@ function getLeagueObj(id){return LEAGUES.find(l=>l.id===id)||LEAGUES[0];}
 
 // Fake leaderboard for the same league (simulated opponents)
 const FAKE_NAMES=['Ahmet_K','Zeynep_A','Mert_Y','Elif_S','Can_T','Ayse_D','Burak_O','Selin_K','Ozan_M','Hande_G','Furkan_B','Nisa_Y','Arda_T','Ceren_A','Kaan_S','Irem_K','Baran_O','Dilara_M','Emre_C','Buse_T'];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOT POOL - "rastgele insanlar" simülasyonu.
+// Şu an gerçek matchmaking sunucumuz olmadığı için rakipleri botlardan üretiyoruz.
+// İsimlerin sonundaki 🤖 işareti, oyun mantığında bot olduğunu tanımak için kullanılıyor
+// (ör. otomatik cevaplama, otomatik turnuva çözümü). İleride gerçek matchmaking
+// eklendiğinde aşağıdaki getRandomOpponents() fonksiyonu backend çağrısıyla değiştirilecek.
+// ─────────────────────────────────────────────────────────────────────────────
+const BOT_POOL=[
+  'Ahmet_K 🤖','Zeynep_A 🤖','Mert_Y 🤖','Elif_S 🤖','Can_T 🤖','Ayse_D 🤖',
+  'Burak_O 🤖','Selin_K 🤖','Ozan_M 🤖','Hande_G 🤖','Furkan_B 🤖','Nisa_Y 🤖',
+  'Arda_T 🤖','Ceren_A 🤖','Kaan_S 🤖','Irem_K 🤖','Baran_O 🤖','Dilara_M 🤖',
+  'Emre_C 🤖','Buse_T 🤖','Yusuf_R 🤖','Eda_M 🤖','Tolga_E 🤖','Sena_K 🤖',
+  'Hasan_D 🤖','Melis_T 🤖','Cem_K 🤖','Pinar_S 🤖','Berke_O 🤖','Lara_Y 🤖'
+];
+// TODO: Backend hazır olduğunda burayı gerçek matchmaking API'siyle değiştir.
+// Ör: async function getRandomOpponents(n, exclude){ return await api.matchmaker.find(n, exclude); }
+function getRandomOpponents(n,exclude){
+  exclude=exclude||[];
+  const avail=BOT_POOL.filter(b=>!exclude.includes(b));
+  const sh=[...avail].sort(()=>Math.random()-0.5);
+  return sh.slice(0,Math.min(n,sh.length));
+}
+function isBot(name){return typeof name==='string'&&name.indexOf('🤖')!==-1;}
 function getFakeLeaderboard(userPts,leagueId,username){
   const seed=leagueId+getWeekKey();
   let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;
@@ -1425,7 +1462,7 @@ function App(){
   const [arenaCode,setArenaCode]=useState("");
   const [arenaMode,setArenaMode]=useState("1v1");
   const [arenaErr,setArenaErr]=useState("");
-  const [tournamentData,setTournamentData]=useState(null);
+  const [tournamentData,setTournamentData]=useState({players:[],started:false,bracket:[],round:1});
   const [userCode,setUserCode]=useState("");
 
   // refs
@@ -1453,6 +1490,10 @@ function App(){
   const afkCountRef=useRef({});
   const pendingSfxRef=useRef(null);
   const pingIntervalRef=useRef(null);
+  // Aktif turnuva maçı bilgisini taşır. Kullanıcı turnuvada "⚔️ Oyna" derse,
+  // gerçek bir multiplayer maçı (bot'a karşı) başlatılır ve maç bitince bracket güncellenir.
+  // İleride gerçek oyuncu eşleşmesi eklendiğinde aynı yapı kullanılabilir.
+  const tournamentMatchRef=useRef(null); // {index:number, opponent:string}
 
   const resetMultiplayerState=useCallback(()=>{
     if(peerRef.current){try{peerRef.current.destroy();}catch(e){}peerRef.current=null;}
@@ -1802,6 +1843,33 @@ function App(){
     if(cat)setCategory(cat);
     setMode(m);modeRef.current=m;setScreen("game");
   },[]);
+  // Bot auto-answer in multiplayer
+  useEffect(()=>{
+    if(screen!=="game"||mode!=="multi"||!isHostRef.current)return;
+    const q=questions[qIdx];if(!q)return;
+    const players=Object.keys(playersRef.current);
+    const bots=players.filter(p=>isBot(p));
+    if(bots.length===0)return;
+    const timers=[];
+    bots.forEach(bot=>{
+      const delay=1500+Math.random()*5500;
+      const t=setTimeout(()=>{
+        if(!answeredRef.current[qIdx])answeredRef.current[qIdx]=new Set();
+        if(answeredRef.current[qIdx].has(bot))return;
+        const isCorrect=Math.random()<0.65;
+        const ans=isCorrect?q.a:[0,1,2,3].filter(i=>i!==q.a)[Math.floor(Math.random()*3)];
+        const pts=isCorrect?(50+Math.floor((15-Math.floor(delay/1000))*5)):0;
+        playersRef.current[bot]=(playersRef.current[bot]||0)+pts;
+        answeredRef.current[qIdx].add(bot);
+        setLiveScores({...playersRef.current});
+        broadcast&&broadcast({type:"score-update",scores:{...playersRef.current}});
+      },delay);
+      timers.push(t);
+    });
+    return ()=>timers.forEach(clearTimeout);
+  },[qIdx,screen,mode,questions]);
+
+
 
   // -- submitAnswer --
   const submitAnswer=useCallback((di1,di2,q)=>{
@@ -1917,7 +1985,102 @@ function App(){
   },[]);
 
 
-    // ══ SCREENS ══
+  
+  // Bir maç sonucunu bracket'a uygular ve gerekirse bir sonraki turu hazırlar.
+  // Hem kullanıcının gerçek maçı bittiğinde hem de bot vs bot otomatik çözümünde kullanılır.
+  const tournamentApplyWinner=useCallback((idx,winner)=>{
+    setTournamentData(d=>{
+      const nb=d.bracket.map((bm,bi)=>bi===idx?{...bm,winner}:bm);
+      if(nb.every(b=>b.winner)){
+        const ws=nb.map(b=>b.winner);
+        if(ws.length===1){
+          setTimeout(()=>{
+            alert("🏆 Şampiyon: "+ws[0]+"!");
+            setTournamentData({players:[],started:false,bracket:[],round:1});
+            setShowTournament(false);
+          },400);
+          return {...d,bracket:nb};
+        }
+        const nm=[];
+        for(let j=0;j<ws.length;j+=2){
+          if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});
+          else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});
+        }
+        return {...d,bracket:nm,round:d.round+1};
+      }
+      return {...d,bracket:nb};
+    });
+  },[]);
+
+  // Tournament: auto-resolve bot vs bot matches
+  // Kullanıcı kendi maçını oynarken arkada bot maçlarını otomatik çözer.
+  useEffect(()=>{
+    if(!showTournament||!tournamentData.started)return;
+    if(tournamentMatchRef.current)return; // kullanıcı maç oynuyorsa bekle
+    const unresolved=tournamentData.bracket.filter(m=>!m.winner&&m.p2!=="BYE");
+    const botMatches=unresolved.filter(m=>isBot(m.p1)&&isBot(m.p2));
+    if(botMatches.length===0)return;
+    const t=setTimeout(()=>{
+      // Tek seferde tüm bekleyen bot vs bot maçlarını çöz.
+      const winners=botMatches.map(m=>({m,w:Math.random()<0.5?m.p1:m.p2}));
+      setTournamentData(d=>{
+        const nb=d.bracket.map(bm=>{
+          const hit=winners.find(x=>x.m===bm);
+          return hit?{...bm,winner:hit.w}:bm;
+        });
+        if(nb.every(bm=>bm.winner)){
+          const ws=nb.map(bm=>bm.winner);
+          if(ws.length===1){
+            setTimeout(()=>{
+              alert("🏆 Şampiyon: "+ws[0]+"!");
+              setTournamentData({players:[],started:false,bracket:[],round:1});
+              setShowTournament(false);
+            },500);
+            return {...d,bracket:nb};
+          }
+          const nm=[];
+          for(let j=0;j<ws.length;j+=2){
+            if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});
+            else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});
+          }
+          return {...d,bracket:nm,round:d.round+1};
+        }
+        return {...d,bracket:nb};
+      });
+    },1200);
+    return ()=>clearTimeout(t);
+  },[tournamentData,showTournament]);
+
+
+  
+  // Turnuva maçı (kullanıcı vs bot) bittiğinde sonucu bracket'a yansıt.
+  // İleride gerçek oyuncu eşleşmeleri eklendiğinde aynı akış çalışacak; tek farkı
+  // rakip skoru ağ üzerinden gelecek (şu an playersRef.current'tan okuyoruz).
+  useEffect(()=>{
+    if(screen!=="result"||!tournamentMatchRef.current)return;
+    const m=tournamentMatchRef.current;
+    const me=usernameRef.current;
+    const myScore=(playersRef.current&&playersRef.current[me])||scoreRef.current||0;
+    const oppScore=(playersRef.current&&playersRef.current[m.opponent])||0;
+    const winner=myScore>=oppScore?me:m.opponent;
+    tournamentMatchRef.current=null;
+    setTimeout(()=>{
+      tournamentApplyWinner(m.index,winner);
+      setShowTournament(true);
+    },1800);
+  },[screen,tournamentApplyWinner]);
+
+  // Apply mode-specific theme to body
+  useEffect(()=>{
+    document.body.className=document.body.className.replace(/mode-\w+/g,"").trim();
+    if(showTournament)document.body.classList.add("mode-tournament");
+    else if(showArena)document.body.classList.add("mode-arena");
+    else if(mode==="multi")document.body.classList.add("mode-multi");
+    else if(mode==="solo")document.body.classList.add("mode-solo");
+  },[mode,showTournament,showArena]);
+
+
+  // ══ SCREENS ══
 
   if(screen==="auth") return(
     <W><div className="sc fi">
@@ -2199,50 +2362,104 @@ function App(){
 
         {showSettings&&<SettingsModal sfxOn={sfxOn} setSfxOn={setSfxOn} musicOn={musicOn} setMusicOn={setMusicOn} onClose={()=>setShowSettings(false)} onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
         
-        {showTournament&&<div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.96)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
-          <div style={{background:"#060e1e",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"20px 18px 34px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
+        {showTournament&&<div style={{position:"fixed",inset:0,background:"rgba(15,5,2,.92)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center",backdropFilter:"blur(8px)"}} onClick={()=>setShowTournament(false)}>
+          <div style={{background:"linear-gradient(180deg,#3a1f12,#17352f)",border:"2px solid #f97316",borderTopLeftRadius:26,borderTopRightRadius:26,padding:"22px 20px 36px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto",animation:"modalScaleIn .35s cubic-bezier(.2,1.2,.4,1)",boxShadow:"0 -10px 50px rgba(249,115,22,.3)"}} onClick={e=>e.stopPropagation()}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#ff4d6d"}}>Turnuva Modu</div>
+              <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,background:"linear-gradient(135deg,#f97316,#ffd700)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>🏆 Turnuva</div>
               <button onClick={()=>setShowTournament(false)} style={{background:"none",border:"none",color:"#bdd7c7",fontSize:22,cursor:"pointer"}}>X</button>
             </div>
             {!tournamentData.started?(
               <div>
-                <div style={{fontSize:12,color:"#bdd7c7",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
+                <div style={{fontSize:12,color:"#bdd7c7",marginBottom:10,lineHeight:1.4}}>Katılımcıları ekle (2-8 oyuncu). Şu an gerçek matchmaking sunucumuz olmadığı için boş slotlar rastgele <b>botlar</b> ile dolduruluyor. İleride bu slotlar gerçek oyuncularla eşleşecek.</div>
+                {/* Hızlı doldur: rastgele 8 kişi (kullanıcı + 7 bot) */}
+                <button onClick={()=>{
+                  const opps=getRandomOpponents(7,[username]);
+                  setTournamentData({players:[username,...opps],started:false,bracket:[],round:1});
+                  playSound("click");
+                }} style={{width:"100%",background:"linear-gradient(135deg,#06d6a0,#00ff88)",border:"none",borderRadius:11,padding:"10px",color:"#071714",fontWeight:800,cursor:"pointer",fontSize:13,marginBottom:10,boxShadow:"0 4px 16px rgba(0,255,136,.25)"}}>🎲 Hızlı Doldur · Rastgele 8 Kişi</button>
                 {(tournamentData.players.length===0?[username]:tournamentData.players).map((p,i)=>(
-                  <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}}>
-                    <span>👤</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}</span>
-                    {i>0&&<button onClick={()=>setTournamentData(d=>({...d,players:d.players.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff4d6d",cursor:"pointer",fontSize:18}}>X</button>}
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+(p===username?"#34d399":"#1e3a6e"),borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}}>
+                    <span>{isBot(p)?"🤖":"👤"}</span>
+                    <span style={{flex:1,fontWeight:700,color:p===username?"#34d399":"#fff"}}>{p}{p===username?" (Sen)":""}</span>
+                    {p!==username&&<button onClick={()=>setTournamentData(d=>({...d,players:d.players.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff4d6d",cursor:"pointer",fontSize:18}}>X</button>}
                   </div>
                 ))}
-                {(tournamentData.players.length||1)<8&&<button onClick={()=>{const n=prompt("Oyuncu adi:");if(!n||!n.trim())return;setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));}} style={{width:"100%",background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"9px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:13,marginBottom:10}}>+ Oyuncu Ekle</button>}
+                {(tournamentData.players.length||1)<8&&(
+                  <div style={{display:"flex",gap:6,marginBottom:10}}>
+                    <button onClick={()=>{
+                      const cur=tournamentData.players.length?tournamentData.players:[username];
+                      const av=getRandomOpponents(1,cur);
+                      if(!av.length){alert("Tüm botlar eklendi!");return;}
+                      setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),av[0]]}));
+                      playSound("click");
+                    }} style={{flex:1,background:"rgba(255,0,255,.07)",border:"2px dashed #ff00ff",borderRadius:10,padding:"9px",color:"#ff00ff",fontWeight:700,cursor:"pointer",fontSize:13}}>🤖 Bot Ekle</button>
+                    <button onClick={()=>{
+                      const n=prompt("Oyuncu adı:");
+                      if(!n||!n.trim())return;
+                      setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));
+                    }} style={{flex:1,background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"9px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:13}}>+ Oyuncu</button>
+                  </div>
+                )}
                 <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)"}} onClick={()=>{
-                  const pl=tournamentData.players.length?tournamentData.players:[username];
-                  if(pl.length<2){alert("En az 2 oyuncu!");return;}
+                  let pl=tournamentData.players.length?tournamentData.players:[username];
+                  // 2 oyuncudan azsa veya tek sayıda ise bot ekleyerek dengele.
+                  if(pl.length<2){
+                    const op=getRandomOpponents(1,pl);
+                    pl=[...pl,...op];
+                  } else if(pl.length%2!==0){
+                    const op=getRandomOpponents(1,pl);
+                    pl=[...pl,...op];
+                  }
                   const sh=[...pl].sort(()=>Math.random()-.5);const br=[];
-                  for(let i=0;i<sh.length;i+=2){if(i+1<sh.length)br.push({p1:sh[i],p2:sh[i+1],winner:null});else br.push({p1:sh[i],p2:"BYE",winner:sh[i]});}
+                  for(let i=0;i<sh.length;i+=2){br.push({p1:sh[i],p2:sh[i+1],winner:null});}
                   setTournamentData({players:pl,started:true,bracket:br,round:1});
-                }}>Turnuvayi Basla</button>
+                  playSound("levelup");
+                }}>🏆 Turnuvayı Başlat</button>
               </div>
             ):(
               <div>
                 <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:"#bdd7c7",marginBottom:10}}>Tur {tournamentData.round}</div>
-                {tournamentData.bracket.map((m,i)=>(
-                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+(m.winner?"#06d6a0":"#1e3a6e"),borderRadius:11,padding:"11px",marginBottom:7}}>
+                {tournamentData.bracket.map((m,i)=>{
+                  const userInMatch=(m.p1===username||m.p2===username);
+                  const opponent=m.p1===username?m.p2:m.p1;
+                  return(
+                  <div key={i} style={{background:"#0f2040",border:"1.5px solid "+(m.winner?"#06d6a0":userInMatch?"#fbbf24":"#1e3a6e"),borderRadius:11,padding:"11px",marginBottom:7}}>
                     <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:m.winner?0:8}}>
-                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p1?"#06d6a0":"#fff"}}>{m.p1}</div>
+                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p1?"#06d6a0":"#fff"}}>{isBot(m.p1)?"🤖 ":""}{m.p1}</div>
                       <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,color:"#bdd7c7",fontWeight:700}}>VS</div>
-                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p2?"#06d6a0":m.p2==="BYE"?"#4a6080":"#fff"}}>{m.p2}</div>
+                      <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p2?"#06d6a0":m.p2==="BYE"?"#4a6080":"#fff"}}>{isBot(m.p2)?"🤖 ":""}{m.p2}</div>
                     </div>
-                    {!m.winner&&m.p2!=="BYE"&&<div style={{display:"flex",gap:5}}>
-                      {[m.p1,m.p2].map(w=><button key={w} onClick={()=>{
-                        const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:w}:bm);
-                        if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){alert("Sampiyon: "+ws[0]+"!");setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));
-                      }} style={{flex:1,background:"rgba(6,214,160,.08)",border:"1.5px solid #06d6a0",borderRadius:8,padding:"6px",color:"#06d6a0",fontWeight:800,cursor:"pointer",fontSize:11}}>{w} Kazandi</button>)}
-                    </div>}
-                    {m.winner&&<div style={{textAlign:"center",color:"#06d6a0",fontWeight:700,fontSize:11}}>Kazanan: {m.winner}</div>}
+                    {!m.winner&&m.p2!=="BYE"&&userInMatch&&(
+                      <button onClick={()=>{
+                        // Kullanıcı maçı: gerçek bir multiplayer oyunu başlat (bot rakip).
+                        // İleride gerçek oyuncu eşleşmesi için aynı startGame(true) akışı kullanılacak,
+                        // tek farkı playersRef gerçek peer'lerden gelen isimlerle dolacak.
+                        tournamentMatchRef.current={index:i,opponent};
+                        setShowTournament(false);
+                        resetMultiplayerState();
+                        isHostRef.current=true;
+                        playersRef.current={[username]:0,[opponent]:0};
+                        setRoomPlayers(Object.keys(playersRef.current));
+                        setMode("multi");
+                        playSound("levelup");
+                        setTimeout(()=>startGame(true),400);
+                      }} style={{width:"100%",background:"linear-gradient(135deg,#06d6a0,#00ff88)",border:"none",borderRadius:9,padding:"9px",color:"#071714",fontWeight:800,cursor:"pointer",fontSize:13,boxShadow:"0 3px 14px rgba(0,255,136,.3)"}}>⚔️ Maçı Oyna</button>
+                    )}
+                    {!m.winner&&m.p2!=="BYE"&&!userInMatch&&isBot(m.p1)&&isBot(m.p2)&&(
+                      <div style={{textAlign:"center",fontSize:11,color:"#bdd7c7",fontStyle:"italic",padding:"4px 0"}}>⏳ Bot maçı otomatik çözülüyor...</div>
+                    )}
+                    {!m.winner&&m.p2!=="BYE"&&!userInMatch&&!(isBot(m.p1)&&isBot(m.p2))&&(
+                      <div style={{display:"flex",gap:5}}>
+                        {[m.p1,m.p2].map(w=>(
+                          <button key={w} onClick={()=>tournamentApplyWinner(i,w)} style={{flex:1,background:"rgba(6,214,160,.08)",border:"1.5px solid #06d6a0",borderRadius:8,padding:"6px",color:"#06d6a0",fontWeight:800,cursor:"pointer",fontSize:11}}>{w} Kazandı</button>
+                        ))}
+                      </div>
+                    )}
+                    {m.winner&&<div style={{textAlign:"center",color:"#06d6a0",fontWeight:700,fontSize:11}}>Kazanan: {m.winner}{m.winner===username?" 🎉":""}</div>}
                   </div>
-                ))}
-                <button onClick={()=>setTournamentData({players:[],started:false,bracket:[],round:1})} style={{width:"100%",background:"rgba(255,77,109,.08)",border:"1.5px solid #ff4d6d",borderRadius:9,padding:"8px",color:"#ff4d6d",fontWeight:700,cursor:"pointer",marginTop:4}}>Sifirla</button>
+                  );
+                })}
+                <button onClick={()=>{tournamentMatchRef.current=null;setTournamentData({players:[],started:false,bracket:[],round:1});}} style={{width:"100%",background:"rgba(255,77,109,.08)",border:"1.5px solid #ff4d6d",borderRadius:9,padding:"8px",color:"#ff4d6d",fontWeight:700,cursor:"pointer",marginTop:4}}>Sıfırla</button>
               </div>
             )}
           </div>
@@ -2276,14 +2493,29 @@ function App(){
             <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>Rakibinin Kodu</div>
             <input className="inp" placeholder="#ABC123" value={arenaCode} onChange={e=>{setArenaCode(e.target.value.toUpperCase().slice(0,7));setArenaErr("");}} style={{textAlign:"center",letterSpacing:4,fontSize:18,fontWeight:700,marginBottom:6}}/>
             {arenaErr&&<div style={{fontSize:11,color:"#ff3366",marginBottom:8,textAlign:"center"}}>{arenaErr}</div>}
+            <button className="pbtn" style={{background:"linear-gradient(135deg,#00ff88,#06d6a0)",boxShadow:"0 4px 20px rgba(0,255,136,.4)",marginBottom:10}} onClick={()=>{
+              setShowArena(false);
+              resetMultiplayerState();
+              isHostRef.current=true;
+              // TODO: Gerçek oyuncu eşleşmesi geldiğinde getRandomOpponents yerine matchmaker çağrılacak.
+              const numOpponents=arenaMode==="1v1"?1:3;
+              const opps=getRandomOpponents(numOpponents,[username]);
+              playersRef.current={[username]:0};
+              opps.forEach(b=>{playersRef.current[b]=0;});
+              setRoomPlayers(Object.keys(playersRef.current));
+              setMode("multi");
+              playSound("levelup");
+              setTimeout(()=>startGame(true),500);
+            }}>🎲 Rastgele Rakip ({arenaMode==="1v1"?"1v1":"2v2"})</button>
+            <div style={{textAlign:"center",fontSize:11,color:"#c4a0e0",margin:"6px 0"}}>veya kod ile davet et</div>
             <button className="pbtn" style={{background:"linear-gradient(135deg,#fb923c,#22c55e)",boxShadow:"0 4px 20px rgba(255,0,170,.4)"}} onClick={()=>{
               const c=arenaCode.trim();
               if(!c){setArenaErr("Kod gir!");return;}
               if(c===userCode){setArenaErr("Kendi kodunu giremezsin!");return;}
               playSound("levelup");
-              alert("Arena daveti gonderildi! Bu ozellik yakindan aktif olacak. Simdilik 'Cok Oyunculu' moddan kod ile oynayabilirsin.");
+              alert("Arena daveti gonderildi! Yakinanda gercek zamanli olacak.");
               setShowArena(false);
-            }}>{arenaMode==="1v1"?"1v1 KAPIŞ":"2v2 TAKIM SAVAŞI"}</button>
+            }}>{arenaMode==="1v1"?"1v1 KAPIŞ":"2v2 TAKIM SAVAŞI"} (Kod ile)</button>
             <div style={{marginTop:12,padding:"10px",background:"rgba(0,229,255,.05)",border:"1px solid rgba(0,229,255,.2)",borderRadius:10,fontSize:10,color:"#80c0e0",lineHeight:1.4}}>💡 Arkadasin senin profilindeki kodu kullanarak veya senin onun kodunu kullanarak arenaya katilabilir. Mac sonunda altin ve XP kazanirsin!</div>
           </div>
         </div>}
@@ -2365,8 +2597,28 @@ function App(){
       {mode==="solo"?(
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
-        <><button className="pbtn" style={{marginTop:4}} onClick={createRoom} >Oda Olustur</button>
-        <div style={{textAlign:"center",fontSize:12,color:"#bdd7c7",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
+        <>
+        {/* RASTGELE EŞLEŞME - şu an botlarla, ileride gerçek oyuncularla. */}
+        <button className="pbtn" style={{marginTop:4,background:"linear-gradient(135deg,#06d6a0,#00ff88)",boxShadow:"0 4px 20px rgba(0,255,136,.4)"}} onClick={()=>{
+          // Quick match - şu anlık rastgele botlarla başlatıyor.
+          // TODO: Backend hazır olduğunda burada matchmaking kuyruğuna gir.
+          resetMultiplayerState();
+          isHostRef.current=true;
+          const numBots=2+Math.floor(Math.random()*2); // 2-3 rakip
+          const opps=getRandomOpponents(numBots,[username]);
+          playersRef.current={[username]:0};
+          opps.forEach(b=>{playersRef.current[b]=0;});
+          setRoomPlayers(Object.keys(playersRef.current));
+          playSound("levelup");
+          setTimeout(()=>startGame(true),500);
+        }}>🎲 Rastgele İnsanlarla Oyna</button>
+        <div style={{fontSize:11,color:"#7a9187",textAlign:"center",margin:"4px 0 10px"}}>2-3 rastgele rakip · anında başlar</div>
+        {/* GRUP / ARKADAŞ ODASI */}
+        <div style={{display:"flex",gap:8,marginTop:4}}>
+          <button className="pbtn" style={{margin:0,flex:1,background:"linear-gradient(135deg,#9b5de5,#ff00ff)"}} onClick={createRoom}>👥 Grupla Oyna (Oda Kur)</button>
+        </div>
+        <div style={{fontSize:11,color:"#7a9187",textAlign:"center",margin:"4px 0 8px"}}>arkadaşların kodla katılır · 15 kişiye kadar</div>
+        <div style={{textAlign:"center",fontSize:12,color:"#bdd7c7",margin:"12px 0 6px"}}>veya kod ile katıl</div>
         <div style={{display:"flex",gap:8}}>
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
             placeholder="000000" value={joinCodeInput}
@@ -2411,7 +2663,17 @@ function App(){
         {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#7a9187",fontSize:12}}>⏳ Bekleniyor...</div>}
       </div>
       <div style={{flex:1}}/>
-      <button className="pbtn" style={{marginTop:12}} onClick={()=>startGame(true)}>🚀 Oyunu Başlat ({roomPlayers.length} kişi)</button>
+      <div style={{display:"flex",gap:8,marginTop:12}}>
+        <button className="pbtn" style={{margin:0,flex:1}} onClick={()=>startGame(true)}>🚀 Başla ({roomPlayers.length})</button>
+        <button onClick={()=>{
+          // Odaya bot ekle (boş slotlar için "rastgele insan" simülasyonu).
+          const av=getRandomOpponents(1,Object.keys(playersRef.current));
+          if(av.length===0){alert("Tüm botlar eklendi!");return;}
+          playersRef.current={...playersRef.current,[av[0]]:0};
+          setRoomPlayers(Object.keys(playersRef.current));
+          playSound("click");
+        }} style={{padding:"14px 16px",background:"linear-gradient(135deg,#ff00ff,#7c3aff)",border:"none",borderRadius:14,color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer",boxShadow:"0 4px 15px rgba(255,0,255,.4)"}}>🤖 Bot</button>
+      </div>
     </div></W>
   );
 
