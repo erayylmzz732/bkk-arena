@@ -27,6 +27,18 @@ html[data-fs="md"]{font-size:16px}
 html[data-fs="lg"]{font-size:18px}
 /* Animasyonları azalt (Ayarlar) */
 html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+/* MEGA COMBO (5+) animasyonu */
+@keyframes comboBlastPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(-15deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.35) rotate(8deg)}50%{transform:translate(-50%,-50%) scale(1) rotate(-4deg)}75%{transform:translate(-50%,-50%) scale(1.12) rotate(2deg)}100%{opacity:0;transform:translate(-50%,-60%) scale(.85) rotate(0)}}
+@keyframes comboShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes comboBurst{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.2)}}
+.combo-blast{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);z-index:500;pointer-events:none;text-align:center;animation:comboBlastPop 1.4s cubic-bezier(.2,1,.4,1) forwards;font-family:'Rajdhani',sans-serif;text-shadow:0 0 20px rgba(255,215,0,.9),0 0 40px rgba(255,77,109,.6)}
+.combo-blast .cb-x{font-size:96px;font-weight:800;line-height:1;background:linear-gradient(90deg,#ffd166,#ff4d6d,#9b5de5,#06d6a0,#ffd166);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:comboShine 1.4s linear infinite;letter-spacing:-2px}
+.combo-blast .cb-label{font-size:28px;font-weight:800;color:#fff;letter-spacing:4px;margin-top:-4px;text-shadow:0 0 12px #ff4d6d}
+.combo-blast .cb-xp{font-size:36px;font-weight:800;color:#ffd166;margin-top:6px;text-shadow:0 0 18px #ffd166}
+.combo-blast .cb-burst{position:absolute;top:50%;left:50%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.45),rgba(255,77,109,.2),transparent 70%);transform:translate(-50%,-50%) scale(.4);animation:comboBurst 1.4s ease-out forwards;z-index:-1}
+/* Küçük combo (2-4) badge'i için pulse animasyonu */
+@keyframes comboPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.combo-badge{animation:comboPulse .6s ease-in-out}
 .app{min-height:100vh;background:linear-gradient(135deg,#14532d 0%,#10231f 40%,#7c2d12 80%,#10231f 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
 .phone{width:390px;min-height:840px;background:#15352f;border-radius:38px;border:1.5px solid #255045;box-shadow:0 0 0 1px #071714,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(0,255,255,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
 .sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
@@ -928,48 +940,203 @@ const _getAC=()=>{if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext
 // Genişletilmiş ses paleti — daha dolgun, oyun-içi efektlerle dolu
 function _tone(c,g,freq,dt,dur,type,vol){const o=c.createOscillator();o.connect(g);o.type=type||'sine';if(typeof freq==='function')freq(o,c.currentTime+dt);else o.frequency.value=freq;const v=vol==null?.2:vol;g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(v,c.currentTime+dt+.012);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+dur);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+dur+.02);}
 function _noise(c,gout,dt,dur,vol){try{const bs=c.sampleRate*dur,b=c.createBuffer(1,bs,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<bs;i++)d[i]=(Math.random()*2-1)*(1-i/bs);const s=c.createBufferSource();s.buffer=b;const g=c.createGain();g.gain.value=vol==null?.12:vol;s.connect(g);g.connect(gout);s.start(c.currentTime+dt);}catch(e){}}
-function playSfx(type){
+// Rastgele varyant seç
+const _pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+// Hızlı kick/snare/hi-hat tarzı perküsyon (drum)
+function _kick(c,g,dt,vol){const o=c.createOscillator();o.connect(g);o.type='sine';o.frequency.setValueAtTime(140,c.currentTime+dt);o.frequency.exponentialRampToValueAtTime(40,c.currentTime+dt+.10);g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(vol||.28,c.currentTime+dt+.005);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.14);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.16);}
+function _hat(c,gout,dt,vol){_noise(c,gout,dt,.04,vol||.06);}
+function playSfx(type,opts){
   if(!_sfxOn)return;
   try{const c=_getAC(),g=c.createGain();g.connect(c.destination);
-    if(type==='correct'){[[0,523],[.08,659],[.16,784],[.24,1047]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'sine',.22));}
-    else if(type==='wrong'){[[0,320,.20],[.16,220,.18],[.30,160,.16]].forEach(([dt,f,v])=>_tone(c,g,f,dt,.22,'sawtooth',v));}
+    if(type==='correct'){
+      // 4 farklı doğru-cevap varyantı (rastgele) — hep neşeli major arpejler
+      const variants=[
+        [[0,523],[.05,659],[.10,784],[.15,1047]],            // C-E-G-C
+        [[0,659],[.05,830],[.10,988],[.15,1319]],            // E-G#-B-E (parlak)
+        [[0,587],[.04,740],[.08,880],[.12,1175],[.18,1480]], // D-F#-A-D-F# (5'li)
+        [[0,698],[.05,880],[.10,1047],[.15,1319]],           // F-A-C-E
+        [[0,523],[.04,659],[.08,784],[.12,1047],[.16,1319]]  // hızlı 5-nota
+      ];
+      const v=_pick(variants);
+      v.forEach(([dt,f])=>_tone(c,g,f,dt,.18,'triangle',.24));
+      // Tatlı bir "ding" tepesi
+      _tone(c,g,v[v.length-1][1]*2,v[v.length-1][0]+.04,.10,'sine',.10);
+    }
+    else if(type==='wrong'){
+      // 3 farklı yanlış-cevap varyantı (alaycı/komik)
+      const variants=[
+        [[0,330],[.10,247],[.20,196]],                  // alçalan
+        [[0,392],[.08,294],[.16,247]],                  // hafif alçalan
+        [[0,440],[.06,277]]                             // sert iki-tonlu "buzzer"
+      ];
+      const v=_pick(variants);
+      v.forEach(([dt,f])=>_tone(c,g,f,dt,.20,'sawtooth',.18));
+      _noise(c,g,0,.06,.05);
+    }
     else if(type==='spend'){_tone(c,g,o=>{o.frequency.setValueAtTime(720,c.currentTime);o.frequency.exponentialRampToValueAtTime(200,c.currentTime+.18);},0,.2,'sine',.22);}
-    else if(type==='earn'){[[0,523],[.08,659],[.16,880]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'triangle',.20));_noise(c,g,0,.05,.05);}
-    else if(type==='levelup'){[[0,523],[.07,659],[.14,784],[.21,1047],[.32,1319],[.42,1568]].forEach(([dt,f])=>_tone(c,g,f,dt,.28,'triangle',.24));}
-    else if(type==='click'){_tone(c,g,1100,0,.04,'square',.10);_tone(c,g,1500,.005,.04,'square',.06);}
-    else if(type==='tab'){_tone(c,g,420,0,.08,'triangle',.14);_tone(c,g,640,.05,.08,'triangle',.12);}
-    else if(type==='swoosh'){_noise(c,g,0,.18,.08);_tone(c,g,o=>{o.frequency.setValueAtTime(180,c.currentTime);o.frequency.exponentialRampToValueAtTime(60,c.currentTime+.18);},0,.18,'sine',.08);}
-    else if(type==='notify'){[[0,880],[.10,1175],[.20,1480]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'sine',.18));}
-    else if(type==='invite'){[[0,659],[.08,880],[.16,1175],[.24,1480]].forEach(([dt,f])=>_tone(c,g,f,dt,.20,'triangle',.20));}
-    else if(type==='accept'){[[0,659],[.08,784],[.18,1047]].forEach(([dt,f])=>_tone(c,g,f,dt,.22,'triangle',.22));}
-    else if(type==='reject'){[[0,440],[.10,330],[.20,247]].forEach(([dt,f])=>_tone(c,g,f,dt,.20,'sawtooth',.18));}
-    else if(type==='match-start'){[[0,523],[.05,659],[.10,784],[.18,1047],[.28,784],[.36,1047],[.46,1319]].forEach(([dt,f])=>_tone(c,g,f,dt,.22,'triangle',.22));_noise(c,g,0,.08,.07);}
-    else if(type==='win'){[[0,523],[.06,659],[.14,784],[.22,1047],[.34,1319],[.46,1047],[.56,1568]].forEach(([dt,f])=>_tone(c,g,f,dt,.28,'triangle',.26));}
-    else if(type==='lose'){[[0,392],[.18,330],[.36,247],[.55,196]].forEach(([dt,f])=>_tone(c,g,f,dt,.30,'sawtooth',.20));}
-    else if(type==='join'){[[0,587],[.08,784]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'sine',.18));}
-    else if(type==='leave'){[[0,440],[.08,330]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'sine',.16));}
+    else if(type==='earn'){[[0,523],[.06,659],[.12,880],[.18,1175]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'triangle',.22));_kick(c,g,0,.10);}
+    else if(type==='levelup'){[[0,523],[.06,659],[.12,784],[.18,1047],[.26,1319],[.34,1568],[.44,2093]].forEach(([dt,f])=>_tone(c,g,f,dt,.26,'triangle',.26));}
+    else if(type==='click'){
+      // Punchy, varyantlı tıklama
+      const variants=[
+        [[0,1100,'square',.10],[.005,1500,'square',.06]],
+        [[0,1300,'square',.10],[.005,1900,'square',.06]],
+        [[0,900,'triangle',.12],[.005,1350,'triangle',.07]],
+        [[0,1500,'square',.09],[.008,2000,'square',.05]]
+      ];
+      _pick(variants).forEach(([dt,f,t,v])=>_tone(c,g,f,dt,.04,t,v));
+    }
+    else if(type==='tab'){
+      // Sekme/menü değişim — neşeli iki-tonlu pop
+      const variants=[
+        [[0,420],[.04,640]],
+        [[0,520],[.04,780]],
+        [[0,460],[.05,690]]
+      ];
+      _pick(variants).forEach(([dt,f])=>_tone(c,g,f,dt,.07,'triangle',.14));
+    }
+    else if(type==='swoosh'){_noise(c,g,0,.16,.08);_tone(c,g,o=>{o.frequency.setValueAtTime(220,c.currentTime);o.frequency.exponentialRampToValueAtTime(60,c.currentTime+.16);},0,.16,'sine',.08);}
+    else if(type==='notify'){[[0,880],[.08,1175],[.16,1480]].forEach(([dt,f])=>_tone(c,g,f,dt,.14,'sine',.18));}
+    else if(type==='invite'){[[0,659],[.06,880],[.12,1175],[.18,1480],[.26,1760]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'triangle',.20));}
+    else if(type==='accept'){[[0,659],[.06,784],[.14,1047]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'triangle',.24));}
+    else if(type==='reject'){[[0,440],[.08,330],[.16,247]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'sawtooth',.18));}
+    else if(type==='match-start'){
+      // Coşkulu maç başlangıcı — fanfar + kick
+      [[0,523],[.05,659],[.10,784],[.16,1047],[.24,1319],[.32,1568]].forEach(([dt,f])=>_tone(c,g,f,dt,.20,'triangle',.24));
+      _kick(c,g,0,.18);_kick(c,g,.16,.16);_kick(c,g,.32,.18);
+    }
+    else if(type==='win'){
+      // Zafer — uzun tatlı arpej + drumroll
+      [[0,523],[.05,659],[.11,784],[.18,1047],[.28,1319],[.40,1047],[.50,1568],[.62,2093]].forEach(([dt,f])=>_tone(c,g,f,dt,.30,'triangle',.26));
+      [0,.10,.20,.30].forEach(d=>_kick(c,g,d,.14));
+    }
+    else if(type==='lose'){
+      // Hüzünlü düşüş
+      [[0,392],[.16,330],[.32,247],[.50,196],[.70,165]].forEach(([dt,f])=>_tone(c,g,f,dt,.28,'sawtooth',.20));
+    }
+    else if(type==='join'){[[0,587],[.06,784]].forEach(([dt,f])=>_tone(c,g,f,dt,.14,'sine',.18));}
+    else if(type==='leave'){[[0,440],[.06,330]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'sine',.16));}
     else if(type==='tick'){_tone(c,g,1200,0,.04,'square',.08);}
-    else if(type==='tick-final'){_tone(c,g,1600,0,.08,'square',.16);}
-    else if(type==='combo'){[[0,880],[.05,1175],[.10,1480],[.15,1760]].forEach(([dt,f])=>_tone(c,g,f,dt,.12,'triangle',.18));}
-    else if(type==='powerup'){[[0,440],[.05,659],[.10,880],[.18,1175]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'triangle',.20));}
+    else if(type==='tick-final'){_tone(c,g,1700,0,.08,'square',.18);_hat(c,g,0,.05);}
+    else if(type==='combo'){[[0,880],[.04,1175],[.08,1480],[.12,1760],[.18,2093]].forEach(([dt,f])=>_tone(c,g,f,dt,.10,'triangle',.20));_hat(c,g,0,.06);}
+    else if(type==='combo-mega'){
+      // Görkemli mega-combo (5+) sesi: yükselen flourish + drum-roll + parlak shimmer
+      const n=(opts&&opts.n)||5;
+      const base=523;
+      // Hızlı yükselen 8-nota arpej (E majör scale up)
+      [0,.04,.08,.12,.16,.20,.25,.30].forEach((dt,i)=>{
+        _tone(c,g,base*Math.pow(1.122,i),dt,.18,'triangle',.26);
+      });
+      // Üst oktav shimmer
+      [0,.06,.12,.18].forEach((dt,i)=>{
+        _tone(c,g,base*4*Math.pow(1.25,i),dt,.16,'sine',.14);
+      });
+      // 4 darbe drum-roll
+      [0,.08,.16,.24].forEach(d=>_kick(c,g,d,.20));
+      // Hi-hat shimmer
+      [0,.10,.20,.30].forEach(d=>_hat(c,g,d,.07));
+      // Combo seviyesi 7+ ise ekstra "ding"
+      if(n>=7){_tone(c,g,2349,.32,.22,'sine',.18);_tone(c,g,3136,.40,.20,'sine',.14);}
+    }
+    else if(type==='powerup'){[[0,440],[.04,659],[.08,880],[.14,1175],[.20,1568]].forEach(([dt,f])=>_tone(c,g,f,dt,.14,'triangle',.22));_hat(c,g,.02,.05);}
+    else if(type==='qstart'){
+      // Her soruya özel — qIdx'e göre farklı majör arpej + perküsyon
+      const idx=(opts&&typeof opts.idx==='number')?opts.idx:0;
+      const scales=[
+        [523,659,784],   [659,784,988],   [587,740,880],  [698,880,1047],
+        [784,988,1175],  [880,1047,1319], [523,698,880],  [659,830,988],
+        [587,784,988],   [698,1047,1319]
+      ];
+      const sc=scales[Math.abs(idx)%scales.length];
+      sc.forEach((f,i)=>_tone(c,g,f,i*.05,.12,'triangle',.18));
+      _hat(c,g,0,.04);
+    }
   }catch(e){}
 }
 // Eski 'playSound' API'sıyla uyumluluk — dolu ses paletinin kısaltılmış adı.
 const playSound=playSfx;
 try{window.playSound=playSfx;window.playSfx=playSfx;}catch(e){}
 const _n2f=n=>440*Math.pow(2,(n-69)/12);
+// Eğlenceli, hızlı chiptune fon parçaları — bas hattı + melodi + hi-hat
+// notes: [midi, beat-duration]
 const _SONGS=[
-  {bpm:140,seq:[[60,2],[64,1],[65,1],[67,2],[65,1],[64,1],[60,3],[59,1],[60,2],[64,2],[67,2],[69,1],[67,1],[65,4]],vol:.04},
-  {bpm:160,seq:[[67,1],[67,1],[69,2],[67,1],[65,1],[64,2],[62,1],[60,2],[62,1],[64,1],[65,2],[67,4],[60,2],[64,2]],vol:.038},
-  {bpm:125,seq:[[72,2],[71,1],[69,1],[67,2],[65,1],[64,1],[62,2],[60,1],[62,1],[64,2],[65,1],[67,1],[69,2],[72,4]],vol:.04},
+  // Coşkulu major - 150 bpm
+  {bpm:150,vol:.045,
+    melody:[[64,1],[67,1],[71,1],[72,2],[71,1],[69,1],[67,2],[64,1],[67,1],[71,1],[74,2],[72,1],[71,1],[69,4]],
+    bass:  [[40,2],[40,2],[45,2],[45,2],[43,2],[43,2],[38,2],[38,2]]},
+  // Tempolu, parlak - 168 bpm
+  {bpm:168,vol:.045,
+    melody:[[72,1],[76,1],[79,1],[76,1],[72,2],[74,1],[76,1],[79,1],[83,1],[81,1],[79,1],[76,2],[74,2],[72,2]],
+    bass:  [[36,2],[36,2],[41,2],[41,2],[40,2],[40,2],[36,4]]},
+  // Funky - 138 bpm
+  {bpm:138,vol:.045,
+    melody:[[67,1],[69,1],[71,1],[72,1],[74,2],[72,1],[71,1],[69,2],[67,1],[64,1],[67,2],[69,1],[71,1],[72,4]],
+    bass:  [[43,1],[43,1],[48,2],[43,1],[43,1],[45,2],[43,1],[43,1],[40,2],[43,2]]},
+  // Heyecanlı - 160 bpm
+  {bpm:160,vol:.045,
+    melody:[[60,1],[64,1],[67,1],[72,1],[71,1],[67,1],[64,2],[60,1],[64,1],[67,1],[72,2],[74,1],[72,1],[71,4]],
+    bass:  [[36,2],[40,2],[43,2],[36,2],[40,2],[43,2],[41,2],[36,2]]},
+  // Neşeli pop - 144 bpm
+  {bpm:144,vol:.045,
+    melody:[[69,1],[72,1],[76,1],[72,1],[69,2],[71,1],[72,1],[74,2],[72,1],[71,1],[69,2],[67,1],[69,1],[72,4]],
+    bass:  [[45,2],[45,2],[50,2],[50,2],[43,2],[43,2],[41,2],[45,2]]},
 ];
 function playMusic(idx){
   stopMusic();if(!_musicOn)return;
-  try{const c=_getAC(),song=_SONGS[idx%3],beat=60/song.bpm;
+  try{
+    const c=_getAC();
+    const N=_SONGS.length;
+    const song=_SONGS[((idx%N)+N)%N];
+    const beat=60/song.bpm;
     _musicGain=c.createGain();_musicGain.gain.value=song.vol;_musicGain.connect(c.destination);
     let t=c.currentTime+.15;
-    for(let rep=0;rep<3;rep++){song.seq.forEach(([note,dur])=>{const o=c.createOscillator(),g2=c.createGain();o.connect(g2);g2.connect(_musicGain);o.type=rep%2===0?'triangle':'sine';o.frequency.value=_n2f(note+(rep>1?12:0));g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(1,t+.025);g2.gain.setValueAtTime(1,t+beat*dur*.75);g2.gain.linearRampToValueAtTime(0,t+beat*dur*.95);o.start(t);o.stop(t+beat*dur);_musicNodes.push(o);t+=beat*dur;});}
-    _musicTO=setTimeout(()=>{_songIdx=(_songIdx+1)%3;playMusic(_songIdx);},(t-c.currentTime+.1)*1000);
+    let totalDur=0;
+    // Melodi (üstte triangle, altında lo-pass sine harmonisi)
+    for(let rep=0;rep<2;rep++){
+      song.melody.forEach(([note,dur])=>{
+        const o=c.createOscillator(),g2=c.createGain();
+        o.connect(g2);g2.connect(_musicGain);
+        o.type=rep===0?'triangle':'sine';
+        o.frequency.value=_n2f(note+(rep===1?12:0));
+        const startT=t;
+        const endT=t+beat*dur;
+        g2.gain.setValueAtTime(0,startT);
+        g2.gain.linearRampToValueAtTime(rep===0?1:.4,startT+.02);
+        g2.gain.setValueAtTime(rep===0?1:.4,endT-beat*dur*.25);
+        g2.gain.linearRampToValueAtTime(0,endT-.005);
+        o.start(startT);o.stop(endT+.02);
+        _musicNodes.push(o);
+        if(rep===0)t+=beat*dur;
+      });
+      if(rep===0)totalDur=t-c.currentTime-.15;
+      if(rep===1)t=c.currentTime+.15;  // 2. tur melodi başlangıçtan itibaren paralel
+    }
+    // Bas hattı — düşük frekans sine
+    let bt=c.currentTime+.15;
+    if(song.bass){
+      for(let br=0;br<2;br++){
+        song.bass.forEach(([note,dur])=>{
+          const bo=c.createOscillator(),bg=c.createGain();
+          bo.connect(bg);bg.connect(_musicGain);
+          bo.type='sine';
+          bo.frequency.value=_n2f(note);
+          bg.gain.setValueAtTime(0,bt);
+          bg.gain.linearRampToValueAtTime(.55,bt+.01);
+          bg.gain.setValueAtTime(.55,bt+beat*dur*.7);
+          bg.gain.linearRampToValueAtTime(0,bt+beat*dur*.99);
+          bo.start(bt);bo.stop(bt+beat*dur+.01);
+          _musicNodes.push(bo);
+          bt+=beat*dur;
+        });
+      }
+    }
+    // Hafif hi-hat (ses dolgunluğu)
+    let ht=c.currentTime+.15;
+    while(ht<c.currentTime+.15+totalDur){
+      _noise(c,_musicGain,ht-c.currentTime,.03,.04);
+      ht+=beat*.5;
+    }
+    _musicTO=setTimeout(()=>{_songIdx=(_songIdx+1)%N;playMusic(_songIdx);},(totalDur+.1)*1000);
   }catch(e){}
 }
 function stopMusic(){clearTimeout(_musicTO);_musicNodes.forEach(n=>{try{n.stop();}catch(e){}});_musicNodes=[];if(_musicGain){try{_musicGain.disconnect();}catch(e){}_musicGain=null;}}
@@ -1271,6 +1438,23 @@ function addGameHistory(u,pts,correct,total){
 // Defined outside App so they don't remount on state change
 // ---------------------------------------------
 
+// Mega combo (5+) ekran ortası patlama animasyonu
+function ComboBlastOverlay({blast,onDone}){
+  React.useEffect(()=>{
+    const t=setTimeout(()=>onDone&&onDone(),1400);
+    return()=>clearTimeout(t);
+  },[blast,onDone]);
+  if(!blast)return null;
+  return (
+    <div className="combo-blast" key={blast.t}>
+      <div className="cb-burst"/>
+      <div className="cb-x">x{blast.n}</div>
+      <div className="cb-label">MEGA COMBO!</div>
+      <div className="cb-xp">+{blast.xp} XP</div>
+    </div>
+  );
+}
+
 function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,lang,setLang,vibrateOn,setVibrateOn,notifOn,setNotifOn,reduceMotion,setReduceMotion,fontSize,setFontSize,onClose,onLogout,username,userCode}){
   const SettingRow=({label,children})=>(
     <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -1560,6 +1744,7 @@ function App(){
   const [userTitle,setUserTitle]=useState("");
   const [goldEarned,setGoldEarned]=useState(0);
   const [comboCount,setComboCount]=useState(0);
+  const [comboBlast,setComboBlast]=useState(null); // {n, xp, t} — 5+ combo özel animasyonu
   const [adaptiveDiff,setAdaptiveDiff]=useState("orta");
   const [answerHistory,setAnswerHistory]=useState([]);
   const [lang,setLang]=useState((()=>{try{return localStorage.getItem("ba_lang")||"tr";}catch(e){return "tr";}})());
@@ -1626,6 +1811,9 @@ function App(){
   const categoryRef=useRef("karışık"); categoryRef.current=category;
   const afkCountRef=useRef({});
   const pendingSfxRef=useRef(null);
+  // Tekli mod combo bonus XP biriktirici — oyun bitince addXP'e ekleniyor
+  const comboXpRef=useRef(0);
+  const comboCountRef=useRef(0);comboCountRef.current=comboCount;
   const pingIntervalRef=useRef(null);
 
   const resetMultiplayerState=useCallback(()=>{
@@ -1703,9 +1891,14 @@ function App(){
       setGold(g=>{const ng=g+rankGold;saveGoldLS(usernameRef.current,ng);return ng;});
       setGoldEarned(rankGold);
     }
-    // XP from correct answers
+    // XP from correct answers + tekli mod combo bonusu
     const correctCount=answers.filter(a=>a.sel===a.a).length;
-    if(correctCount>0) addXP(correctCount*5);
+    const totalXP=correctCount*5+(mode==='solo'?comboXpRef.current:0);
+    if(totalXP>0) addXP(totalXP);
+    // Combo bonus XP'i kullanıcıya bildiri olarak göster
+    if(mode==='solo'&&comboXpRef.current>0){
+      setGoldEarned(g=>g); // no-op, just to trigger render later
+    }
     // Update stats
     const ns=getStats(usernameRef.current);
     ns.games=(ns.games||0)+1;
@@ -1724,7 +1917,7 @@ function App(){
 
   // -- Music --
   useEffect(()=>{
-    if(screen==="game"&&!musicStarted){setMusicStarted(true);if(musicOn)playMusic(0);}
+    if(screen==="game"&&!musicStarted){setMusicStarted(true);if(musicOn)playMusic(Math.floor(Math.random()*5));}
     if((screen==="result"||screen==="home"||screen==="auth")&&musicStarted){stopMusic();setMusicStarted(false);}
   },[screen]);
 
@@ -1964,6 +2157,7 @@ function App(){
   // -- Start game --
   const startGame=useCallback((isMulti)=>{
     setScreen("loading");setMusicStarted(false);setGoldEarned(0);setKickedPlayers([]);
+    setComboCount(0);setComboBlast(null);comboXpRef.current=0; // combo durumlarını sıfırla
     const qs=getQsByCategory(category,qCount,usernameRef.current);
     setTimeout(()=>{const pl=Object.keys(playersRef.current);if(isMulti&&isHostRef.current)broadcast({type:"start",questions:qs,qCount,players:pl,category});launchGame(qs,qCount,isMulti?"multi":"solo",pl,category);},700);
   },[category,qCount]);
@@ -1996,6 +2190,28 @@ function App(){
     setFeedback(true);
     setAnswers(a=>[...a,{q:q.q,o:q.o,a:q.a,sel:orig1,sel2:orig2,tl:tlRef.current,pts}]);
     pendingSfxRef.current=ok;
+    // -- TEKLİ MOD COMBO ÇARPANI --
+    // Doğru cevapta combo artar, yanlışta sıfırlanır. Her combo seviyesi 1 XP bonus,
+    // 5+ combo'da seviye başına 2 XP bonus + özel animasyon/ses tetiklenir.
+    if(modeRef.current!=="multi"){
+      if(ok){
+        const newCombo=comboCountRef.current+1;
+        // Bonus XP hesabı: 1->0, 2->1, 3->2, 4->3, 5->5, 6->7, 7->9 ...
+        const bonus=newCombo<=1?0:(newCombo<=4?(newCombo-1):(3+(newCombo-4)*2));
+        if(bonus>0)comboXpRef.current+=bonus;
+        setComboCount(newCombo);
+        if(newCombo>=5){
+          // Mega combo: özel animasyon + ses
+          if(sfxOnRef.current)playSfx('combo-mega',{n:newCombo});
+          setComboBlast({n:newCombo,xp:bonus,t:Date.now()});
+          try{if(navigator.vibrate)navigator.vibrate([30,30,30,30,80]);}catch(e){}
+        } else if(newCombo>=2){
+          if(sfxOnRef.current)playSfx('combo');
+        }
+      } else {
+        if(comboCountRef.current>0)setComboCount(0);
+      }
+    }
     if(modeRef.current==="multi"){
       setWaiting(true);
       if(isHostRef.current){
@@ -2021,6 +2237,8 @@ function App(){
   const doAnswer=useCallback((displayIdx)=>{
     const q=questionsRef.current[qIdxRef.current];if(!q)return;
     if(selRef.current!==null&&(!pwDoubleRef.current||sel2Ref.current!==null))return;
+    // Şık tıklama sesi
+    if(sfxOnRef.current)playSfx("click");
     if(pwDoubleRef.current){
       if(selRef.current===null){setSel(displayIdx);return;}
       if(displayIdx!==selRef.current){setSel2(displayIdx);submitAnswer(selRef.current,displayIdx,q);return;}
@@ -2085,6 +2303,13 @@ function App(){
     scheduleBotAnswers(qIdx);
     return()=>clearBotTimeouts();
   },[screen,qIdx,scheduleBotAnswers,clearBotTimeouts]);
+
+  // Her soruya özel kısa jingle — qIdx'e göre farklı arpej
+  useEffect(()=>{
+    if(screen!=="game")return;
+    if(!sfxOnRef.current)return;
+    playSfx("qstart",{idx:qIdx});
+  },[screen,qIdx]);
 
   // -- Turnuva: bot vs bot maçlarını otomatik çöz, kullanıcının maçı dışındakileri 1.5 sn sonra simüle et --
   useEffect(()=>{
@@ -2252,7 +2477,7 @@ function App(){
         {/* Nav */}
         <div style={{display:"flex",background:"#17352f",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
           {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
-            <button key={t.k} onClick={()=>setHomeTab(t.k)} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#34d399,#f59e0b)":"transparent",color:homeTab===t.k?"#071714":"#7a9187",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
+            <button key={t.k} onClick={()=>{playSfx("tab");setHomeTab(t.k);}} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#34d399,#f59e0b)":"transparent",color:homeTab===t.k?"#071714":"#7a9187",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
           ))}
         </div>
 
@@ -2663,7 +2888,12 @@ function App(){
           </div>
         </div>}
         {showAvEd&&<AvatarEditor avatar={avatar} levelInfo={levelInfo} onSave={(av)=>{setAvatar(av);saveAvatar(usernameRef.current,av);setShowAvEd(false);}} onClose={()=>setShowAvEd(false)}/>}
-        {comboCount>=2&&<div style={{position:"fixed",top:70,right:16,background:"linear-gradient(135deg,#ff4d6d,#9b5de5)",borderRadius:20,padding:"4px 12px",fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:800,color:"#fff",zIndex:100}}>x{comboCount} COMBO!</div>}
+        {/* Küçük combo badge (2-4) — sağ üstte */}
+        {comboCount>=2&&comboCount<5&&<div key={"cb"+comboCount} className="combo-badge" style={{position:"fixed",top:70,right:16,background:"linear-gradient(135deg,#ff4d6d,#9b5de5)",borderRadius:20,padding:"4px 12px",fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:800,color:"#fff",zIndex:100,boxShadow:"0 4px 14px rgba(155,93,229,.5)"}}>x{comboCount} COMBO! +{comboCount-1} XP</div>}
+        {/* Büyük combo badge (5+) — sağ üstte sürekli pulse */}
+        {comboCount>=5&&<div key={"cbm"+comboCount} className="combo-badge" style={{position:"fixed",top:70,right:16,background:"linear-gradient(135deg,#ffd166,#ff4d6d,#9b5de5)",backgroundSize:"200% 200%",borderRadius:22,padding:"6px 14px",fontFamily:"'Rajdhani',sans-serif",fontSize:18,fontWeight:800,color:"#fff",zIndex:100,boxShadow:"0 0 20px rgba(255,215,0,.7),0 4px 18px rgba(255,77,109,.5)",border:"2px solid #ffd166"}}>🔥 x{comboCount} MEGA! +{3+(comboCount-4)*2} XP</div>}
+        {/* Mega combo flash — ekran ortasında patlayan görsel */}
+        {comboBlast&&<ComboBlastOverlay blast={comboBlast} onDone={()=>setComboBlast(null)}/>}
         {showShop&&(
           <div className="shop-overlay" onClick={()=>setShowShop(false)}>
             <div className="shop-panel" onClick={e=>e.stopPropagation()}>
@@ -2934,9 +3164,12 @@ function App(){
           <div className="rs">{score}</div>
           <div className="rsl">toplam puan · %{pct} başarı</div>
         </div>
-        {goldEarned>0&&(
+        {(goldEarned>0||(mode==='solo'&&comboXpRef.current>0))&&(
           <div style={{background:"rgba(251,191,36,.08)",border:"1.5px solid rgba(251,191,36,.25)",borderRadius:12,padding:"11px",textAlign:"center",marginBottom:12}}>
-            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#fbbf24"}}>+{goldEarned} 🪙 · +{correct*5} XP</div>
+            <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:26,fontWeight:700,color:"#fbbf24"}}>+{goldEarned} 🪙 · +{correct*5+(mode==='solo'?comboXpRef.current:0)} XP</div>
+            {mode==='solo'&&comboXpRef.current>0&&(
+              <div style={{marginTop:6,fontSize:12,fontWeight:700,color:"#ff4d6d"}}>🔥 Combo Bonus: +{comboXpRef.current} XP</div>
+            )}
           </div>
         )}
         <div className="rstats">
