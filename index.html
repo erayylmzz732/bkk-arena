@@ -21,6 +21,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#10231f}
+/* Yazı boyutu ayarı (Ayarlar) */
+html[data-fs="sm"]{font-size:14px}
+html[data-fs="md"]{font-size:16px}
+html[data-fs="lg"]{font-size:18px}
+/* Animasyonları azalt (Ayarlar) */
+html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
 .app{min-height:100vh;background:linear-gradient(135deg,#14532d 0%,#10231f 40%,#7c2d12 80%,#10231f 100%);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;color:#e2e4f0;padding:16px}
 .phone{width:390px;min-height:840px;background:#15352f;border-radius:38px;border:1.5px solid #255045;box-shadow:0 0 0 1px #071714,0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(0,255,255,.08);overflow:hidden;display:flex;flex-direction:column;position:relative}
 .sc{flex:1;padding:26px 20px 24px;display:flex;flex-direction:column;overflow-y:auto}
@@ -1265,29 +1271,62 @@ function addGameHistory(u,pts,correct,total){
 // Defined outside App so they don't remount on state change
 // ---------------------------------------------
 
-function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,onClose,onLogout}){
+function SettingsModal({sfxOn,setSfxOn,musicOn,setMusicOn,lang,setLang,vibrateOn,setVibrateOn,notifOn,setNotifOn,reduceMotion,setReduceMotion,fontSize,setFontSize,onClose,onLogout,username,userCode}){
+  const SettingRow=({label,children})=>(
+    <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+      <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>{label}</span>{children}
+    </div>
+  );
+  const Toggle=({on,onClick})=><div className={"toggle"+(on?" on":"")} onClick={onClick}><div className="toggle-knob"/></div>;
+  const handleClearCache=()=>{
+    if(!confirm("Yerel önbelleği temizlemek istediğine emin misin? Görülen sorular sıfırlanır."))return;
+    try{
+      const keep=["ba_user","ba_pass","ba_fb_uid"];
+      const all=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&!keep.includes(k))all.push(k);}
+      all.forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+      alert("Önbellek temizlendi. Sayfayı yenile.");
+    }catch(e){}
+  };
+  const handleCopyCode=()=>{try{navigator.clipboard.writeText(userCode||"");alert("Kod kopyalandı: "+(userCode||"-"));}catch(e){}};
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.95)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
-      <div style={{background:"#060e1e",border:"2px solid #2a5a8e",borderRadius:20,padding:20,width:"100%",maxWidth:340}} onClick={e=>e.stopPropagation()}>
+    <div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.95)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={onClose}>
+      <div style={{background:"#060e1e",border:"2px solid #2a5a8e",borderRadius:20,padding:20,width:"100%",maxWidth:380,maxHeight:"86vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:20,fontWeight:700,color:"#ffffff"}}>Ayarlar</span>
-          <button onClick={onClose} style={{background:"none",border:"none",color:"#bdd7c7",fontSize:22,cursor:"pointer"}}>X</button>
+          <span style={{fontFamily:"'Rajdhani',sans-serif",fontSize:22,fontWeight:700,color:"#fff"}}>⚙️ Ayarlar</span>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#bdd7c7",fontSize:24,cursor:"pointer",padding:"0 4px"}}>×</button>
         </div>
-        <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>Ses Efektleri</span>
-          <div className={"toggle"+(sfxOn?" on":"")} onClick={()=>{setSfxOn(!sfxOn);setSfxEnabledG(!sfxOn);}}><div className="toggle-knob"/></div>
-        </div>
-        <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>Oyun Muzigi</span>
-          <div className={"toggle"+(musicOn?" on":"")} onClick={()=>{setMusicOn(!musicOn);setMusicEnabledG(!musicOn);}}><div className="toggle-knob"/></div>
-        </div>
-        <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>Dil / Language</span>
-          <div style={{display:"flex",gap:4}}>
-            {["tr","en"].map(l=><button key={l} onClick={()=>{setLang(l);try{localStorage.setItem("ba_lang",l);}catch(e){}}} style={{background:lang===l?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"#162848",border:"1px solid #2a5a8e",borderRadius:8,padding:"4px 10px",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}}>{l.toUpperCase()}</button>)}
+        {username&&<div style={{background:"linear-gradient(135deg,#1a3a6e,#2a1a5a)",border:"1.5px solid #4cc9f0",borderRadius:12,padding:"10px 12px",marginBottom:10}}>
+          <div style={{fontSize:11,color:"#bdd7c7",fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>Hesap</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
+            <div><div style={{fontSize:14,fontWeight:700,color:"#fff"}}>{username}</div><div style={{fontSize:11,color:"#4cc9f0",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{userCode||"#----"}</div></div>
+            <button onClick={handleCopyCode} style={{background:"rgba(76,201,240,.15)",border:"1px solid #4cc9f0",borderRadius:8,padding:"5px 10px",color:"#4cc9f0",fontWeight:700,fontSize:11,cursor:"pointer"}}>Kopyala</button>
+          </div>
+        </div>}
+        <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,margin:"8px 0 6px"}}>Ses & Görsel</div>
+        <SettingRow label="🔊 Ses Efektleri"><Toggle on={sfxOn} onClick={()=>{setSfxOn(!sfxOn);setSfxEnabledG(!sfxOn);}}/></SettingRow>
+        <SettingRow label="🎵 Oyun Müziği"><Toggle on={musicOn} onClick={()=>{setMusicOn(!musicOn);setMusicEnabledG(!musicOn);}}/></SettingRow>
+        <SettingRow label="📳 Titreşim"><Toggle on={vibrateOn} onClick={()=>setVibrateOn(!vibrateOn)}/></SettingRow>
+        <SettingRow label="🔔 Bildirimler"><Toggle on={notifOn} onClick={()=>setNotifOn(!notifOn)}/></SettingRow>
+        <SettingRow label="🎬 Animasyonları Azalt"><Toggle on={reduceMotion} onClick={()=>setReduceMotion(!reduceMotion)}/></SettingRow>
+        <div style={{background:"#0f2040",border:"1.5px solid #2a5a8e",borderRadius:12,padding:"12px",marginBottom:8}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#fff"}}>🔠 Yazı Boyutu</span>
+            <span style={{fontSize:12,color:"#bdd7c7"}}>{fontSize==='sm'?'Küçük':fontSize==='lg'?'Büyük':'Normal'}</span>
+          </div>
+          <div style={{display:"flex",gap:6}}>
+            {[{v:'sm',l:'A-'},{v:'md',l:'A'},{v:'lg',l:'A+'}].map(o=><button key={o.v} onClick={()=>setFontSize(o.v)} style={{flex:1,background:fontSize===o.v?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"#162848",border:"1px solid #2a5a8e",borderRadius:8,padding:"6px 0",color:"#fff",fontWeight:700,fontSize:o.v==='sm'?11:o.v==='lg'?17:14,cursor:"pointer"}}>{o.l}</button>)}
           </div>
         </div>
-        <button className="sbtn" style={{fontSize:13,padding:11,marginTop:8,width:"100%"}} onClick={onLogout}>Cikis Yap</button>
+        <SettingRow label="🌐 Dil / Language">
+          <div style={{display:"flex",gap:4}}>
+            {[{v:"tr",l:"TR"},{v:"en",l:"EN"}].map(l=><button key={l.v} onClick={()=>{setLang(l.v);try{localStorage.setItem("ba_lang",l.v);}catch(e){}}} style={{background:lang===l.v?"linear-gradient(135deg,#4cc9f0,#9b5de5)":"#162848",border:"1px solid #2a5a8e",borderRadius:8,padding:"4px 10px",color:"#fff",fontWeight:700,fontSize:12,cursor:"pointer"}}>{l.l}</button>)}
+          </div>
+        </SettingRow>
+        <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,margin:"12px 0 6px"}}>Veri & Hesap</div>
+        <button className="sbtn" style={{fontSize:13,padding:10,marginBottom:6,width:"100%",background:"#162848"}} onClick={handleClearCache}>🗑️ Önbelleği Temizle</button>
+        <button className="sbtn" style={{fontSize:13,padding:10,marginBottom:8,width:"100%",background:"#162848"}} onClick={()=>{window.open("mailto:?subject=BILGI%20ARENA%20Geri%20Bildirim&body=Mesajın%3A%20","_blank");}}>📧 Geri Bildirim Gönder</button>
+        <button className="sbtn" style={{fontSize:13,padding:11,width:"100%",background:"linear-gradient(135deg,#ff4d6d,#c2185b)",color:"#fff"}} onClick={onLogout}>🚪 Çıkış Yap</button>
+        <div style={{textAlign:"center",fontSize:10,color:"#4a6080",marginTop:12}}>BILGI ARENA · v2.0</div>
       </div>
     </div>
   );
@@ -1537,8 +1576,12 @@ function App(){
   const [showShop,setShowShop]=useState(false);
   const [showSettings,setShowSettings]=useState(false);
   const [showAvEd,setShowAvEd]=useState(false);
-  const [sfxOn,setSfxOn]=useState(true);
-  const [musicOn,setMusicOn]=useState(true);
+  const [sfxOn,setSfxOn]=useState((()=>{try{const v=localStorage.getItem("ba_sfx");return v===null?true:v==="1";}catch(e){return true;}})());
+  const [musicOn,setMusicOn]=useState((()=>{try{const v=localStorage.getItem("ba_music");return v===null?true:v==="1";}catch(e){return true;}})());
+  const [vibrateOn,setVibrateOn]=useState((()=>{try{const v=localStorage.getItem("ba_vib");return v===null?true:v==="1";}catch(e){return true;}})());
+  const [notifOn,setNotifOn]=useState((()=>{try{const v=localStorage.getItem("ba_notif");return v===null?true:v==="1";}catch(e){return true;}})());
+  const [reduceMotion,setReduceMotion]=useState((()=>{try{return localStorage.getItem("ba_reduceMotion")==="1";}catch(e){return false;}})());
+  const [fontSize,setFontSize]=useState((()=>{try{return localStorage.getItem("ba_fontSize")||"md";}catch(e){return "md";}})());
   const [musicStarted,setMusicStarted]=useState(false);
   const [levelUpQueue,setLevelUpQueue]=useState([]);
   const [chestModal,setChestModal]=useState(false);
@@ -1638,13 +1681,16 @@ function App(){
     return()=>clearInterval(pingIntervalRef.current);
   },[username]);
 
-  // -- Reveal SFX --
+  // -- Reveal SFX + Titreşim --
+  const vibrateRef=useRef(true);vibrateRef.current=vibrateOn;
+  const doVibrate=useCallback((pattern)=>{try{if(vibrateRef.current&&navigator.vibrate)navigator.vibrate(pattern);}catch(e){}},[]);
   useEffect(()=>{
-    if(revealed&&pendingSfxRef.current!==null&&sfxOnRef.current){
-      playSfx(pendingSfxRef.current?'correct':'wrong');
+    if(revealed&&pendingSfxRef.current!==null){
+      if(sfxOnRef.current)playSfx(pendingSfxRef.current?'correct':'wrong');
+      doVibrate(pendingSfxRef.current?[40]:[80,40,80]);
       pendingSfxRef.current=null;
     }
-  },[revealed]);
+  },[revealed,doVibrate]);
 
   // -- Gold award on result --
   useEffect(()=>{
@@ -1936,7 +1982,10 @@ function App(){
 
   // -- submitAnswer --
   const submitAnswer=useCallback((di1,di2,q)=>{
-    clearInterval(timerRef.current);
+    // Solo modda cevap verince timer durur (1.5 sn sonra sıradaki soru). Multi modda
+    // ise diğer oyuncular/botlar cevaplayana kadar geri sayım devam etmeli — kullanıcı
+    // ekranda donmuş bir sayaç görmesin.
+    if(modeRef.current!=="multi")clearInterval(timerRef.current);
     const sh=seededShuffle(q.o,usernameRef.current+String(qIdxRef.current));
     const orig1=di1===null?null:sh[di1].i;
     const orig2=di2!==null?sh[di2].i:null;
@@ -1953,7 +2002,8 @@ function App(){
         playersRef.current[usernameRef.current]=ns;setLiveScores({...playersRef.current});
         broadcast({type:"scores",data:{...playersRef.current}});
         hostRecordAnswered(qIdxRef.current,usernameRef.current,di1===null);
-        clearTimeout(forceRef.current);forceRef.current=setTimeout(()=>doAdvance(qIdxRef.current),22000);
+        // Bot ve gerçek oyuncuların hepsi en fazla 10 sn içinde cevaplar; 11 sn sonra zorla ilerle
+        clearTimeout(forceRef.current);forceRef.current=setTimeout(()=>doAdvance(qIdxRef.current),11000);
       } else if(hostConnRef.current){
         try{hostConnRef.current.send({type:"score",name:usernameRef.current,score:ns});hostConnRef.current.send({type:"answered",qIdx:qIdxRef.current,name:usernameRef.current,wasAFK:di1===null});}catch(e){}
       }
@@ -1992,7 +2042,86 @@ function App(){
     return()=>clearInterval(timerRef.current);
   },[screen,qIdx,submitAnswer]);
 
-  useEffect(()=>()=>{clearInterval(timerRef.current);clearTimeout(forceRef.current);if(peerRef.current)peerRef.current.destroy();stopMusic();},[]);
+  // -- Ayar kalıcılığı (localStorage) --
+  useEffect(()=>{try{localStorage.setItem("ba_sfx",sfxOn?"1":"0");}catch(e){}},[sfxOn]);
+  useEffect(()=>{try{localStorage.setItem("ba_music",musicOn?"1":"0");}catch(e){}},[musicOn]);
+  useEffect(()=>{try{localStorage.setItem("ba_vib",vibrateOn?"1":"0");}catch(e){}},[vibrateOn]);
+  useEffect(()=>{try{localStorage.setItem("ba_notif",notifOn?"1":"0");}catch(e){}},[notifOn]);
+  useEffect(()=>{try{localStorage.setItem("ba_reduceMotion",reduceMotion?"1":"0");}catch(e){}document.documentElement.classList.toggle("reduce-motion",reduceMotion);},[reduceMotion]);
+  useEffect(()=>{try{localStorage.setItem("ba_fontSize",fontSize);}catch(e){}document.documentElement.setAttribute("data-fs",fontSize);},[fontSize]);
+
+  // -- Bot otomatik cevaplama --
+  // Her bot için 2.5-9.5 saniye arasında rastgele cevap zamanı seçer (max 10 sn).
+  // Doğruluk oranı %65-80, puan tlAtAnswer'a göre.
+  const botTimeoutsRef=useRef([]);
+  const clearBotTimeouts=useCallback(()=>{botTimeoutsRef.current.forEach(t=>clearTimeout(t));botTimeoutsRef.current=[];},[]);
+  const scheduleBotAnswers=useCallback((qI)=>{
+    clearBotTimeouts();
+    if(!isHostRef.current)return;
+    const q=questionsRef.current[qI];if(!q)return;
+    const bots=Object.keys(playersRef.current).filter(n=>isBot(n));
+    bots.forEach(bot=>{
+      const delayMs=2500+Math.random()*7000; // 2.5–9.5 sn
+      const t=setTimeout(()=>{
+        if(qIdxRef.current!==qI)return; // soru değişmiş
+        if(!playersRef.current[bot]&&playersRef.current[bot]!==0)return; // bot çıkmış
+        if(answeredRef.current[qI]&&answeredRef.current[qI].has(bot))return; // zaten kayıtlı
+        const correct=Math.random()<0.72; // %72 doğruluk
+        const tlAtAnswer=Math.max(1,15-Math.floor(delayMs/1000));
+        const pts=correct?calcScore(tlAtAnswer):0;
+        playersRef.current[bot]=(playersRef.current[bot]||0)+pts;
+        try{setLiveScores({...playersRef.current});}catch(e){}
+        try{broadcast({type:"scores",data:{...playersRef.current}});}catch(e){}
+        try{hostRecordAnswered(qI,bot,false);}catch(e){}
+      },delayMs);
+      botTimeoutsRef.current.push(t);
+    });
+  },[clearBotTimeouts,hostRecordAnswered]);
+
+  // Yeni soruya geçildiğinde bot cevaplarını planla.
+  useEffect(()=>{
+    if(screen!=="game")return;
+    if(modeRef.current!=="multi")return;
+    scheduleBotAnswers(qIdx);
+    return()=>clearBotTimeouts();
+  },[screen,qIdx,scheduleBotAnswers,clearBotTimeouts]);
+
+  // -- Turnuva: bot vs bot maçlarını otomatik çöz, kullanıcının maçı dışındakileri 1.5 sn sonra simüle et --
+  useEffect(()=>{
+    if(!tournamentData||!tournamentData.started)return;
+    const pendingBotMatches=tournamentData.bracket.map((m,i)=>({m,i})).filter(({m})=>!m.winner&&m.p2!=="BYE"&&m.p1!==username&&m.p2!==username);
+    if(pendingBotMatches.length===0)return;
+    // İlk bot-vs-bot maçı seç ve 1200-1800 ms sonra rastgele kazanan ata
+    const t=setTimeout(()=>{
+      setTournamentData(d=>{
+        if(!d||!d.started)return d;
+        const nb=d.bracket.map((bm,bi)=>{
+          if(bm.winner||bm.p2==="BYE")return bm;
+          if(bm.p1===username||bm.p2===username)return bm; // kullanıcı maçına dokunma
+          const w=Math.random()<0.5?bm.p1:bm.p2;
+          return {...bm,winner:w};
+        });
+        // Bütün maçlar bittiyse bir sonraki tura kur
+        if(nb.every(bm=>bm.winner)){
+          const ws=nb.map(bm=>bm.winner);
+          if(ws.length===1){
+            setTimeout(()=>{alert("🏆 Şampiyon: "+ws[0]+"!");setShowTournament(false);},400);
+            return {players:[],started:false,bracket:[],round:1};
+          }
+          const nm=[];
+          for(let j=0;j<ws.length;j+=2){
+            if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});
+            else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});
+          }
+          return {...d,bracket:nm,round:d.round+1};
+        }
+        return {...d,bracket:nb};
+      });
+    },1400);
+    return()=>clearTimeout(t);
+  },[tournamentData,username]);
+
+  useEffect(()=>()=>{clearInterval(timerRef.current);clearTimeout(forceRef.current);if(peerRef.current)peerRef.current.destroy();stopMusic();clearBotTimeouts();},[clearBotTimeouts]);
 
   const copyLink=()=>{
     const txt=inviteLink||window.location.href;
@@ -2360,7 +2489,17 @@ function App(){
           );
         })()}
 
-        {showSettings&&<SettingsModal sfxOn={sfxOn} setSfxOn={setSfxOn} musicOn={musicOn} setMusicOn={setMusicOn} onClose={()=>setShowSettings(false)} onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
+        {showSettings&&<SettingsModal
+          sfxOn={sfxOn} setSfxOn={setSfxOn}
+          musicOn={musicOn} setMusicOn={setMusicOn}
+          lang={lang} setLang={setLang}
+          vibrateOn={vibrateOn} setVibrateOn={setVibrateOn}
+          notifOn={notifOn} setNotifOn={setNotifOn}
+          reduceMotion={reduceMotion} setReduceMotion={setReduceMotion}
+          fontSize={fontSize} setFontSize={setFontSize}
+          username={username} userCode={userCode}
+          onClose={()=>setShowSettings(false)}
+          onLogout={()=>{try{localStorage.removeItem('ba_user');localStorage.removeItem('ba_pass');}catch(e){}setShowSettings(false);setScreen('auth');}}/>}
         
         {showTournament&&<div style={{position:"fixed",inset:0,background:"rgba(6,14,30,.96)",zIndex:200,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={()=>setShowTournament(false)}>
           <div style={{background:"#060e1e",border:"2px solid #ff4d6d",borderTopLeftRadius:24,borderTopRightRadius:24,padding:"20px 18px 34px",width:"100%",maxWidth:420,maxHeight:"88vh",overflowY:"auto"}} onClick={e=>e.stopPropagation()}>
@@ -2426,21 +2565,30 @@ function App(){
                       <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:14,color:"#bdd7c7",fontWeight:700}}>VS</div>
                       <div style={{flex:1,textAlign:"center",fontWeight:700,color:m.winner===m.p2?"#06d6a0":m.p2==="BYE"?"#4a6080":"#fff"}}>{m.p2}</div>
                     </div>
-                    {!m.winner&&m.p2!=="BYE"&&<div style={{display:"flex",gap:5}}>
-                      {[m.p1,m.p2].map(w=>{const isPM=m.p1===username||m.p2===username;return <button key={w} onClick={()=>{
-                        let actualWinner=w;let msg="";
-                        if(isPM){
-                          const ps=Math.floor(Math.random()*120)+60;
-                          const bs=Math.floor(Math.random()*120)+50;
-                          actualWinner=ps>bs?username:(m.p1===username?m.p2:m.p1);
-                          msg=(actualWinner===username?"🎉 Kazandın! ":"😞 Kaybettin! ")+ps+" - "+bs;
-                          if(typeof playSound==="function")playSound(actualWinner===username?"win":"wrong");
-                        }
+                    {!m.winner&&m.p2!=="BYE"&&(()=>{
+                      const isPM=m.p1===username||m.p2===username;
+                      if(!isPM){
+                        // Bot vs bot: kullanıcı seçemez, otomatik çözülmesini bekler.
+                        return <div style={{textAlign:"center",fontSize:11,color:"#7a9187",padding:"4px 0"}}>⏳ Maç simülasyonu...</div>;
+                      }
+                      const opp=m.p1===username?m.p2:m.p1;
+                      return <button onClick={()=>{
+                        // Kullanıcı maçını oyna: rastgele puan simülasyonu (gelecekte gerçek oyun ekranına yönlendirilecek)
+                        const ps=Math.floor(Math.random()*120)+60;
+                        const bs=Math.floor(Math.random()*120)+50;
+                        const actualWinner=ps>bs?username:opp;
+                        const msg=(actualWinner===username?"🎉 Kazandın! ":"😞 Kaybettin! ")+ps+" - "+bs;
+                        playSfx(actualWinner===username?"win":"lose");
                         const nb=tournamentData.bracket.map((bm,bi)=>bi===i?{...bm,winner:actualWinner}:bm);
-                        if(nb.every(bm=>bm.winner)){const ws=nb.map(bm=>bm.winner);if(ws.length===1){setTimeout(()=>alert("🏆 Şampiyon: "+ws[0]+"!"),msg?500:0);setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}}else setTournamentData(d=>({...d,bracket:nb}));
-                        if(msg)setTimeout(()=>alert(msg),200);
-                      }} style={{flex:1,background:isPM?"linear-gradient(135deg,#06d6a0,#00ff88)":"rgba(6,214,160,.08)",border:"1.5px solid #06d6a0",borderRadius:8,padding:"7px",color:isPM?"#fff":"#06d6a0",fontWeight:800,cursor:"pointer",fontSize:11}}>{isPM?(w===username?"⚔️ Maçı Oyna":"🎯 "+w):(w+" Kazandı")}</button>;})}
-                    </div>}
+                        // Tüm maçlar bittiyse bir sonraki tura geç
+                        if(nb.every(bm=>bm.winner)){
+                          const ws=nb.map(bm=>bm.winner);
+                          if(ws.length===1){setTimeout(()=>alert("🏆 Şampiyon: "+ws[0]+"!"),500);setTournamentData({players:[],started:false,bracket:[],round:1});setShowTournament(false);}
+                          else{const nm=[];for(let j=0;j<ws.length;j+=2){if(j+1<ws.length)nm.push({p1:ws[j],p2:ws[j+1],winner:null});else nm.push({p1:ws[j],p2:"BYE",winner:ws[j]});}setTournamentData(d=>({...d,bracket:nm,round:d.round+1}));}
+                        }else setTournamentData(d=>({...d,bracket:nb}));
+                        setTimeout(()=>alert(msg),200);
+                      }} style={{width:"100%",background:"linear-gradient(135deg,#06d6a0,#00ff88)",border:"none",borderRadius:8,padding:"9px",color:"#071714",fontWeight:800,cursor:"pointer",fontSize:13}}>⚔️ Maçı Oyna ({opp})</button>;
+                    })()}
                     {m.winner&&<div style={{textAlign:"center",color:"#06d6a0",fontWeight:700,fontSize:11}}>Kazanan: {m.winner}</div>}
                   </div>
                 ))}
