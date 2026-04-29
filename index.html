@@ -440,6 +440,87 @@ async function fbSearchByUsername(username){
 }
 
 // ═══════════════════════════════════════════════════════
+// MAÇ DAVETLERİ — Çoklu / Turnuva / Arena için kod ile davet
+// ═══════════════════════════════════════════════════════
+async function fbSendInvite(fromUid,fromUsername,fromCode,toUid,payload){
+  if(!db()) return {ok:false,err:"Firebase yok"};
+  try{
+    await db().collection("invites").add({
+      fromUid,fromUsername,fromCode,toUid,
+      kind:(payload&&payload.kind)||'multi',
+      payload:payload||{},
+      ts:firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt:Date.now(),
+      status:'pending'
+    });
+    return {ok:true};
+  }catch(e){return {ok:false,err:e.message};}
+}
+async function fbListInvites(toUid){
+  if(!db()) return [];
+  try{
+    const snap=await db().collection("invites").where("toUid","==",toUid).where("status","==","pending").limit(10).get();
+    const now=Date.now();
+    const out=[];
+    for(const d of snap.docs){
+      const data=d.data();
+      // 5 dakikadan eski davetleri otomatik temizle
+      if(data.createdAt&&(now-data.createdAt)>5*60*1000){
+        try{await d.ref.delete();}catch(e){}
+        continue;
+      }
+      out.push({id:d.id,...data});
+    }
+    return out;
+  }catch(e){return [];}
+}
+async function fbDeleteInvite(id){
+  if(!db()) return;
+  try{await db().collection("invites").doc(id).delete();}catch(e){}
+}
+
+// ═══════════════════════════════════════════════════════
+// ARKADAŞLIK İSTEKLERİ — kabul / reddet
+// ═══════════════════════════════════════════════════════
+async function fbSendFriendRequest(fromUid,fromUsername,fromCode,toUid){
+  if(!db()) return {ok:false,err:"Firebase yok"};
+  try{
+    // Aynı isteği tekrar göndermesin
+    const existing=await db().collection("friendRequests").where("fromUid","==",fromUid).where("toUid","==",toUid).where("status","==","pending").limit(1).get();
+    if(!existing.empty)return {ok:false,err:"Zaten gönderdin"};
+    await db().collection("friendRequests").add({
+      fromUid,fromUsername,fromCode,toUid,
+      ts:firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt:Date.now(),
+      status:'pending'
+    });
+    return {ok:true};
+  }catch(e){return {ok:false,err:e.message};}
+}
+async function fbListFriendRequests(toUid){
+  if(!db()) return [];
+  try{
+    const snap=await db().collection("friendRequests").where("toUid","==",toUid).where("status","==","pending").limit(20).get();
+    return snap.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){return [];}
+}
+async function fbAcceptFriendRequest(reqId,toUid,toUsername,fromUid,fromUsername){
+  if(!db()) return false;
+  try{
+    const batch=db().batch();
+    batch.update(db().collection("friendRequests").doc(reqId),{status:'accepted'});
+    batch.update(db().collection("users").doc(toUid),{friends:firebase.firestore.FieldValue.arrayUnion({uid:fromUid,username:fromUsername})});
+    batch.update(db().collection("users").doc(fromUid),{friends:firebase.firestore.FieldValue.arrayUnion({uid:toUid,username:toUsername})});
+    await batch.commit();
+    return true;
+  }catch(e){return false;}
+}
+async function fbRejectFriendRequest(reqId){
+  if(!db()) return false;
+  try{await db().collection("friendRequests").doc(reqId).update({status:'rejected'});return true;}catch(e){return false;}
+}
+
+// ═══════════════════════════════════════════════════════
 // LEAGUE (Real leaderboard!)
 // ═══════════════════════════════════════════════════════
 async function fbAddLeaguePts(uid, username, league, pts){
@@ -838,16 +919,38 @@ const GLASS_COL=["#1a1a3a","#C0C0C0","#ffd700","#00f0ff","#ff4466"];
 // ── Audio ──
 let _ac=null,_musicNodes=[],_musicGain=null,_sfxOn=true,_musicOn=true,_songIdx=0,_musicTO=null;
 const _getAC=()=>{if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();return _ac;};
+// Genişletilmiş ses paleti — daha dolgun, oyun-içi efektlerle dolu
+function _tone(c,g,freq,dt,dur,type,vol){const o=c.createOscillator();o.connect(g);o.type=type||'sine';if(typeof freq==='function')freq(o,c.currentTime+dt);else o.frequency.value=freq;const v=vol==null?.2:vol;g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(v,c.currentTime+dt+.012);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+dur);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+dur+.02);}
+function _noise(c,gout,dt,dur,vol){try{const bs=c.sampleRate*dur,b=c.createBuffer(1,bs,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<bs;i++)d[i]=(Math.random()*2-1)*(1-i/bs);const s=c.createBufferSource();s.buffer=b;const g=c.createGain();g.gain.value=vol==null?.12:vol;s.connect(g);g.connect(gout);s.start(c.currentTime+dt);}catch(e){}}
 function playSfx(type){
   if(!_sfxOn)return;
   try{const c=_getAC(),g=c.createGain();g.connect(c.destination);
-    if(type==='correct'){[[0,523],[.1,659],[.2,784],[.3,1047]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(.2,c.currentTime+dt+.03);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.18);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.2);});}
-    else if(type==='wrong'){[[0,320],[.18,240]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.18,c.currentTime+dt);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.22);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.25);});}
-    else if(type==='spend'){const o=c.createOscillator();o.connect(g);o.type='sine';o.frequency.setValueAtTime(700,c.currentTime);o.frequency.exponentialRampToValueAtTime(200,c.currentTime+.18);g.gain.setValueAtTime(.2,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.2);o.start();o.stop(c.currentTime+.22);}
-    else if(type==='earn'){[[0,523],[.1,659],[.2,880]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.frequency.value=f;g.gain.setValueAtTime(.18,c.currentTime+dt);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.18);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.2);});}
-    else if(type==='levelup'){[[0,523],[.08,659],[.16,784],[.24,1047],[.35,1319]].forEach(([dt,f])=>{const o=c.createOscillator();o.connect(g);o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime+dt);g.gain.linearRampToValueAtTime(.25,c.currentTime+dt+.04);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dt+.25);o.start(c.currentTime+dt);o.stop(c.currentTime+dt+.28);});}
+    if(type==='correct'){[[0,523],[.08,659],[.16,784],[.24,1047]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'sine',.22));}
+    else if(type==='wrong'){[[0,320,.20],[.16,220,.18],[.30,160,.16]].forEach(([dt,f,v])=>_tone(c,g,f,dt,.22,'sawtooth',v));}
+    else if(type==='spend'){_tone(c,g,o=>{o.frequency.setValueAtTime(720,c.currentTime);o.frequency.exponentialRampToValueAtTime(200,c.currentTime+.18);},0,.2,'sine',.22);}
+    else if(type==='earn'){[[0,523],[.08,659],[.16,880]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'triangle',.20));_noise(c,g,0,.05,.05);}
+    else if(type==='levelup'){[[0,523],[.07,659],[.14,784],[.21,1047],[.32,1319],[.42,1568]].forEach(([dt,f])=>_tone(c,g,f,dt,.28,'triangle',.24));}
+    else if(type==='click'){_tone(c,g,1100,0,.04,'square',.10);_tone(c,g,1500,.005,.04,'square',.06);}
+    else if(type==='tab'){_tone(c,g,420,0,.08,'triangle',.14);_tone(c,g,640,.05,.08,'triangle',.12);}
+    else if(type==='swoosh'){_noise(c,g,0,.18,.08);_tone(c,g,o=>{o.frequency.setValueAtTime(180,c.currentTime);o.frequency.exponentialRampToValueAtTime(60,c.currentTime+.18);},0,.18,'sine',.08);}
+    else if(type==='notify'){[[0,880],[.10,1175],[.20,1480]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'sine',.18));}
+    else if(type==='invite'){[[0,659],[.08,880],[.16,1175],[.24,1480]].forEach(([dt,f])=>_tone(c,g,f,dt,.20,'triangle',.20));}
+    else if(type==='accept'){[[0,659],[.08,784],[.18,1047]].forEach(([dt,f])=>_tone(c,g,f,dt,.22,'triangle',.22));}
+    else if(type==='reject'){[[0,440],[.10,330],[.20,247]].forEach(([dt,f])=>_tone(c,g,f,dt,.20,'sawtooth',.18));}
+    else if(type==='match-start'){[[0,523],[.05,659],[.10,784],[.18,1047],[.28,784],[.36,1047],[.46,1319]].forEach(([dt,f])=>_tone(c,g,f,dt,.22,'triangle',.22));_noise(c,g,0,.08,.07);}
+    else if(type==='win'){[[0,523],[.06,659],[.14,784],[.22,1047],[.34,1319],[.46,1047],[.56,1568]].forEach(([dt,f])=>_tone(c,g,f,dt,.28,'triangle',.26));}
+    else if(type==='lose'){[[0,392],[.18,330],[.36,247],[.55,196]].forEach(([dt,f])=>_tone(c,g,f,dt,.30,'sawtooth',.20));}
+    else if(type==='join'){[[0,587],[.08,784]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'sine',.18));}
+    else if(type==='leave'){[[0,440],[.08,330]].forEach(([dt,f])=>_tone(c,g,f,dt,.18,'sine',.16));}
+    else if(type==='tick'){_tone(c,g,1200,0,.04,'square',.08);}
+    else if(type==='tick-final'){_tone(c,g,1600,0,.08,'square',.16);}
+    else if(type==='combo'){[[0,880],[.05,1175],[.10,1480],[.15,1760]].forEach(([dt,f])=>_tone(c,g,f,dt,.12,'triangle',.18));}
+    else if(type==='powerup'){[[0,440],[.05,659],[.10,880],[.18,1175]].forEach(([dt,f])=>_tone(c,g,f,dt,.16,'triangle',.20));}
   }catch(e){}
 }
+// Eski 'playSound' API'sıyla uyumluluk — dolu ses paletinin kısaltılmış adı.
+const playSound=playSfx;
+try{window.playSound=playSfx;window.playSfx=playSfx;}catch(e){}
 const _n2f=n=>440*Math.pow(2,(n-69)/12);
 const _SONGS=[
   {bpm:140,seq:[[60,2],[64,1],[65,1],[67,2],[65,1],[64,1],[60,3],[59,1],[60,2],[64,2],[67,2],[69,1],[67,1],[65,4]],vol:.04},
@@ -1055,6 +1158,30 @@ function getLeagueObj(id){return LEAGUES.find(l=>l.id===id)||LEAGUES[0];}
 
 // Fake leaderboard for the same league (simulated opponents)
 const FAKE_NAMES=['Ahmet_K','Zeynep_A','Mert_Y','Elif_S','Can_T','Ayse_D','Burak_O','Selin_K','Ozan_M','Hande_G','Furkan_B','Nisa_Y','Arda_T','Ceren_A','Kaan_S','Irem_K','Baran_O','Dilara_M','Emre_C','Buse_T'];
+// Bot havuzu — turnuva, çoklu mod ve arena için. İleride matchmaking API'sine bağlanacak.
+const BOT_POOL=['Ahmet 🤖','Zeynep 🤖','Mehmet 🤖','Ayşe 🤖','Hasan 🤖','Elif 🤖','Mustafa 🤖','Fatma 🤖','Cem 🤖','Selin 🤖','Burak 🤖','Nisa 🤖','Arda 🤖','Ceren 🤖','Kaan 🤖','İrem 🤖','Baran 🤖','Dilara 🤖','Emre 🤖','Buse 🤖','Tolga 🤖','Pınar 🤖','Tarkan 🤖','Yağmur 🤖','Onur 🤖','Berk 🤖','Sude 🤖','Doruk 🤖','Sıla 🤖','Kerem 🤖'];
+function isBot(name){return typeof name==='string'&&name.indexOf('🤖')!==-1;}
+// Hariç tutulanlar dışında n adet rastgele bot ismi döndürür.
+function getRandomOpponents(n,exclude){
+  const ex=new Set(exclude||[]);
+  const pool=BOT_POOL.filter(b=>!ex.has(b));
+  const sh=pool.sort(()=>Math.random()-.5);
+  return sh.slice(0,Math.max(0,n));
+}
+// Yerel olarak çevrimiçi gözüken kullanıcıları tarar (ba_online_<user> = timestamp).
+// İleride Firebase'in 'online' koleksiyonuyla zenginleştirilecek.
+function getOnlineUsers(){
+  try{
+    const now=Date.now();const out=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(!k||!k.startsWith('ba_online_'))continue;
+      const v=parseInt(localStorage.getItem(k)||'0');
+      if(now-v<120000) out.push(k.substring('ba_online_'.length));
+    }
+    return out;
+  }catch(e){return [];}
+}
 function getFakeLeaderboard(userPts,leagueId,username){
   const seed=leagueId+getWeekKey();
   let h=0;for(const c of seed)h=(h*31+c.charCodeAt(0))>>>0;
@@ -1425,7 +1552,11 @@ function App(){
   const [arenaCode,setArenaCode]=useState("");
   const [arenaMode,setArenaMode]=useState("1v1");
   const [arenaErr,setArenaErr]=useState("");
-  const [tournamentData,setTournamentData]=useState(null);
+  const [tournamentData,setTournamentData]=useState({players:[],started:false,bracket:[],round:1});
+  const [tInviteCode,setTInviteCode]=useState("");
+  const [tInviteMsg,setTInviteMsg]=useState("");
+  const [mInviteCode,setMInviteCode]=useState("");
+  const [mInviteMsg,setMInviteMsg]=useState("");
   const [userCode,setUserCode]=useState("");
 
   // refs
@@ -1893,16 +2024,48 @@ function App(){
     else if(type==='x2')setPwX2(true);
   },[gold,pwElim]);
 
-  // -- Friend search --
-  const searchFriend=useCallback(()=>{
-    const code=friendSearchInput.trim();
+  // -- Friend search (önce Firebase, yoksa local localStorage fallback) --
+  const searchFriend=useCallback(async()=>{
+    const code=friendSearchInput.trim().toUpperCase();
     if(!code){setFriendSearchErr("Kod girin");return;}
-    const db=getUsernames();
-    const found=Object.keys(db).find(u=>getUserCode(u)===code);
+    if(code===userCode){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
+    // 1) Firebase
+    try{
+      if(typeof fbSearchByCode!=="undefined"){
+        const r=await fbSearchByCode(code);
+        if(r&&r.username){
+          if(r.username===username){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
+          setFriendSearchResult(r.username);setFriendSearchErr("");return;
+        }
+      }
+    }catch(e){}
+    // 2) Local fallback
+    const dbU=getUsernames();
+    const found=Object.keys(dbU).find(u=>getUserCode(u)===code);
     if(!found){setFriendSearchErr("Bu koda sahip kullanıcı bulunamadı");setFriendSearchResult(null);return;}
     if(found===username){setFriendSearchErr("Kendinizi ekleyemezsiniz");return;}
     setFriendSearchResult(found);setFriendSearchErr("");
-  },[friendSearchInput,username]);
+  },[friendSearchInput,username,userCode]);
+
+  // Kod ile çoklu/turnuva/arena daveti gönder (Firebase'de invites koleksiyonuna).
+  const sendInviteByCode=useCallback(async(rawCode,payload,cb)=>{
+    const code=(rawCode||"").trim().toUpperCase();
+    if(!code){cb&&cb("Kod gir!",false);return;}
+    if(code===userCode){cb&&cb("Kendi kodunu giremezsin",false);playSfx("wrong");return;}
+    let target=null;
+    try{if(typeof fbSearchByCode!=="undefined"){const r=await fbSearchByCode(code);if(r)target=r;}}catch(e){}
+    if(!target){cb&&cb("Bu koda sahip kullanıcı bulunamadı",false);playSfx("wrong");return;}
+    const fromUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+    if(!fromUid||typeof fbSendInvite==="undefined"){
+      // Çevrimdışı: davet gönderilemiyor, ama yine de UI'da bilgilendirici mesaj
+      cb&&cb("Çevrimdışı mod: davet gönderilemiyor",false);return;
+    }
+    try{
+      const r=await fbSendInvite(fromUid,username,userCode,target.uid,payload);
+      if(r&&r.ok){cb&&cb("✓ Davet gönderildi: "+target.username,true);playSfx("invite");}
+      else{cb&&cb((r&&r.err)||"Davet gönderilemedi",false);playSfx("wrong");}
+    }catch(e){cb&&cb("Davet gönderilemedi",false);}
+  },[username,userCode]);
 
   const addFriend=useCallback((friendName)=>{
     const cur=getFriends(usernameRef.current);
@@ -1997,29 +2160,29 @@ function App(){
           <div className="mc" onClick={()=>{resetMultiplayerState();setMode("solo");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>🎯</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e7fff5",marginBottom:3}}>Tekli Mod</div>
-            <div style={{fontSize:12,color:"#7a9187"}}>Tek başına oyna, kendi rekorunu kır</div>
-            <div style={{marginTop:8}}><span className="badge be">Solo</span></div>
+            <div style={{fontSize:12,color:"#7a9187"}}>Tek başına çöz, XP & altın topla, rekorunu kır</div>
+            <div style={{marginTop:8}}><span className="badge be">Solo · Pratik</span></div>
           </div>
 
           <div className="mc" onClick={()=>{resetMultiplayerState();setMode("multi");setScreen("setup");}}>
             <div style={{fontSize:26,marginBottom:6}}>👥</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#e7fff5",marginBottom:3}}>Çoklu Mod</div>
-            <div style={{fontSize:12,color:"#7a9187"}}>Sadece oda kur / koda katıl alanı</div>
-            <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer</span></div>
+            <div style={{fontSize:12,color:"#7a9187"}}>Hızlı eşleş veya grup oda kur — 2-15 kişi yarışsın</div>
+            <div style={{marginTop:8,display:"flex",gap:8}}><span className="badge bm">Multiplayer · 2-15</span></div>
           </div>
 
           <div className="mc" onClick={()=>setShowTournament(true)} style={{background:"linear-gradient(135deg,#17352f,#3a1f12)",border:"2px solid #f97316",cursor:"pointer"}}>
             <div style={{fontSize:28,marginBottom:4}}>🏆</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#fff7ed",marginBottom:2}}>Turnuva</div>
-            <div style={{fontSize:12,color:"#bdd7c7"}}>Ayrı turnuva alanı · 2-8 oyuncu eleme</div>
-            <div style={{marginTop:6}}><span style={{background:"rgba(249,115,22,.15)",color:"#fb923c",border:"1px solid rgba(249,115,22,.4)",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700}}>AYRI ALAN</span></div>
+            <div style={{fontSize:12,color:"#bdd7c7"}}>Tek eleme bracket · 8 kişilik finale yürü, kupayı kap</div>
+            <div style={{marginTop:6}}><span style={{background:"rgba(249,115,22,.15)",color:"#fb923c",border:"1px solid rgba(249,115,22,.4)",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:700}}>ELEME · 8 KİŞİ</span></div>
           </div>
 
           <div className="mc" onClick={()=>setShowArena(true)} style={{background:"linear-gradient(135deg,#17352f,#0f3f35)",border:"2px solid #22c55e",cursor:"pointer",animation:"slideUp .5s ease"}}>
             <div style={{fontSize:30,marginBottom:4}}>⚔️</div>
             <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:21,fontWeight:700,color:"#86efac",marginBottom:2}}>Arena</div>
-            <div style={{fontSize:12,color:"#bdd7c7"}}>Ayrı arena alanı · 1v1 veya 2v2 davet</div>
-            <div style={{marginTop:6}}><span style={{background:"linear-gradient(135deg,#22c55e,#f59e0b)",color:"#071714",fontSize:9,padding:"2px 10px",borderRadius:20,fontWeight:800}}>AYRI ALAN</span></div>
+            <div style={{fontSize:12,color:"#bdd7c7"}}>1v1 düello veya 2v2 takım kapışması · kod ile davet</div>
+            <div style={{marginTop:6}}><span style={{background:"linear-gradient(135deg,#22c55e,#f59e0b)",color:"#071714",fontSize:9,padding:"2px 10px",borderRadius:20,fontWeight:800}}>1v1 / 2v2</span></div>
           </div>
         </>}
 
@@ -2207,24 +2370,51 @@ function App(){
             </div>
             {!tournamentData.started?(
               <div>
-                <div style={{fontSize:12,color:"#bdd7c7",marginBottom:10}}>Katilimcilari ekle (2-8 oyuncu)</div>
+                <div style={{fontSize:12,color:"#bdd7c7",marginBottom:10,lineHeight:1.4}}>8 kişilik tek eleme bracket. Boş slotlar otomatik olarak çevrimiçi oyuncularla, yeterli yoksa botlarla doldurulur.</div>
+                {/* Mevcut katılımcıları göster (en azından kullanıcı kendisi) */}
                 {(tournamentData.players.length===0?[username]:tournamentData.players).map((p,i)=>(
                   <div key={i} style={{background:"#0f2040",border:"1.5px solid #1e3a6e",borderRadius:10,padding:"9px 12px",marginBottom:5,display:"flex",alignItems:"center",gap:8}}>
-                    <span>👤</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}</span>
+                    <span>{isBot(p)?"🤖":"👤"}</span><span style={{flex:1,fontWeight:700,color:"#fff"}}>{p}{p===username?" (Sen)":""}</span>
                     {i>0&&<button onClick={()=>setTournamentData(d=>({...d,players:d.players.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff4d6d",cursor:"pointer",fontSize:18}}>X</button>}
                   </div>
                 ))}
-                {(tournamentData.players.length||1)<8&&<button onClick={()=>{const n=prompt("Oyuncu adi:");if(!n||!n.trim())return;setTournamentData(d=>({...d,players:[...(d.players.length?d.players:[username]),n.trim()]}));}} style={{width:"100%",background:"rgba(76,201,240,.07)",border:"2px dashed #4cc9f0",borderRadius:10,padding:"9px",color:"#4cc9f0",fontWeight:700,cursor:"pointer",fontSize:13,marginBottom:10}}>+ Oyuncu Ekle</button>}
-                <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)"}} onClick={()=>{
-                  var pl=tournamentData.players.length?tournamentData.players:[username];
-                  var botNames=["Ahmet 🤖","Zeynep 🤖","Mehmet 🤖","Ayse 🤖","Hasan 🤖","Elif 🤖","Mustafa 🤖"];
-                  if(pl.length<2){pl=[username,botNames[Math.floor(Math.random()*botNames.length)]];}
-                  else if(pl.length%2!==0){var av=botNames.filter(function(n){return pl.indexOf(n)===-1;});pl=[].concat(pl,[av[Math.floor(Math.random()*av.length)]]);}
-                  var sh=[].concat(pl).sort(function(){return Math.random()-.5;});var br=[];
-                  for(var i=0;i<sh.length;i+=2){br.push({p1:sh[i],p2:sh[i+1],winner:null});}
+                {/* Kod ile arkadaş daveti — Firebase üzerinden */}
+                <div style={{marginTop:10,padding:"10px",background:"rgba(76,201,240,.06)",border:"1px solid rgba(76,201,240,.25)",borderRadius:10}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Kod ile arkadaş davet et</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <input className="inp" style={{margin:0,flex:1,letterSpacing:3,fontWeight:700,textAlign:"center",fontSize:15}}
+                      placeholder="#ABC123" value={tInviteCode} maxLength={7}
+                      onChange={e=>{setTInviteCode(e.target.value.toUpperCase());setTInviteMsg("");}}/>
+                    <button onClick={()=>sendInviteByCode(tInviteCode,{kind:'tournament'},(msg,ok)=>{setTInviteMsg(msg);if(ok)setTInviteCode("");})}
+                      style={{background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",border:"none",borderRadius:10,padding:"0 14px",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12}}>Davet</button>
+                  </div>
+                  {tInviteMsg&&<div style={{fontSize:11,color:tInviteMsg.startsWith("✓")?"#34d399":"#f87171",marginTop:6}}>{tInviteMsg}</div>}
+                </div>
+                <button className="pbtn" style={{background:"linear-gradient(135deg,#ff4d6d,#c2185b)",marginTop:12}} onClick={()=>{
+                  // Otomatik 8'e tamamla: önce çevrimiçi oyuncular, sonra botlar
+                  let pl=tournamentData.players.length?[...tournamentData.players]:[username];
+                  if(pl.indexOf(username)===-1)pl.unshift(username);
+                  const target=8;
+                  if(pl.length<target){
+                    const online=getOnlineUsers().filter(u=>u!==username&&pl.indexOf(u)===-1);
+                    pl=pl.concat(online.slice(0,target-pl.length));
+                  }
+                  if(pl.length<target){
+                    const botFill=getRandomOpponents(target-pl.length,pl);
+                    pl=pl.concat(botFill);
+                  }
+                  // 2'nin katı değilse (8'den az olabilir) bot ile dengele
+                  if(pl.length%2!==0){
+                    const extra=getRandomOpponents(1,pl);
+                    if(extra.length)pl.push(extra[0]);
+                  }
+                  const sh=[...pl].sort(()=>Math.random()-.5);
+                  const br=[];
+                  for(let i=0;i<sh.length;i+=2)br.push({p1:sh[i],p2:sh[i+1],winner:null});
                   setTournamentData({players:pl,started:true,bracket:br,round:1});
-                  if(typeof playSound==="function")playSound("levelup");
-                }}>Turnuvayi Basla</button>
+                  playSfx("match-start");
+                }}>🏆 Turnuvayı Başlat (8 oyuncu)</button>
+                <div style={{fontSize:10,color:"#bdd7c7",textAlign:"center",marginTop:8,lineHeight:1.4}}>💡 Daveti gönderdikten sonra karşı taraf kabul ederse turnuva yarı-canlı çalışır. Eksik slotlar bot ile doldurulur.</div>
               </div>
             ):(
               <div>
@@ -2285,18 +2475,43 @@ function App(){
                 </button>
               ))}
             </div>
-            <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>Rakibinin Kodu</div>
+            <button className="pbtn" style={{background:"linear-gradient(135deg,#fb923c,#ff4d6d)",boxShadow:"0 4px 20px rgba(251,146,60,.4)",marginBottom:12}} onClick={()=>{
+              setShowArena(false);
+              resetMultiplayerState();
+              isHostRef.current=true;
+              const numOpponents=arenaMode==="1v1"?1:3;
+              // Önce çevrimiçi gerçek oyuncu, eksik kalanı bot ile doldur
+              const online=getOnlineUsers().filter(u=>u!==username);
+              const realOpps=online.slice(0,numOpponents);
+              const need=numOpponents-realOpps.length;
+              const botOpps=need>0?getRandomOpponents(need,[username,...realOpps]):[];
+              const opps=[...realOpps,...botOpps];
+              playersRef.current={[username]:0};
+              opps.forEach(b=>{playersRef.current[b]=0;});
+              setRoomPlayers(Object.keys(playersRef.current));
+              setMode("multi");
+              playSfx("match-start");
+              setTimeout(()=>startGame(true),500);
+            }}>⚔️ Maça Başla {arenaMode==="1v1"?"(1v1)":"(2v2)"}</button>
+            <div style={{textAlign:"center",fontSize:11,color:"#c4a0e0",margin:"6px 0"}}>veya kod ile arkadaşını davet et</div>
+            <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Rakibinin Kodu</div>
             <input className="inp" placeholder="#ABC123" value={arenaCode} onChange={e=>{setArenaCode(e.target.value.toUpperCase().slice(0,7));setArenaErr("");}} style={{textAlign:"center",letterSpacing:4,fontSize:18,fontWeight:700,marginBottom:6}}/>
             {arenaErr&&<div style={{fontSize:11,color:"#ff3366",marginBottom:8,textAlign:"center"}}>{arenaErr}</div>}
-            <button className="pbtn" style={{background:"linear-gradient(135deg,#fb923c,#22c55e)",boxShadow:"0 4px 20px rgba(255,0,170,.4)"}} onClick={()=>{
+            <button className="pbtn" style={{background:"linear-gradient(135deg,#00e5ff,#9b5de5)",boxShadow:"0 4px 20px rgba(0,229,255,.35)"}} onClick={()=>{
               const c=arenaCode.trim();
               if(!c){setArenaErr("Kod gir!");return;}
               if(c===userCode){setArenaErr("Kendi kodunu giremezsin!");return;}
-              playSound("levelup");
-              alert("Arena daveti gonderildi! Bu ozellik yakindan aktif olacak. Simdilik 'Cok Oyunculu' moddan kod ile oynayabilirsin.");
-              setShowArena(false);
-            }}>{arenaMode==="1v1"?"1v1 KAPIŞ":"2v2 TAKIM SAVAŞI"}</button>
-            <div style={{marginTop:12,padding:"10px",background:"rgba(0,229,255,.05)",border:"1px solid rgba(0,229,255,.2)",borderRadius:10,fontSize:10,color:"#80c0e0",lineHeight:1.4}}>💡 Arkadasin senin profilindeki kodu kullanarak veya senin onun kodunu kullanarak arenaya katilabilir. Mac sonunda altin ve XP kazanirsin!</div>
+              sendInviteByCode(c,{kind:'arena',arenaMode},(msg,ok)=>{
+                if(ok){
+                  setArenaErr("");
+                  alert("Davet gönderildi! Karşı taraf kabul edince maç başlayacak.");
+                  setShowArena(false);
+                }else{
+                  setArenaErr(msg||"Davet gönderilemedi");
+                }
+              });
+            }}>📨 Davet Gönder ({arenaMode==="1v1"?"1v1":"2v2"})</button>
+            <div style={{marginTop:12,padding:"10px",background:"rgba(0,229,255,.05)",border:"1px solid rgba(0,229,255,.2)",borderRadius:10,fontSize:10,color:"#80c0e0",lineHeight:1.4}}>💡 "Maça Başla" çevrimiçi oyuncuları toplar, yetersizse boşluklar bot ile dolar. Kod ile davet ederek arkadaşınla doğrudan eşleşebilirsin.</div>
           </div>
         </div>}
         {showAvEd&&<AvatarEditor avatar={avatar} levelInfo={levelInfo} onSave={(av)=>{setAvatar(av);saveAvatar(usernameRef.current,av);setShowAvEd(false);}} onClose={()=>setShowAvEd(false)}/>}
@@ -2378,18 +2593,39 @@ function App(){
         <button className="pbtn" style={{marginTop:4}} onClick={()=>startGame(false)}>🚀 Oyunu Başlat</button>
       ):(
         <>
+        {/* HIZLI EŞLEŞME — önce çevrimiçi gerçek oyuncular, eksik kalanı bot ile doldurur. */}
         <button className="pbtn" style={{marginTop:4,background:"linear-gradient(135deg,#06d6a0,#00ff88)",boxShadow:"0 4px 20px rgba(0,255,136,.4)"}} onClick={()=>{
-          const botPool=["Ahmet 🤖","Zeynep 🤖","Mehmet 🤖","Ayse 🤖","Hasan 🤖","Elif 🤖"];
-          const sh=[...botPool].sort(()=>Math.random()-.5);
+          resetMultiplayerState();
           isHostRef.current=true;
+          const target=3; // 4 kişilik maç
+          const online=getOnlineUsers().filter(u=>u!==username);
+          const realOpps=online.slice(0,target);
+          const need=target-realOpps.length;
+          const botFill=need>0?getRandomOpponents(need,[username,...realOpps]):[];
+          const opps=[...realOpps,...botFill];
           playersRef.current={[username]:0};
-          sh.slice(0,3).forEach(function(b){playersRef.current[b]=0;});
+          opps.forEach(b=>{playersRef.current[b]=0;});
           setRoomPlayers(Object.keys(playersRef.current));
-          if(typeof playSound==="function")playSound("levelup");
-          setTimeout(function(){startGame(true);},400);
-        }}>🚀 Hızlı Maç (Bot ile)</button>
-        <button className="pbtn" style={{marginTop:8,background:"linear-gradient(135deg,#9b5de5,#ff00ff)"}} onClick={createRoom}>🏠 Oda Kur</button>
-        <div style={{textAlign:"center",fontSize:12,color:"#bdd7c7",margin:"12px 0 6px"}}>veya mevcut odaya katil</div>
+          playSfx("match-start");
+          setTimeout(()=>startGame(true),500);
+        }}>🚀 Hızlı Eşleşme</button>
+        <div style={{fontSize:11,color:"#7a9187",textAlign:"center",margin:"4px 0 10px"}}>Çevrimiçi oyuncular yetersizse boşluklar otomatik doldurulur.</div>
+        {/* GRUP / ARKADAŞ ODASI */}
+        <button className="pbtn" style={{marginTop:0,background:"linear-gradient(135deg,#9b5de5,#ff00ff)"}} onClick={()=>{playSfx("click");createRoom();}}>👥 Grup Oda Kur</button>
+        <div style={{fontSize:11,color:"#7a9187",textAlign:"center",margin:"4px 0 10px"}}>Arkadaşların kodla katılır · en fazla 15 kişi</div>
+        {/* KOD İLE ARKADAŞ DAVETİ */}
+        <div style={{padding:"10px",background:"rgba(76,201,240,.06)",border:"1px solid rgba(76,201,240,.25)",borderRadius:10,marginBottom:8}}>
+          <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Kod ile arkadaş davet et</div>
+          <div style={{display:"flex",gap:6}}>
+            <input className="inp" style={{margin:0,flex:1,letterSpacing:3,fontWeight:700,textAlign:"center",fontSize:15}}
+              placeholder="#ABC123" value={mInviteCode} maxLength={7}
+              onChange={e=>{setMInviteCode(e.target.value.toUpperCase());setMInviteMsg("");}}/>
+            <button onClick={()=>sendInviteByCode(mInviteCode,{kind:'multi'},(msg,ok)=>{setMInviteMsg(msg);if(ok)setMInviteCode("");})}
+              style={{background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",border:"none",borderRadius:10,padding:"0 14px",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12}}>Davet</button>
+          </div>
+          {mInviteMsg&&<div style={{fontSize:11,color:mInviteMsg.startsWith("✓")?"#34d399":"#f87171",marginTop:6}}>{mInviteMsg}</div>}
+        </div>
+        <div style={{textAlign:"center",fontSize:12,color:"#bdd7c7",margin:"6px 0"}}>veya mevcut odaya katıl</div>
         <div style={{display:"flex",gap:8}}>
           <input className="inp" style={{margin:0,flex:1,letterSpacing:4,fontSize:20,fontWeight:700,textAlign:"center"}}
             placeholder="000000" value={joinCodeInput}
