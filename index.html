@@ -394,6 +394,11 @@ async function fbGetUser(uid){
 // ═══════════════════════════════════════════════════════
 // ROOM CODES (Cross-device!)
 // ═══════════════════════════════════════════════════════
+// Local helpers (same-device, in-memory + localStorage fallback)
+function genRoomCode(){return String(Math.floor(100000+Math.random()*900000));}
+function saveRoomCode(code,peerId){try{localStorage.setItem("ba_room_"+code,JSON.stringify({peerId,ts:Date.now()}));}catch(e){}}
+function getRoomPeerId(code){try{const s=localStorage.getItem("ba_room_"+code);if(!s)return null;const d=JSON.parse(s);if(Date.now()-d.ts>7200000)return null;return d.peerId||null;}catch(e){return null;}}
+
 async function fbSaveRoomCode(code, peerId){
   // Local (same device/network)
   saveRoomCode(code, peerId);
@@ -812,11 +817,6 @@ const CATEGORIES=[
   {id:'bilim',label:'Bilim',icon:'🔬',desc:'Fizik, kimya, biyoloji'},
   {id:'sanat',label:'Sanat & Edebiyat',icon:'🎨',desc:'Resim, müzik, edebiyat'},
 ];
-
-function getQsByCategory(cat,count){
-  const pool=[...(ALL_QS[cat]||ALL_QS.karışık)].sort(()=>Math.random()-.5);
-  return pool.slice(0,count);
-}
 
 // ── Level system ──
 function getLvlXP(lv){return Math.floor(100*Math.pow(1.48,lv-1));}
@@ -1815,6 +1815,7 @@ function App(){
   const [mInviteCode,setMInviteCode]=useState("");
   const [mInviteMsg,setMInviteMsg]=useState("");
   const [userCode,setUserCode]=useState("");
+  const [leagueData,setLeagueData]=useState({league:'bronze',weeklyPts:0,weekKey:'',prevLeague:'bronze'});
   // Bildirim sistemi: Firebase'den gelen davet + arkadaşlık istekleri
   const [pendingNotifs,setPendingNotifs]=useState([]);
   const [incomingFriendReqs,setIncomingFriendReqs]=useState([]);
@@ -1892,6 +1893,7 @@ function App(){
     setUserTitle(getTitleLS(u));
     setFriends(getFriends(u));
     getUserCode(u); // ensure code generated
+    setLeagueData(getLeagueData(u));
   },[]);
 
   // -- Online ping --
@@ -1928,9 +1930,19 @@ function App(){
     const correctCount=answers.filter(a=>a.sel===a.a).length;
     const totalXP=correctCount*5+(mode==='solo'?comboXpRef.current:0);
     if(totalXP>0) addXP(totalXP);
-    // Combo bonus XP'i kullanıcıya bildiri olarak göster
-    if(mode==='solo'&&comboXpRef.current>0){
-      setGoldEarned(g=>g); // no-op, just to trigger render later
+    // League puanı da ekle ve state'i güncelle
+    if(totalXP>0){
+      const u=usernameRef.current;
+      addLeaguePts(u,totalXP);
+      setLeagueData(getLeagueData(u));
+      // Firebase league sync (async, hata olsa devam)
+      try{
+        const uid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+        if(uid&&typeof fbAddLeaguePts!=="undefined"){
+          const ld2=getLeagueData(u);
+          fbAddLeaguePts(uid,u,ld2.league,totalXP).catch(()=>{});
+        }
+      }catch(e){}
     }
     // Update stats
     const ns=getStats(usernameRef.current);
@@ -2046,7 +2058,7 @@ function App(){
     setUsername(u);
     try{localStorage.setItem("ba_user",u);localStorage.setItem("ba_pass",pass);if(result.uid)localStorage.setItem("ba_fb_uid",result.uid);}catch(e){}
     loadUser(u);if(result.gold)setGold(result.gold);if(result.avatar)setAvatar(result.avatar);
-    setTimeout(()=>doTriggerDaily("login"),400);
+    setTimeout(()=>triggerDaily("login"),400);
     const pending=sessionStorage.getItem("pendingRoom");
     if(pending){sessionStorage.removeItem("pendingRoom");joinAsClient(u,pending);}else setScreen("home");
     setAuthLoading(false);
@@ -2440,11 +2452,21 @@ function App(){
     if(notif.type==='invite'){
       try{if(typeof fbDeleteInvite!=="undefined")await fbDeleteInvite(notif.id);}catch(e){}
       const p=notif.payload||{};
-      if(p.peerId){
+      // peerId bul: payload'dan, yoksa roomCode ile Firebase lookup
+      let pid=p.peerId||null;
+      if(!pid&&p.roomCode){
+        try{if(typeof fbGetRoomPeerId!=="undefined")pid=await fbGetRoomPeerId(p.roomCode);}catch(e){}
+        if(!pid)pid=getRoomPeerId(p.roomCode);
+      }
+      if(pid){
         setMode(p.mode||"multi");
         setCategory(p.category||"karışık");
-        // Oyun odasına bağlan
-        try{joinAsClient(null,p.peerId);}catch(e){}
+        try{joinAsClient(null,pid);}catch(e){}
+      }else{
+        // Oda yok → setup ekranına git
+        setMode(p.mode||"multi");
+        setCategory(p.category||"karışık");
+        setScreen("setup");
       }
     }else if(notif.type==='friend'){
       const myUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
@@ -2570,16 +2592,28 @@ function App(){
     }catch(e){cb&&cb("Davet gönderilemedi",false);}
   },[username,userCode]);
 
-  const addFriend=useCallback((friendName)=>{
+  const addFriend=useCallback(async(friendName)=>{
     const cur=getFriends(usernameRef.current);
-    if(cur.includes(friendName))return;
-    const updated=[...cur,friendName];
-    setFriends(updated);saveFriendsLS(usernameRef.current,updated);
+    if(!cur.includes(friendName)){
+      const updated=[...cur,friendName];
+      setFriends(updated);saveFriendsLS(usernameRef.current,updated);
+    }
+    // Firebase üzerinden resmi arkadaşlık isteği gönder
+    try{
+      const myUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+      if(myUid&&typeof fbSearchByUsername!=="undefined"&&typeof fbSendFriendRequest!=="undefined"){
+        const r=await fbSearchByUsername(friendName);
+        if(r&&r.uid){
+          await fbSendFriendRequest(myUid,usernameRef.current,userCode,r.uid);
+        }
+      }
+    }catch(e){}
     setFriendSearchResult(null);setFriendSearchInput("");
-  },[]);
+    playSfx("earn");
+  },[userCode]);
 
   const challengeFriend=useCallback((friendName)=>{
-    setMode("multi");setScreen("setup-challenge");
+    setMode("multi");setCategory("karışık");setScreen("setup");
   },[]);
 
 
@@ -2605,19 +2639,21 @@ function App(){
       <button className="sbtn" onClick={()=>{
         const g="Misafir"+(Math.floor(Math.random()*9000)+1000);
         try{localStorage.setItem("ba_user",g);}catch(e){}
-        setUsername(g);loadUser(g);setTimeout(()=>doTriggerDaily("login"),300);
+        setUsername(g);loadUser(g);setTimeout(()=>triggerDaily("login"),300);
         const p2=sessionStorage.getItem("pendingRoom");if(p2){sessionStorage.removeItem("pendingRoom");joinAsClient(g,p2);}else setScreen("home");
       }}>Misafir Olarak Devam Et</button>
     </div></W>
   );
+
+  // Bildirim banner'ı — tüm screenlerde, position:fixed sayesinde her zaman görünür
+  const _globalBanner=username?<NotificationBanner notifs={pendingNotifs} onAccept={acceptNotif} onReject={rejectNotif}/>:null;
 
   if(screen==="home"){
     const fr=getFrame(levelInfo.level);
     const ms=getMissions(username);
     return(
       <W><div className="sc fi">
-        {/* Bildirim banner'ı — en üstte, her zaman */}
-        <NotificationBanner notifs={pendingNotifs} onAccept={acceptNotif} onReject={rejectNotif}/>
+        {_globalBanner}
         <div className="hdr">
           <span className="logosm">BİLGİ ARENA</span>
           <div style={{display:"flex",alignItems:"center",gap:7}}>
@@ -2627,8 +2663,8 @@ function App(){
         </div>
         {/* Nav */}
         <div style={{display:"flex",background:"#17352f",borderRadius:12,padding:3,gap:2,marginBottom:14}}>
-          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
-            <button key={t.k} onClick={()=>{playSfx("tab");setHomeTab(t.k);}} style={{flex:1,padding:"9px 2px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#34d399,#f59e0b)":"transparent",color:homeTab===t.k?"#071714":"#7a9187",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t.l}</button>
+          {[{k:"home",l:"🏠"},{k:"friends",l:"👥"},{k:"league",l:"🏆"},{k:"missions",l:"📋"},{k:"daily",l:"📅"},{k:"profile",l:"👤"}].map(t=>(
+            <button key={t.k} onClick={()=>{playSfx("tab");setHomeTab(t.k);}} style={{flex:1,padding:"9px 1px",borderRadius:9,border:"none",background:homeTab===t.k?"linear-gradient(135deg,#34d399,#f59e0b)":"transparent",color:homeTab===t.k?"#071714":"#7a9187",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:13,cursor:"pointer"}}>{t.l}</button>
           ))}
         </div>
 
@@ -2697,7 +2733,9 @@ function App(){
           const lg=allLgs.find(l=>l.id===(ld.league||"bronze"))||allLgs[0];
           const nextLg=allLgs[allLgs.findIndex(l=>l.id===lg.id)+1];
           const pts=ld.weeklyPts||0;
-          const bd=[{name:username,pts,isMe:true},...["Ali","Ayse","Mehmet","Fatma","Ahmet","Zeynep","Mustafa"].map((n,i)=>({name:n,pts:Math.max(0,pts+Math.floor(Math.random()*200)*(i%2?1:-1)),isMe:false}))].sort((a,b)=>b.pts-a.pts).slice(0,8);
+          // Seeded leaderboard — her render'da aynı sonuç
+          const rawBoard=typeof getFakeLeaderboard!=="undefined"?getFakeLeaderboard(pts,ld.league||"bronze",username):[];
+          const bd=[{name:username,pts,isMe:true},...rawBoard.filter(r=>r.name!==username)].sort((a,b)=>b.pts-a.pts).slice(0,10);
           return(<div>
             <div style={{background:"linear-gradient(135deg,"+lg.color+"22,"+lg.color+"11)",border:"2px solid "+lg.color,borderRadius:14,padding:14,marginBottom:10,textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:2}}>{lg.icon}</div>
@@ -2758,7 +2796,29 @@ function App(){
                 <div style={{fontSize:14,fontWeight:700,color:"#e2e4f0"}}>{f}</div>
                 <div style={{fontSize:11,color:isOnline(f)?"#34d399":"#7a9187"}}>{isOnline(f)?"🟢 Çevrimiçi":"⚫ Çevrimdışı"}</div>
               </div>
-              <button onClick={()=>{setMode("multi");setCategory("karışık");setScreen("setup");}} style={{background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#34d399",padding:"6px 12px",borderRadius:10,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:12}}>⚔️ Meydan Oku</button>
+              <button onClick={()=>{
+                // Oda kur ve arkadaşa davet gönder
+                playSfx("click");
+                setMode("multi");setCategory("karışık");
+                createRoom();
+                // Oda açıldıktan kısa süre sonra Firebase'e davet gönder
+                setTimeout(()=>{
+                  const fCode=(()=>{try{const fb=getFriends(usernameRef.current);return null;}catch(e){return null;}})();
+                  const pid=peerRef.current?peerRef.current.id:null;
+                  const rc=roomCode||"";
+                  // Arkadaşın Firebase UID'sini bulmak için kodunu ara
+                  if(typeof fbSearchByUsername!=="undefined"){
+                    fbSearchByUsername(f).then(r=>{
+                      if(r&&r.uid){
+                        const fromUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+                        if(fromUid&&typeof fbSendInvite!=="undefined"){
+                          fbSendInvite(fromUid,usernameRef.current,userCode,r.uid,{kind:'multi',peerId:pid,roomCode:rc,mode:'multi',category:'karışık'}).catch(()=>{});
+                        }
+                      }
+                    }).catch(()=>{});
+                  }
+                },1200);
+              }} style={{background:"rgba(110,231,247,.1)",border:"1px solid rgba(110,231,247,.2)",color:"#34d399",padding:"6px 12px",borderRadius:10,cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:700,fontSize:12}}>⚔️ Meydan Oku</button>
             </div>
           ))}
         </>}
@@ -3007,12 +3067,12 @@ function App(){
             <div style={{background:"rgba(255,0,170,.08)",border:"1.5px solid rgba(255,0,170,.4)",borderRadius:14,padding:"14px",marginBottom:14,textAlign:"center"}}>
               <div style={{fontSize:10,color:"#bdd7c7",fontWeight:700,textTransform:"uppercase",letterSpacing:2,marginBottom:4}}>Senin Kodun</div>
               <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:32,fontWeight:700,color:"#fb923c",letterSpacing:6}}>{userCode||"#----"}</div>
-              <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){}playSound("click");alert("Kod kopyalandi!");}} style={{marginTop:8,background:"rgba(255,0,170,.15)",border:"1px solid #fb923c",borderRadius:9,padding:"5px 14px",color:"#fb923c",fontWeight:700,fontSize:11,cursor:"pointer"}}>Kopyala</button>
+              <button onClick={()=>{try{navigator.clipboard.writeText(userCode);}catch(e){}playSfx("click");}} style={{marginTop:8,background:"rgba(255,0,170,.15)",border:"1px solid #fb923c",borderRadius:9,padding:"5px 14px",color:"#fb923c",fontWeight:700,fontSize:11,cursor:"pointer"}}>📋 Kopyala</button>
             </div>
             <div style={{fontSize:11,fontWeight:700,color:"#bdd7c7",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>Mod Sec</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
               {[{k:"1v1",l:"1 vs 1",d:"Klasik kapisma",i:"⚔️"},{k:"2v2",l:"2 vs 2",d:"Takim modu",i:"🛡️"}].map(m=>(
-                <button key={m.k} onClick={()=>{setArenaMode(m.k);playSound("click");}} style={{background:arenaMode===m.k?"linear-gradient(135deg,rgba(255,0,170,.2),rgba(34,197,94,.2))":"#10231f",border:arenaMode===m.k?"2px solid #fb923c":"1.5px solid #3a1a5a",borderRadius:12,padding:"12px",cursor:"pointer",textAlign:"center",transition:"all .2s"}}>
+                <button key={m.k} onClick={()=>{setArenaMode(m.k);playSfx("click");}} style={{background:arenaMode===m.k?"linear-gradient(135deg,rgba(255,0,170,.2),rgba(34,197,94,.2))":"#10231f",border:arenaMode===m.k?"2px solid #fb923c":"1.5px solid #3a1a5a",borderRadius:12,padding:"12px",cursor:"pointer",textAlign:"center",transition:"all .2s"}}>
                   <div style={{fontSize:24,marginBottom:3}}>{m.i}</div>
                   <div style={{fontFamily:"'Rajdhani',sans-serif",fontSize:16,fontWeight:700,color:arenaMode===m.k?"#fb923c":"#fff"}}>{m.l}</div>
                   <div style={{fontSize:10,color:"#bdd7c7"}}>{m.d}</div>
@@ -3112,8 +3172,9 @@ function App(){
     );
   }
 
-  if(screen==="setup"||screen==="setup-challenge") return(
+  if(screen==="setup") return(
     <W><div className="sc fi">
+      {_globalBanner}
       <div className="shdr">
         <button className="bk" onClick={goHome}>←</button>
         <div><div className="stitle">Oyun Ayarları</div><div style={{fontSize:11,color:"#7a9187"}}>{mode==="solo"?"Tekli Mod":"Çoklu Mod"}</div></div>
@@ -3200,6 +3261,7 @@ function App(){
 
   if(screen==="lobby-host") return(
     <W><div className="sc fi">
+      {_globalBanner}
       <div className="shdr">
         <button className="bk" onClick={goHome}>←</button>
         <div><div className="stitle">Oda Hazır</div></div>
@@ -3214,6 +3276,20 @@ function App(){
         <div style={{fontSize:10,color:"#bdd7c7",marginTop:2}}>Arkadasina bu kodu soyle</div>
       </div>
       <div className="linkbox"><div className="linktxt">{inviteLink||"Oluşturuluyor..."}</div><button className="copybtn" onClick={copyLink}>{copied?"✓ Kopyalandı!":"📋 Linki Kopyala"}</button></div>
+      {/* Kod ile doğrudan davet — peerId payload'ına gömülü */}
+      <div style={{padding:"10px 12px",background:"rgba(76,201,240,.06)",border:"1px solid rgba(76,201,240,.2)",borderRadius:12,marginBottom:10}}>
+        <div style={{fontSize:10,fontWeight:700,color:"#bdd7c7",marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Kod ile davet et</div>
+        <div style={{display:"flex",gap:6}}>
+          <input className="inp" style={{margin:0,flex:1,letterSpacing:3,fontWeight:700,textAlign:"center",fontSize:14}}
+            placeholder="#ABC123" value={mInviteCode} maxLength={7}
+            onChange={e=>{setMInviteCode(e.target.value.toUpperCase());setMInviteMsg("");}}/>
+          <button onClick={()=>{
+            const pid=peerRef.current?peerRef.current.id:null;
+            sendInviteByCode(mInviteCode,{kind:'multi',peerId:pid,roomCode,mode:'multi',category},(msg,ok)=>{setMInviteMsg(msg);if(ok)setMInviteCode("");});
+          }} style={{background:"linear-gradient(135deg,#4cc9f0,#9b5de5)",border:"none",borderRadius:10,padding:"0 14px",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12}}>Davet</button>
+        </div>
+        {mInviteMsg&&<div style={{fontSize:11,color:mInviteMsg.startsWith("✓")?"#34d399":"#f87171",marginTop:6}}>{mInviteMsg}</div>}
+      </div>
       <div style={{fontSize:12,color:"#7a9187",marginBottom:8,marginTop:4}}>Oyuncular ({roomPlayers.length}/15)</div>
       <div className="playerlist">{roomPlayers.map((p,i)=>(<div key={p} className="plitem"><div className="plavatarsm">{p[0].toUpperCase()}</div><div style={{flex:1,fontSize:13,fontWeight:700,color:"#e2e4f0"}}>{p}{p===username?" (Sen)":""}</div><div className="pingdot"/></div>))}
         {roomPlayers.length<2&&<div style={{textAlign:"center",padding:"10px",color:"#7a9187",fontSize:12}}>⏳ Bekleniyor...</div>}
