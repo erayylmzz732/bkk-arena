@@ -206,6 +206,11 @@ html,body{height:100%;background:#030312;overscroll-behavior:none}
 }
 @keyframes neonPulse{0%,100%{opacity:1}50%{opacity:.7}}
 @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes notifSlideDown{from{transform:translateY(-120%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes notifSlideUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-120%);opacity:0}}
+.notif-wrap{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;z-index:600;padding:10px 12px 0;pointer-events:none}
+.notif-item{background:linear-gradient(135deg,#0f3228,#162848);border:1.5px solid #2dd4bf;border-radius:16px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:11px;pointer-events:all;box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 20px rgba(45,212,191,.15);animation:notifSlideDown .42s cubic-bezier(.2,1,.4,1) both}
+.notif-item.leaving{animation:notifSlideUp .32s ease forwards}
 @keyframes comboAnim{0%{transform:scale(.5);opacity:0}50%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
 @keyframes correctFlash{0%{background:rgba(0,255,136,.3)}100%{background:transparent}}
 @keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
@@ -1438,6 +1443,30 @@ function addGameHistory(u,pts,correct,total){
 // Defined outside App so they don't remount on state change
 // ---------------------------------------------
 
+// ── Bildirim banner'ı: ekranın üstünden aşağı kayar ──
+function NotificationBanner({notifs,onAccept,onReject}){
+  if(!notifs||notifs.length===0)return null;
+  return(
+    <div className="notif-wrap">
+      {notifs.map(n=>(
+        <div key={n.id} className={"notif-item"+(n.leaving?" leaving":"")}>
+          <div style={{fontSize:26,lineHeight:1}}>{n.type==='invite'?'⚔️':'👥'}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:12,fontWeight:800,color:'#e2e4f0',lineHeight:1.2}}>{n.type==='invite'?'Maç Daveti':'Arkadaşlık İsteği'}</div>
+            <div style={{fontSize:11,color:'#bdd7c7',marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
+              <b style={{color:'#4cc9f0'}}>{n.fromUsername}</b>{n.type==='invite'?' seni oyuna davet etti':' arkadaş olmak istiyor'}
+            </div>
+          </div>
+          <div style={{display:'flex',gap:5,flexShrink:0}}>
+            <button onClick={()=>onAccept(n)} style={{background:'linear-gradient(135deg,#34d399,#059669)',border:'none',borderRadius:9,padding:'6px 11px',color:'#fff',fontWeight:800,fontSize:11,cursor:'pointer',boxShadow:'0 2px 10px rgba(52,211,153,.4)'}}>✓ Kabul</button>
+            <button onClick={()=>onReject(n)} style={{background:'rgba(255,77,109,.12)',border:'1px solid #ff4d6d55',borderRadius:9,padding:'6px 10px',color:'#ff4d6d',fontWeight:800,fontSize:11,cursor:'pointer'}}>✕</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Mega combo (5+) ekran ortası patlama animasyonu
 function ComboBlastOverlay({blast,onDone}){
   React.useEffect(()=>{
@@ -1786,6 +1815,10 @@ function App(){
   const [mInviteCode,setMInviteCode]=useState("");
   const [mInviteMsg,setMInviteMsg]=useState("");
   const [userCode,setUserCode]=useState("");
+  // Bildirim sistemi: Firebase'den gelen davet + arkadaşlık istekleri
+  const [pendingNotifs,setPendingNotifs]=useState([]);
+  const [incomingFriendReqs,setIncomingFriendReqs]=useState([]);
+  const notifIdsRef=useRef(new Set()); // zaten gösterilen ID'leri izle (tekrar pop etme)
 
   // refs
   const USERS=useRef(new Map());
@@ -2348,6 +2381,122 @@ function App(){
 
   useEffect(()=>()=>{clearInterval(timerRef.current);clearTimeout(forceRef.current);if(peerRef.current)peerRef.current.destroy();stopMusic();clearBotTimeouts();},[clearBotTimeouts]);
 
+  // ── Firebase bildirim polling (15 sn'de bir) ──
+  // Gelen game invites ve arkadaşlık isteklerini çeker, yeni olanları banner'da gösterir.
+  useEffect(()=>{
+    if(!username)return;
+    const myUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+    if(!myUid)return;
+    const poll=async()=>{
+      try{
+        // Oyun davetleri
+        if(typeof fbListInvites!=="undefined"){
+          const invites=await fbListInvites(myUid);
+          const newOnes=(invites||[]).filter(inv=>!notifIdsRef.current.has(inv.id));
+          if(newOnes.length>0){
+            newOnes.forEach(inv=>notifIdsRef.current.add(inv.id));
+            setPendingNotifs(prev=>[...prev,...newOnes.map(inv=>({
+              id:inv.id,type:'invite',
+              fromUsername:inv.fromUsername||inv.fromCode||"Biri",
+              fromCode:inv.fromCode,payload:inv.payload||{}
+            }))]);
+            try{playSfx('invite');}catch(e){}
+          }
+        }
+      }catch(e){}
+      try{
+        // Arkadaşlık istekleri
+        if(typeof fbListFriendRequests!=="undefined"){
+          const reqs=await fbListFriendRequests(myUid);
+          const newReqs=(reqs||[]).filter(r=>!notifIdsRef.current.has("fr_"+r.id));
+          if(newReqs.length>0){
+            newReqs.forEach(r=>notifIdsRef.current.add("fr_"+r.id));
+            setPendingNotifs(prev=>[...prev,...newReqs.map(r=>({
+              id:"fr_"+r.id,realId:r.id,type:'friend',
+              fromUid:r.fromUid,fromUsername:r.fromUsername||r.fromCode||"Biri"
+            }))]);
+            setIncomingFriendReqs(prev=>{
+              const ids=new Set(prev.map(x=>x.id));
+              return [...prev,...newReqs.filter(r=>!ids.has(r.id))];
+            });
+            try{playSfx('invite');}catch(e){}
+          }
+        }
+      }catch(e){}
+    };
+    poll();
+    const iv=setInterval(poll,15000);
+    return()=>clearInterval(iv);
+  },[username]);
+
+  // Banner kapatma (animasyonlu)
+  const dismissNotif=useCallback((id)=>{
+    setPendingNotifs(prev=>prev.map(n=>n.id===id?{...n,leaving:true}:n));
+    setTimeout(()=>setPendingNotifs(prev=>prev.filter(n=>n.id!==id)),380);
+  },[]);
+
+  // Davet kabul et
+  const acceptNotif=useCallback(async(notif)=>{
+    if(notif.type==='invite'){
+      try{if(typeof fbDeleteInvite!=="undefined")await fbDeleteInvite(notif.id);}catch(e){}
+      const p=notif.payload||{};
+      if(p.peerId){
+        setMode(p.mode||"multi");
+        setCategory(p.category||"karışık");
+        // Oyun odasına bağlan
+        try{joinAsClient(null,p.peerId);}catch(e){}
+      }
+    }else if(notif.type==='friend'){
+      const myUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+      if(myUid&&notif.fromUid&&typeof fbAcceptFriendRequest!=="undefined"){
+        try{
+          await fbAcceptFriendRequest(notif.realId,myUid,username,notif.fromUid,notif.fromUsername);
+          const cur=getFriends(usernameRef.current);
+          if(!cur.includes(notif.fromUsername)){
+            const upd=[...cur,notif.fromUsername];
+            setFriends(upd);saveFriendsLS(usernameRef.current,upd);
+          }
+        }catch(e){}
+      }
+      setIncomingFriendReqs(prev=>prev.filter(r=>r.id!==notif.realId));
+    }
+    dismissNotif(notif.id);
+  },[username,dismissNotif]);
+
+  // Davet reddet
+  const rejectNotif=useCallback(async(notif)=>{
+    if(notif.type==='invite'){
+      try{if(typeof fbDeleteInvite!=="undefined")await fbDeleteInvite(notif.id);}catch(e){}
+    }else if(notif.type==='friend'){
+      try{if(typeof fbRejectFriendRequest!=="undefined")await fbRejectFriendRequest(notif.realId);}catch(e){}
+      setIncomingFriendReqs(prev=>prev.filter(r=>r.id!==notif.realId));
+    }
+    dismissNotif(notif.id);
+  },[dismissNotif]);
+
+  // Friends tab: gelen arkadaşlık isteğini doğrudan listeden kabul/reddet
+  const acceptFriendReqFromList=useCallback(async(req)=>{
+    const myUid=(()=>{try{return localStorage.getItem("ba_fb_uid")||null;}catch(e){return null;}})();
+    if(myUid&&req.fromUid&&typeof fbAcceptFriendRequest!=="undefined"){
+      try{
+        await fbAcceptFriendRequest(req.id,myUid,usernameRef.current,req.fromUid,req.fromUsername);
+        const cur=getFriends(usernameRef.current);
+        if(!cur.includes(req.fromUsername)){
+          const upd=[...cur,req.fromUsername];
+          setFriends(upd);saveFriendsLS(usernameRef.current,upd);
+        }
+      }catch(e){}
+    }
+    setIncomingFriendReqs(prev=>prev.filter(r=>r.id!==req.id));
+    notifIdsRef.current.add("fr_"+req.id);
+  },[]);
+
+  const rejectFriendReqFromList=useCallback(async(req)=>{
+    try{if(typeof fbRejectFriendRequest!=="undefined")await fbRejectFriendRequest(req.id);}catch(e){}
+    setIncomingFriendReqs(prev=>prev.filter(r=>r.id!==req.id));
+    notifIdsRef.current.add("fr_"+req.id);
+  },[]);
+
   const copyLink=()=>{
     const txt=inviteLink||window.location.href;
     const fallback=()=>{try{const ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.focus();ta.select();document.execCommand("copy");document.body.removeChild(ta);}catch(e){}};
@@ -2467,6 +2616,8 @@ function App(){
     const ms=getMissions(username);
     return(
       <W><div className="sc fi">
+        {/* Bildirim banner'ı — en üstte, her zaman */}
+        <NotificationBanner notifs={pendingNotifs} onAccept={acceptNotif} onReject={rejectNotif}/>
         <div className="hdr">
           <span className="logosm">BİLGİ ARENA</span>
           <div style={{display:"flex",alignItems:"center",gap:7}}>
@@ -2578,6 +2729,26 @@ function App(){
               <button className="pbtn" style={{width:"auto",padding:"7px 14px",fontSize:13}} onClick={()=>addFriend(friendSearchResult)}>+ Ekle</button>
             </div>
           )}
+          {/* Gelen Arkadaşlık İstekleri */}
+          {incomingFriendReqs.length>0&&<>
+            <div style={{fontSize:11,color:"#ffd166",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8,marginTop:4,display:"flex",alignItems:"center",gap:6}}>
+              <span style={{background:"#ffd166",color:"#071714",borderRadius:20,padding:"1px 7px",fontSize:10,fontWeight:800}}>{incomingFriendReqs.length}</span>
+              Gelen Arkadaşlık İstekleri
+            </div>
+            {incomingFriendReqs.map(req=>(
+              <div key={req.id} style={{background:"linear-gradient(135deg,#1e2a18,#17352f)",border:"1.5px solid #ffd16655",borderRadius:12,padding:"11px 13px",marginBottom:7,display:"flex",alignItems:"center",gap:10,animation:"fadeUp .25s ease"}}>
+                <div style={{width:36,height:36,background:"linear-gradient(135deg,#ffd166,#f59e0b)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:"#071714"}}>{(req.fromUsername||"?")[0].toUpperCase()}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#e2e4f0",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{req.fromUsername}</div>
+                  <div style={{fontSize:10,color:"#ffd166"}}>Arkadaş olmak istiyor 👋</div>
+                </div>
+                <div style={{display:"flex",gap:5,flexShrink:0}}>
+                  <button onClick={()=>acceptFriendReqFromList(req)} style={{background:"linear-gradient(135deg,#34d399,#059669)",border:"none",borderRadius:8,padding:"6px 11px",color:"#fff",fontWeight:800,fontSize:11,cursor:"pointer"}}>✓ Kabul</button>
+                  <button onClick={()=>rejectFriendReqFromList(req)} style={{background:"rgba(255,77,109,.12)",border:"1px solid #ff4d6d55",borderRadius:8,padding:"6px 9px",color:"#ff4d6d",fontWeight:800,fontSize:11,cursor:"pointer"}}>✕</button>
+                </div>
+              </div>
+            ))}
+          </>}
           <div style={{fontSize:11,color:"#7a9187",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Arkadaşlar ({friends.length})</div>
           {friends.length===0&&<div style={{textAlign:"center",padding:"20px",color:"#7a9187",fontSize:13}}>Henüz arkadaşın yok.<br/>Yukarıdan kod ile ekleyebilirsin.</div>}
           {friends.map((f,i)=>(
